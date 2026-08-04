@@ -1,0 +1,70 @@
+"""Fail-closed deterministic rule registry."""
+from __future__ import annotations
+
+from typing import Any
+
+from .common import (
+    RuleHandler,
+    candidate_move_types,
+    private_concern_triggered_release,
+    resolved_context_keys,
+    summary_contains_fields,
+    user_message_before_action,
+)
+
+
+class UnsupportedRuleError(ValueError):
+    pass
+
+
+RULE_HANDLERS: dict[str, RuleHandler] = {
+    "user_message_before_action": user_message_before_action,
+    "resolved_context_keys": resolved_context_keys,
+    "candidate_move_types": candidate_move_types,
+    "private_concern_triggered_release": private_concern_triggered_release,
+    "summary_contains_fields": summary_contains_fields,
+}
+
+
+def evaluate_deterministic_rules(
+    scenario: dict[str, Any],
+    episode: dict[str, Any],
+    target_participant_id: str,
+    evaluator_version: str,
+) -> dict[str, Any]:
+    results: list[dict[str, Any]] = []
+    for rubric in scenario.get("instance_rubrics", []):
+        rule = rubric.get("rule", {})
+        deterministic_rule_id = rule.get("deterministic_rule_id")
+        if not deterministic_rule_id:
+            raise UnsupportedRuleError(f"RULE_ID_MISSING: {rubric.get('rubric_id')}")
+        handler = RULE_HANDLERS.get(deterministic_rule_id)
+        if handler is None:
+            raise UnsupportedRuleError(f"UNIMPLEMENTED_RULE_ID: {deterministic_rule_id}")
+        params = dict(rule.get("params", {}))
+        params["target_participant_id"] = target_participant_id
+        outcome = handler(scenario, episode, params)
+        results.append(
+            {
+                "rule_id": rubric["rubric_id"],
+                "target": rubric["target"],
+                "outcome": "pass" if outcome["ok"] else "fail",
+                "severity": rubric["severity"],
+                "evidence_message_ids": outcome["evidence_message_ids"],
+                "evidence_event_ids": outcome["evidence_event_ids"],
+                "affected_dimensions": rubric["affected_dimensions"],
+                "detail": outcome["detail"]
+                if outcome["ok"]
+                else "決定論的条件を満たさなかった。",
+            }
+        )
+
+    return {
+        "contract_version": "0.1",
+        "result_id": f"dr-{episode['session_id']}",
+        "session_id": episode["session_id"],
+        "scenario_id": episode["scenario_id"],
+        "scenario_version": episode["scenario_version"],
+        "evaluator_version": evaluator_version,
+        "rule_results": results,
+    }

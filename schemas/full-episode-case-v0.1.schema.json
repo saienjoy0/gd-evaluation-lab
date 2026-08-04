@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/gd-evaluation/schemas/full-episode-case-v0.1.schema.json",
+  "title": "Full Episode Case v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "case_id",
+    "exercise_id",
+    "state",
+    "scenario_path",
+    "target_participant_id",
+    "episode_path",
+    "candidate_rubric_path",
+    "ai_quality_rubric_path",
+    "human_inputs",
+    "versions",
+    "test_oracles"
+  ],
+  "properties": {
+    "contract_version": {"const": "0.1"},
+    "case_id": {"type": "string", "minLength": 1},
+    "exercise_id": {"type": "string", "minLength": 1},
+    "state": {"enum": ["high", "medium", "low", "system_failure"]},
+    "scenario_path": {"$ref": "#/$defs/safePath"},
+    "target_participant_id": {"type": "string", "minLength": 1},
+    "episode_path": {"$ref": "#/$defs/safePath"},
+    "candidate_rubric_path": {"$ref": "#/$defs/safePath"},
+    "ai_quality_rubric_path": {"$ref": "#/$defs/safePath"},
+    "human_inputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rater_sheet_paths", "adjudication_path"],
+      "properties": {
+        "rater_sheet_paths": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/safePath"}
+        },
+        "adjudication_path": {"$ref": "#/$defs/safePath"}
+      }
+    },
+    "versions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "runner_version",
+        "deterministic_evaluator_version",
+        "opportunity_resolver_version",
+        "aggregator_version",
+        "feedback_template_version"
+      ],
+      "properties": {
+        "runner_version": {"type": "string", "minLength": 1},
+        "deterministic_evaluator_version": {"type": "string", "minLength": 1},
+        "opportunity_resolver_version": {"type": "string", "minLength": 1},
+        "aggregator_version": {"type": "string", "minLength": 1},
+        "feedback_template_version": {"type": "string", "minLength": 1}
+      }
+    },
+    "test_oracles": {
+      "type": "object",
+      "additionalProperties": {"$ref": "#/$defs/safePath"},
+      "required": [
+        "deterministic_rules",
+        "system_quality",
+        "opportunity_resolution",
+        "evaluation_result",
+        "feedback"
+      ]
+    }
+  },
+  "$defs": {
+    "safePath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"
+    }
+  }
+}
