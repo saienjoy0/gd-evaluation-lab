@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+"""Validate GD Evaluation Contract v0.1 and its canonical fixtures."""
+
 from __future__ import annotations
 
 import copy
@@ -12,69 +15,36 @@ from jsonschema.exceptions import SchemaError
 
 ROOT = Path(__file__).resolve().parents[1]
 CANDIDATE_DIMENSIONS = {
-    "issue_framing",
-    "logical_reasoning",
-    "listening_and_response",
-    "valuable_contribution",
-    "collaboration_and_relationship",
-    "decision_and_consensus",
-    "process_and_time_management",
+    "issue_framing", "logical_reasoning", "listening_and_response",
+    "valuable_contribution", "collaboration_and_relationship",
+    "decision_and_consensus", "process_and_time_management",
 }
 AI_DIMENSIONS = {
-    "goal_progression",
-    "responsiveness",
-    "user_agency",
-    "role_believability",
-    "discussion_coherence",
-    "novelty_and_repetition",
-    "consensus_quality",
-    "natural_pacing",
+    "goal_progression", "responsiveness", "user_agency", "role_believability",
+    "discussion_coherence", "novelty_and_repetition", "consensus_quality", "natural_pacing",
 }
-FILES = [
-    "docs/EVALUATION_PURPOSE.md",
-    "docs/COMPETENCY_MODEL.md",
-    "docs/RUBRIC_DESIGN.md",
-    "docs/EVALUATION_CONTRACT_V0.1.md",
-    "rubrics/candidate-behavior/v0.1.json",
-    "rubrics/ai-participant/v0.1.json",
-    "schemas/scenario-v0.1.schema.json",
-    "schemas/episode-v0.1.schema.json",
-    "schemas/annotation-v0.1.schema.json",
-    "schemas/evaluation-result-v0.1.schema.json",
-    "fixtures/scenarios/market-entry-001.json",
-    "fixtures/episodes/example-episode-v0.1.json",
+REQUIRED_FILES = [
+    "docs/EVALUATION_PURPOSE.md", "docs/COMPETENCY_MODEL.md",
+    "docs/RUBRIC_DESIGN.md", "docs/EVALUATION_CONTRACT_V0.1.md",
+    "rubrics/candidate-behavior/v0.1.json", "rubrics/ai-participant/v0.1.json",
+    "schemas/scenario-v0.1.schema.json", "schemas/episode-v0.1.schema.json",
+    "schemas/annotation-v0.1.schema.json", "schemas/evaluation-result-v0.1.schema.json",
+    "fixtures/scenarios/market-entry-001.json", "fixtures/episodes/example-episode-v0.1.json",
     "fixtures/annotations/example-human-annotation-v0.1.json",
     "fixtures/results/example-evaluation-result-v0.1.json",
 ]
-FIXTURE_SCHEMAS = {
-    "fixtures/scenarios/market-entry-001.json": "schemas/scenario-v0.1.schema.json",
-    "fixtures/episodes/example-episode-v0.1.json": "schemas/episode-v0.1.schema.json",
-    "fixtures/annotations/example-human-annotation-v0.1.json": "schemas/annotation-v0.1.schema.json",
-    "fixtures/results/example-evaluation-result-v0.1.json": "schemas/evaluation-result-v0.1.schema.json",
-}
 
 JsonObject = dict[str, Any]
-SemanticValidator = Callable[[JsonObject, str], list[str]]
 
 
 def load(path: str) -> Any:
     return json.loads((ROOT / path).read_text(encoding="utf-8"))
 
 
-def json_path(parts: Any) -> str:
-    result = "$"
-    for part in parts:
-        if isinstance(part, int):
-            result += f"[{part}]"
-        else:
-            result += f".{part}"
-    return result
-
-
 def schema_errors(instance: Any, schema: JsonObject, label: str) -> list[str]:
     validator = Draft202012Validator(schema, format_checker=FormatChecker())
     errors = sorted(validator.iter_errors(instance), key=lambda item: list(item.absolute_path))
-    return [f"{label}{json_path(error.absolute_path)}: {error.message}" for error in errors]
+    return [f"{label} {list(error.absolute_path)}: {error.message}" for error in errors]
 
 
 def duplicate_values(values: list[Any]) -> set[Any]:
@@ -88,29 +58,31 @@ def duplicate_values(values: list[Any]) -> set[Any]:
     return duplicates
 
 
-def validate_dimension_results(data: JsonObject, field: str, label: str) -> list[str]:
+def dimension_errors(data: JsonObject, field: str, label: str) -> list[str]:
     errors: list[str] = []
     entries = data.get(field, [])
-    dimensions = [entry.get("dimension") for entry in entries if isinstance(entry, dict)]
+    dimensions = [item.get("dimension") for item in entries if isinstance(item, dict)]
     if len(dimensions) != 7 or set(dimensions) != CANDIDATE_DIMENSIONS:
         errors.append(f"{label}.{field}: must contain every candidate dimension exactly once")
     duplicates = duplicate_values(dimensions)
     if duplicates:
-        errors.append(f"{label}.{field}: duplicate dimensions: {sorted(duplicates)}")
+        errors.append(f"{label}.{field}: duplicate dimensions {sorted(duplicates)}")
 
+    evidence_field = "evidence_message_ids"
+    if field == "dimensions" and entries and "selected_evidence_message_ids" in entries[0]:
+        evidence_field = "selected_evidence_message_ids"
     for index, entry in enumerate(entries):
         if not isinstance(entry, dict):
             continue
-        location = f"{label}.{field}[{index}]"
         score = entry.get("score")
-        evidence = entry.get("evidence_message_ids", [])
+        evidence = entry.get(evidence_field, [])
         reason = entry.get("not_evaluable_reason")
+        location = f"{label}.{field}[{index}]"
         if len(evidence) != len(set(evidence)):
-            errors.append(f"{location}.evidence_message_ids: IDs must be unique")
+            errors.append(f"{location}: evidence IDs must be unique")
         if score == "NE":
-            if field == "dimensions":
-                valid_reason = isinstance(reason, str) and bool(reason.strip())
-            else:
+            valid_reason = isinstance(reason, str) and bool(reason.strip())
+            if field == "candidate_dimensions":
                 valid_reason = (
                     isinstance(reason, dict)
                     and isinstance(reason.get("code"), str)
@@ -120,283 +92,170 @@ def validate_dimension_results(data: JsonObject, field: str, label: str) -> list
             if not valid_reason:
                 errors.append(f"{location}: NE requires a non-empty reason")
             if evidence:
-                errors.append(f"{location}: NE must not contain evidence IDs")
+                errors.append(f"{location}: NE cannot contain score evidence")
         elif isinstance(score, int) and not isinstance(score, bool):
             if reason is not None:
-                errors.append(f"{location}: numeric scores require a null NE reason")
+                errors.append(f"{location}: numeric score requires null NE reason")
             if not evidence:
-                errors.append(f"{location}: numeric scores require evidence")
+                errors.append(f"{location}: numeric score requires evidence")
             if score == 4 and len(set(evidence)) < 2:
-                errors.append(f"{location}: score 4 requires two distinct evidence messages")
+                errors.append(f"{location}: score 4 requires two evidence messages")
     return errors
 
 
-def validate_episode_integrity(episode: JsonObject, label: str) -> list[str]:
+def episode_errors(episode: JsonObject, label: str) -> list[str]:
     errors: list[str] = []
     participants = episode.get("participants", [])
-    participant_ids = [item.get("participant_id") for item in participants if isinstance(item, dict)]
-    participant_types = {
-        item.get("participant_id"): item.get("speaker_type")
-        for item in participants
-        if isinstance(item, dict) and item.get("participant_id")
-    }
+    participant_ids = [item.get("participant_id") for item in participants]
+    participant_types = {item.get("participant_id"): item.get("speaker_type") for item in participants}
     duplicates = duplicate_values(participant_ids)
     if duplicates:
-        errors.append(f"{label}.participants: duplicate participant IDs: {sorted(duplicates)}")
-    speaker_types = [item.get("speaker_type") for item in participants if isinstance(item, dict)]
-    if "user" not in speaker_types:
-        errors.append(f"{label}.participants: at least one user is required")
-    if "ai" not in speaker_types:
-        errors.append(f"{label}.participants: at least one AI participant is required")
+        errors.append(f"{label}: duplicate participant IDs {sorted(duplicates)}")
+    if "user" not in participant_types.values():
+        errors.append(f"{label}: at least one user is required")
+    if "ai" not in participant_types.values():
+        errors.append(f"{label}: at least one AI is required")
 
     messages = episode.get("messages", [])
     if not messages:
-        errors.append(f"{label}.messages: at least one message is required")
-    message_ids = [item.get("message_id") for item in messages if isinstance(item, dict)]
+        errors.append(f"{label}: at least one message is required")
+    message_ids = [item.get("message_id") for item in messages]
     duplicates = duplicate_values(message_ids)
     if duplicates:
-        errors.append(f"{label}.messages: duplicate message IDs: {sorted(duplicates)}")
+        errors.append(f"{label}: duplicate message IDs {sorted(duplicates)}")
     for index, message in enumerate(messages):
-        if not isinstance(message, dict):
-            continue
-        location = f"{label}.messages[{index}]"
         participant_id = message.get("participant_id")
         if participant_id not in participant_types:
-            errors.append(f"{location}.participant_id: unknown participant {participant_id!r}")
+            errors.append(f"{label}.messages[{index}]: unknown participant")
         elif participant_types[participant_id] != message.get("speaker_type"):
-            errors.append(f"{location}.speaker_type: does not match participant declaration")
-        start_ms = message.get("start_ms")
-        end_ms = message.get("end_ms")
-        if isinstance(start_ms, int) and isinstance(end_ms, int) and end_ms < start_ms:
-            errors.append(f"{location}: end_ms must be greater than or equal to start_ms")
+            errors.append(f"{label}.messages[{index}]: speaker type mismatch")
+        if message.get("end_ms", 0) < message.get("start_ms", 0):
+            errors.append(f"{label}.messages[{index}]: reversed message time")
 
-    events = episode.get("events", [])
-    event_ids = [item.get("event_id") for item in events if isinstance(item, dict)]
+    event_ids = [item.get("event_id") for item in episode.get("events", [])]
     duplicates = duplicate_values(event_ids)
     if duplicates:
-        errors.append(f"{label}.events: duplicate event IDs: {sorted(duplicates)}")
-    for index, event in enumerate(events):
-        if not isinstance(event, dict):
-            continue
-        participant_id = event.get("participant_id")
-        if participant_id is not None and participant_id not in participant_types:
-            errors.append(f"{label}.events[{index}].participant_id: unknown participant {participant_id!r}")
-
+        errors.append(f"{label}: duplicate event IDs {sorted(duplicates)}")
     try:
-        started_at = datetime.fromisoformat(str(episode.get("started_at", "")).replace("Z", "+00:00"))
-        ended_at = datetime.fromisoformat(str(episode.get("ended_at", "")).replace("Z", "+00:00"))
-        if ended_at < started_at:
-            errors.append(f"{label}: ended_at must not precede started_at")
-    except ValueError:
+        started = datetime.fromisoformat(episode["started_at"].replace("Z", "+00:00"))
+        ended = datetime.fromisoformat(episode["ended_at"].replace("Z", "+00:00"))
+        if ended < started:
+            errors.append(f"{label}: reversed session time")
+    except (KeyError, ValueError):
         pass
     return errors
 
 
-def validate_evidence_references(
-    data: JsonObject, field: str, message_ids: set[str], label: str
+def evidence_reference_errors(
+    data: JsonObject, field: str, messages: dict[str, JsonObject],
+    target_participant_id: str | None, label: str,
 ) -> list[str]:
     errors: list[str] = []
-    for index, entry in enumerate(data.get(field, [])):
-        if not isinstance(entry, dict):
-            continue
-        referenced = set(entry.get("evidence_message_ids", []))
-        unknown = referenced - message_ids
-        if unknown:
-            errors.append(f"{label}.{field}[{index}]: unknown evidence IDs: {sorted(unknown)}")
-        for question_index, question in enumerate(entry.get("question_results", [])):
-            question_unknown = set(question.get("evidence_message_ids", [])) - message_ids
-            if question_unknown:
-                errors.append(
-                    f"{label}.{field}[{index}].question_results[{question_index}]: "
-                    f"unknown evidence IDs: {sorted(question_unknown)}"
-                )
+    evidence_field = "evidence_message_ids"
+    entries = data.get(field, [])
+    if field == "dimensions" and entries and "selected_evidence_message_ids" in entries[0]:
+        evidence_field = "selected_evidence_message_ids"
+    for index, entry in enumerate(entries):
+        for message_id in entry.get(evidence_field, []):
+            message = messages.get(message_id)
+            if message is None:
+                errors.append(f"{label}.{field}[{index}]: unknown evidence {message_id}")
+                continue
+            if message.get("speaker_type") != "user":
+                errors.append(f"{label}.{field}[{index}]: evidence must be a user message")
+            if target_participant_id and message.get("participant_id") != target_participant_id:
+                errors.append(f"{label}.{field}[{index}]: evidence belongs to another participant")
+        for q_index, question in enumerate(entry.get("question_results", [])):
+            for message_id in question.get("evidence_message_ids", []):
+                message = messages.get(message_id)
+                if message is None:
+                    errors.append(f"{label}.{field}[{index}].question_results[{q_index}]: unknown evidence")
+                elif message.get("speaker_type") != "user":
+                    errors.append(f"{label}.{field}[{index}].question_results[{q_index}]: evidence must be a user message")
+                elif target_participant_id and message.get("participant_id") != target_participant_id:
+                    errors.append(f"{label}.{field}[{index}].question_results[{q_index}]: evidence belongs to another participant")
     return errors
 
 
 def expect_invalid(
-    name: str,
-    instance: JsonObject,
-    schema: JsonObject,
-    semantic_validator: SemanticValidator | None = None,
+    label: str, instance: JsonObject, schema: JsonObject,
+    semantic: Callable[[JsonObject], list[str]] | None = None,
 ) -> list[str]:
-    detected = schema_errors(instance, schema, name)
-    if semantic_validator is not None:
-        detected.extend(semantic_validator(instance, name))
-    if detected:
-        return []
-    return [f"negative test was incorrectly accepted: {name}"]
+    detected = schema_errors(instance, schema, label)
+    if semantic:
+        detected.extend(semantic(instance))
+    return [] if detected else [f"negative test incorrectly accepted: {label}"]
 
 
 def run_negative_tests(fixtures: dict[str, JsonObject], schemas: dict[str, JsonObject]) -> list[str]:
     failures: list[str] = []
-    scenario = fixtures["scenario"]
-    episode = fixtures["episode"]
-    annotation = fixtures["annotation"]
-    result = fixtures["result"]
+    scenario, episode = fixtures["scenario"], fixtures["episode"]
+    annotation, result = fixtures["annotation"], fixtures["result"]
 
     broken = copy.deepcopy(scenario)
     del broken["topic"]
-    failures += expect_invalid("negative/scenario-missing-topic", broken, schemas["scenario"])
+    failures += expect_invalid("scenario-missing-topic", broken, schemas["scenario"])
 
     broken = copy.deepcopy(annotation)
     broken["created_at"] = "not-a-date"
-    failures += expect_invalid("negative/annotation-invalid-date", broken, schemas["annotation"])
+    failures += expect_invalid("annotation-invalid-date", broken, schemas["annotation"])
 
-    broken = copy.deepcopy(result)
-    duplicate_dimension = broken["candidate_dimensions"][0]["dimension"]
-    for entry in broken["candidate_dimensions"]:
-        entry["dimension"] = duplicate_dimension
-    failures += expect_invalid(
-        "negative/result-duplicate-dimensions",
-        broken,
-        schemas["result"],
-        lambda item, label: validate_dimension_results(item, "candidate_dimensions", label),
-    )
+    for key, field, schema_key in [
+        ("annotation", "dimensions", "annotation"),
+        ("result", "candidate_dimensions", "result"),
+    ]:
+        original = fixtures[key]
+        broken = copy.deepcopy(original)
+        duplicate = broken[field][0]["dimension"]
+        for entry in broken[field]:
+            entry["dimension"] = duplicate
+        failures += expect_invalid(
+            f"{key}-duplicate-dimensions", broken, schemas[schema_key],
+            lambda item, f=field, k=key: dimension_errors(item, f, k),
+        )
 
-    broken = copy.deepcopy(result)
-    ne_entry = next(item for item in broken["candidate_dimensions"] if item["score"] == "NE")
-    ne_entry["not_evaluable_reason"] = None
-    failures += expect_invalid(
-        "negative/result-ne-without-reason",
-        broken,
-        schemas["result"],
-        lambda item, label: validate_dimension_results(item, "candidate_dimensions", label),
-    )
+        broken = copy.deepcopy(original)
+        next(item for item in broken[field] if item["score"] == "NE")["not_evaluable_reason"] = None
+        failures += expect_invalid(
+            f"{key}-ne-without-reason", broken, schemas[schema_key],
+            lambda item, f=field, k=key: dimension_errors(item, f, k),
+        )
 
-    broken = copy.deepcopy(result)
-    numeric_entry = next(item for item in broken["candidate_dimensions"] if isinstance(item["score"], int))
-    numeric_entry["evidence_message_ids"] = []
-    failures += expect_invalid(
-        "negative/result-numeric-without-evidence",
-        broken,
-        schemas["result"],
-        lambda item, label: validate_dimension_results(item, "candidate_dimensions", label),
-    )
+        broken = copy.deepcopy(original)
+        next(item for item in broken[field] if isinstance(item["score"], int))["evidence_message_ids"] = []
+        failures += expect_invalid(
+            f"{key}-numeric-without-evidence", broken, schemas[schema_key],
+            lambda item, f=field, k=key: dimension_errors(item, f, k),
+        )
 
-    broken = copy.deepcopy(result)
-    numeric_entry = next(item for item in broken["candidate_dimensions"] if isinstance(item["score"], int))
-    numeric_entry["score"] = 4
-    numeric_entry["evidence_message_ids"] = ["message_001"]
-    failures += expect_invalid(
-        "negative/result-score-4-one-evidence",
-        broken,
-        schemas["result"],
-        lambda item, label: validate_dimension_results(item, "candidate_dimensions", label),
-    )
+        broken = copy.deepcopy(original)
+        numeric = next(item for item in broken[field] if isinstance(item["score"], int))
+        numeric["score"] = 4
+        numeric["evidence_message_ids"] = ["message_001"]
+        failures += expect_invalid(
+            f"{key}-score4-one-evidence", broken, schemas[schema_key],
+            lambda item, f=field, k=key: dimension_errors(item, f, k),
+        )
 
-    broken = copy.deepcopy(annotation)
-    duplicate_dimension = broken["dimensions"][0]["dimension"]
-    for entry in broken["dimensions"]:
-        entry["dimension"] = duplicate_dimension
-    failures += expect_invalid(
-        "negative/annotation-duplicate-dimensions",
-        broken,
-        schemas["annotation"],
-        lambda item, label: validate_dimension_results(item, "dimensions", label),
-    )
-
-    broken = copy.deepcopy(annotation)
-    ne_entry = next(item for item in broken["dimensions"] if item["score"] == "NE")
-    ne_entry["not_evaluable_reason"] = None
-    failures += expect_invalid(
-        "negative/annotation-ne-without-reason",
-        broken,
-        schemas["annotation"],
-        lambda item, label: validate_dimension_results(item, "dimensions", label),
-    )
-
-    broken = copy.deepcopy(annotation)
-    numeric_entry = next(item for item in broken["dimensions"] if isinstance(item["score"], int))
-    numeric_entry["evidence_message_ids"] = []
-    failures += expect_invalid(
-        "negative/annotation-numeric-without-evidence",
-        broken,
-        schemas["annotation"],
-        lambda item, label: validate_dimension_results(item, "dimensions", label),
-    )
-
-    broken = copy.deepcopy(annotation)
-    numeric_entry = next(item for item in broken["dimensions"] if isinstance(item["score"], int))
-    numeric_entry["score"] = 4
-    numeric_entry["evidence_message_ids"] = ["message_001"]
-    failures += expect_invalid(
-        "negative/annotation-score-4-one-evidence",
-        broken,
-        schemas["annotation"],
-        lambda item, label: validate_dimension_results(item, "dimensions", label),
-    )
-
-    broken = copy.deepcopy(episode)
-    broken["messages"] = []
-    failures += expect_invalid(
-        "negative/episode-empty-messages", broken, schemas["episode"], validate_episode_integrity
-    )
-
-    broken = copy.deepcopy(episode)
-    broken["participants"] = [item for item in broken["participants"] if item["speaker_type"] == "ai"]
-    failures += expect_invalid(
-        "negative/episode-no-user", broken, schemas["episode"], validate_episode_integrity
-    )
-
-    broken = copy.deepcopy(episode)
-    broken["participants"] = [item for item in broken["participants"] if item["speaker_type"] == "user"]
-    failures += expect_invalid(
-        "negative/episode-no-ai", broken, schemas["episode"], validate_episode_integrity
-    )
-
-    broken = copy.deepcopy(episode)
-    broken["participants"][1]["participant_id"] = broken["participants"][0]["participant_id"]
-    failures += expect_invalid(
-        "negative/episode-duplicate-participant-id",
-        broken,
-        schemas["episode"],
-        validate_episode_integrity,
-    )
-
-    broken = copy.deepcopy(episode)
-    broken["events"][1]["event_id"] = broken["events"][0]["event_id"]
-    failures += expect_invalid(
-        "negative/episode-duplicate-event-id", broken, schemas["episode"], validate_episode_integrity
-    )
-
-    broken = copy.deepcopy(episode)
-    broken["messages"][0]["participant_id"] = "missing_participant"
-    failures += expect_invalid(
-        "negative/episode-unknown-message-participant",
-        broken,
-        schemas["episode"],
-        validate_episode_integrity,
-    )
-
-    broken = copy.deepcopy(episode)
-    broken["messages"][0]["end_ms"] = broken["messages"][0]["start_ms"] - 1
-    failures += expect_invalid(
-        "negative/episode-reversed-message-time",
-        broken,
-        schemas["episode"],
-        validate_episode_integrity,
-    )
-
-    broken = copy.deepcopy(episode)
-    broken["ended_at"] = "2026-08-04T04:59:00Z"
-    failures += expect_invalid(
-        "negative/episode-reversed-session-time",
-        broken,
-        schemas["episode"],
-        validate_episode_integrity,
-    )
+    episode_cases: list[tuple[str, JsonObject]] = []
+    broken = copy.deepcopy(episode); broken["messages"] = []; episode_cases.append(("episode-empty-messages", broken))
+    broken = copy.deepcopy(episode); broken["participants"] = [p for p in broken["participants"] if p["speaker_type"] == "ai"]; episode_cases.append(("episode-no-user", broken))
+    broken = copy.deepcopy(episode); broken["participants"] = [p for p in broken["participants"] if p["speaker_type"] == "user"]; episode_cases.append(("episode-no-ai", broken))
+    broken = copy.deepcopy(episode); broken["participants"][1]["participant_id"] = broken["participants"][0]["participant_id"]; episode_cases.append(("episode-duplicate-participant", broken))
+    broken = copy.deepcopy(episode); broken["events"][1]["event_id"] = broken["events"][0]["event_id"]; episode_cases.append(("episode-duplicate-event", broken))
+    broken = copy.deepcopy(episode); broken["messages"][0]["participant_id"] = "missing"; episode_cases.append(("episode-unknown-participant", broken))
+    broken = copy.deepcopy(episode); broken["messages"][0]["end_ms"] = broken["messages"][0]["start_ms"] - 1; episode_cases.append(("episode-reversed-message-time", broken))
+    broken = copy.deepcopy(episode); broken["ended_at"] = "2026-08-04T04:59:00Z"; episode_cases.append(("episode-reversed-session-time", broken))
+    for label, item in episode_cases:
+        failures += expect_invalid(label, item, schemas["episode"], lambda value, l=label: episode_errors(value, l))
     return failures
 
 
 def main() -> int:
     errors: list[str] = []
-
-    for path in FILES:
-        if not (ROOT / path).is_file():
-            errors.append(f"missing: {path}")
-    if errors:
-        print("\n".join(errors))
-        return 1
+    for path in REQUIRED_FILES:
+        if not (ROOT / path).exists():
+            errors.append(f"missing required file: {path}")
 
     candidate = load("rubrics/candidate-behavior/v0.1.json")
     dimensions = candidate.get("dimensions", [])
@@ -416,86 +275,60 @@ def main() -> int:
     if not any(rule.get("severity") == "critical" for rule in ai.get("deterministic_rules", [])):
         errors.append("critical AI quality rule required")
 
-    schema_paths = [path for path in FILES if path.startswith("schemas/")]
-    schema_documents: dict[str, JsonObject] = {}
-    for path in schema_paths:
-        schema = load(path)
-        schema_documents[path] = schema
-        if schema.get("$schema") != "https://json-schema.org/draft/2020-12/schema":
-            errors.append(f"{path}: schema version mismatch")
+    schemas = {
+        "scenario": load("schemas/scenario-v0.1.schema.json"),
+        "episode": load("schemas/episode-v0.1.schema.json"),
+        "annotation": load("schemas/annotation-v0.1.schema.json"),
+        "result": load("schemas/evaluation-result-v0.1.schema.json"),
+    }
+    for name, schema in schemas.items():
         try:
             Draft202012Validator.check_schema(schema)
-        except SchemaError as error:
-            errors.append(f"{path}{json_path(error.absolute_path)}: invalid schema: {error.message}")
+        except SchemaError as exc:
+            errors.append(f"{name} schema invalid: {exc.message}")
 
-    fixtures_by_path: dict[str, JsonObject] = {}
-    for fixture_path, schema_path in FIXTURE_SCHEMAS.items():
-        fixture = load(fixture_path)
-        fixtures_by_path[fixture_path] = fixture
-        errors.extend(schema_errors(fixture, schema_documents[schema_path], fixture_path))
+    fixture_specs = [
+        ("scenario", "fixtures/scenarios/market-entry-001.json"),
+        ("episode", "fixtures/episodes/example-episode-v0.1.json"),
+        ("annotation", "fixtures/annotations/example-human-annotation-v0.1.json"),
+        ("result", "fixtures/results/example-evaluation-result-v0.1.json"),
+    ]
+    fixtures: dict[str, JsonObject] = {}
+    for name, path in fixture_specs:
+        fixture = load(path)
+        fixtures[name] = fixture
+        errors.extend(schema_errors(fixture, schemas[name], path))
 
-    scenario = fixtures_by_path["fixtures/scenarios/market-entry-001.json"]
-    if set(scenario.get("evaluation_opportunities", {})) != CANDIDATE_DIMENSIONS:
-        errors.append("scenario must declare seven evaluation opportunities")
+    scenario = fixtures["scenario"]
+    opportunity_dimensions = {item.get("dimension") for item in scenario.get("evaluation_opportunities", [])}
+    if opportunity_dimensions != CANDIDATE_DIMENSIONS:
+        errors.append("scenario opportunities must cover all seven dimensions")
+    opportunity_ids = [item.get("opportunity_id") for item in scenario.get("evaluation_opportunities", [])]
+    if duplicate_values(opportunity_ids):
+        errors.append("scenario opportunity IDs must be unique")
     if not scenario.get("instance_rubrics"):
         errors.append("scenario requires instance rubrics")
 
-    episode = fixtures_by_path["fixtures/episodes/example-episode-v0.1.json"]
-    errors.extend(validate_episode_integrity(episode, "fixtures/episodes/example-episode-v0.1.json"))
-    message_ids = {item["message_id"] for item in episode.get("messages", []) if "message_id" in item}
+    episode = fixtures["episode"]
+    errors.extend(episode_errors(episode, "example episode"))
+    messages = {item["message_id"]: item for item in episode.get("messages", [])}
 
-    annotation = fixtures_by_path["fixtures/annotations/example-human-annotation-v0.1.json"]
-    errors.extend(
-        validate_dimension_results(
-            annotation, "dimensions", "fixtures/annotations/example-human-annotation-v0.1.json"
-        )
-    )
-    errors.extend(
-        validate_evidence_references(
-            annotation,
-            "dimensions",
-            message_ids,
-            "fixtures/annotations/example-human-annotation-v0.1.json",
-        )
-    )
+    annotation = fixtures["annotation"]
+    errors.extend(dimension_errors(annotation, "dimensions", "example annotation"))
+    errors.extend(evidence_reference_errors(annotation, "dimensions", messages, None, "example annotation"))
 
-    result = fixtures_by_path["fixtures/results/example-evaluation-result-v0.1.json"]
-    errors.extend(
-        validate_dimension_results(
-            result, "candidate_dimensions", "fixtures/results/example-evaluation-result-v0.1.json"
-        )
-    )
-    errors.extend(
-        validate_evidence_references(
-            result,
-            "candidate_dimensions",
-            message_ids,
-            "fixtures/results/example-evaluation-result-v0.1.json",
-        )
-    )
-
-    negative_fixtures = {
-        "scenario": scenario,
-        "episode": episode,
-        "annotation": annotation,
-        "result": result,
-    }
-    negative_schemas = {
-        "scenario": schema_documents["schemas/scenario-v0.1.schema.json"],
-        "episode": schema_documents["schemas/episode-v0.1.schema.json"],
-        "annotation": schema_documents["schemas/annotation-v0.1.schema.json"],
-        "result": schema_documents["schemas/evaluation-result-v0.1.schema.json"],
-    }
-    errors.extend(run_negative_tests(negative_fixtures, negative_schemas))
+    result = fixtures["result"]
+    errors.extend(dimension_errors(result, "candidate_dimensions", "example result"))
+    errors.extend(evidence_reference_errors(result, "candidate_dimensions", messages, result.get("target_participant_id"), "example result"))
+    errors.extend(run_negative_tests(fixtures, schemas))
 
     if errors:
         print("Evaluation contract validation failed:")
-        print("\n".join(f"- {error}" for error in errors))
+        for error in errors:
+            print(f"- {error}")
         return 1
-
     print("Evaluation contract v0.1 OK")
-    print("JSON Schema validation: Draft 2020-12 with format checking")
-    print("Negative contract tests: 18 passed")
+    print("Canonical fixtures and negative contract tests passed")
     return 0
 
 

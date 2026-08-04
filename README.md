@@ -11,7 +11,8 @@ Evaluation Contract v0.1では、次を正本として管理します。
 - 1〜4点と`NE`
 - 発言ID付きの評価根拠
 - AI参加者の品質ゲート
-- シナリオ固有ルーブリック
+- ID付き評価機会
+- 構造化されたシナリオ固有ルール
 - ルーブリック・モデル・プロンプト・評価器の版
 - 旧評価と新評価のshadow mode比較
 
@@ -35,6 +36,9 @@ Evaluation Contract v0.1では、次を正本として管理します。
 
 - `rubrics/candidate-behavior/v0.1.json`
 - `rubrics/ai-participant/v0.1.json`
+- `contracts/move-vocabulary-v0.1.json`
+- `contracts/deterministic-rule-vocabulary-v0.1.json`
+- `schemas/common/ne-reason-codes-v0.1.json`
 - `schemas/`
 
 ## 役割分担
@@ -42,6 +46,7 @@ Evaluation Contract v0.1では、次を正本として管理します。
 - `docs/`: 人間向けの評価仕様と検証計画
 - `annotation/`: 人間評価者の手順
 - `rubrics/`: 版管理された行動アンカーとJudge質問
+- `contracts/`: moveとdeterministic ruleの共通語彙
 - `schemas/`: gd-appと評価ラボ間のJSON契約
 - `fixtures/`: 匿名化・合成の検証データ、標準演習、評価機会ケース
 - `knowledge/`: 長期的に残す決定と現在地
@@ -55,22 +60,17 @@ python scripts/check_knowledge.py
 python scripts/check_evaluation_contract.py
 python scripts/check_annotation_foundation.py
 python scripts/check_candidate_scenario_pack.py
+python scripts/check_contract_hardening.py
 ```
 
 ## 評価者の基本手順
 
 1. AIスコアを非表示にする
-2. 評価機会を確認する
+2. 評価機会IDを確認する
 3. 点数より先に利用者本人の証拠発言を選ぶ
 4. BARSアンカーへ照合する
 5. 1〜4またはNEを記録する
 6. 二重評価後に不一致理由を調停する
-
-## 毎日の使い方
-
-ChatGPTへ次のように指示します。
-
-> 今日のGD評価研究の内容をリポジトリへ反映して。決定、発見、未解決、次のタスクに分けて。
 
 ## 利用制限
 

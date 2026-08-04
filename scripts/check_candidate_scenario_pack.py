@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
-"""Validate Candidate Assessment Scenario Pack v0.1."""
+"""Validate the hardened Candidate Assessment Scenario Pack v0.1."""
 
 from __future__ import annotations
 
 import copy
 import json
+from collections import Counter
 from pathlib import Path
 from typing import Any, Callable
 
 from jsonschema import Draft202012Validator, FormatChecker
+from jsonschema.exceptions import ValidationError
 
 ROOT = Path(__file__).resolve().parents[1]
 DIMENSIONS = [
@@ -51,66 +53,124 @@ def validate_schema(instance: Any, schema: dict[str, Any], label: str) -> None:
         details = "\n".join(
             f"- {label} {list(error.absolute_path)}: {error.message}" for error in errors
         )
-        raise AssertionError(details)
+        raise ValidationError(details)
 
 
-def validate_scenario_semantics(scenario: dict[str, Any]) -> None:
+def validate_scenario_semantics(
+    scenario: dict[str, Any],
+    move_vocabulary: set[str],
+    rubric_rule_vocabulary: set[str],
+    prohibited_rule_vocabulary: set[str],
+    question_ids: set[str],
+) -> Counter[str]:
+    scenario_id = scenario["scenario_id"]
     if scenario["phase_plan"] != STANDARD_PHASES:
-        raise AssertionError(f"non-standard phase order: {scenario['scenario_id']}")
+        raise AssertionError(f"{scenario_id}: phase order must equal the standard phase sequence")
 
     participants = scenario["ai_participants"]
     if len(participants) < 3:
-        raise AssertionError(f"fewer than three AI roles: {scenario['scenario_id']}")
-    agent_ids = [participant["agent_id"] for participant in participants]
+        raise AssertionError(f"{scenario_id}: at least three AI roles are required")
+    agent_ids = [item["agent_id"] for item in participants]
     if len(agent_ids) != len(set(agent_ids)):
-        raise AssertionError(f"duplicate agent ID: {scenario['scenario_id']}")
-    private_concerns = [participant.get("private_concern") for participant in participants]
-    if any(not str(concern or "").strip() for concern in private_concerns):
-        raise AssertionError(f"missing private concern: {scenario['scenario_id']}")
-    if len(private_concerns) != len(set(private_concerns)):
-        raise AssertionError(f"duplicate private concern: {scenario['scenario_id']}")
-    if any(not participant.get("allowed_moves") for participant in participants):
-        raise AssertionError(f"participant without allowed moves: {scenario['scenario_id']}")
+        raise AssertionError(f"{scenario_id}: duplicate agent ID")
+    concerns = [item.get("private_concern") for item in participants]
+    if any(not str(item or "").strip() for item in concerns):
+        raise AssertionError(f"{scenario_id}: every AI role requires a private concern")
+    if len(concerns) != len(set(concerns)):
+        raise AssertionError(f"{scenario_id}: private concerns must be distinct")
+    for participant in participants:
+        unknown = set(participant["allowed_moves"]) - move_vocabulary
+        if unknown:
+            raise AssertionError(f"{scenario_id}: unknown allowed moves {sorted(unknown)}")
 
-    required_moves = scenario.get("required_moves", [])
-    forbidden_moves = scenario.get("forbidden_moves", [])
-    if len(required_moves) != len(set(required_moves)):
-        raise AssertionError(f"duplicate required move: {scenario['scenario_id']}")
-    if len(forbidden_moves) != len(set(forbidden_moves)):
-        raise AssertionError(f"duplicate forbidden move: {scenario['scenario_id']}")
-    if set(required_moves) & set(forbidden_moves):
-        raise AssertionError(f"required/forbidden move conflict: {scenario['scenario_id']}")
-
-    rubrics = scenario["instance_rubrics"]
-    rubric_ids = [rubric["rubric_id"] for rubric in rubrics]
-    if len(rubric_ids) != len(set(rubric_ids)):
-        raise AssertionError(f"duplicate rubric ID: {scenario['scenario_id']}")
-    targets = {rubric["target"] for rubric in rubrics}
-    if "candidate" not in targets:
-        raise AssertionError(f"missing candidate rubric: {scenario['scenario_id']}")
-    if not ({"ai_system", "episode"} & targets):
-        raise AssertionError(f"missing environment rubric: {scenario['scenario_id']}")
-    for rubric in rubrics:
-        if rubric["target"] == "candidate" and not rubric["affected_dimensions"]:
-            raise AssertionError(f"candidate rubric without dimension: {rubric['rubric_id']}")
+    prohibited = scenario["prohibited_conditions"]
+    prohibited_ids = [item["condition_id"] for item in prohibited]
+    if len(prohibited_ids) != len(set(prohibited_ids)):
+        raise AssertionError(f"{scenario_id}: duplicate prohibited condition ID")
+    prohibited_id_set = set(prohibited_ids)
+    for item in prohibited:
+        if item["rule_id"] not in prohibited_rule_vocabulary:
+            raise AssertionError(
+                f"{scenario_id}: unknown prohibited rule {item['rule_id']}"
+            )
 
     opportunities = scenario["evaluation_opportunities"]
-    if set(opportunities) != set(DIMENSIONS):
-        raise AssertionError(f"opportunity keys differ from seven dimensions: {scenario['scenario_id']}")
+    opportunity_ids = [item["opportunity_id"] for item in opportunities]
+    if len(opportunity_ids) != len(set(opportunity_ids)):
+        raise AssertionError(f"{scenario_id}: duplicate opportunity ID")
+    counts: Counter[str] = Counter()
+    for item in opportunities:
+        counts[item["dimension"]] += 1
+        if item["phase"] not in scenario["phase_plan"]:
+            raise AssertionError(
+                f"{scenario_id}: opportunity {item['opportunity_id']} uses an unknown phase"
+            )
+        unknown_invalidators = set(item["invalidated_by"]) - prohibited_id_set
+        if unknown_invalidators:
+            raise AssertionError(
+                f"{scenario_id}: opportunity {item['opportunity_id']} references "
+                f"unknown invalidators {sorted(unknown_invalidators)}"
+            )
+
+    action_ids = [item["action_id"] for item in scenario["required_actions"]]
+    if len(action_ids) != len(set(action_ids)):
+        raise AssertionError(f"{scenario_id}: duplicate required action ID")
+    for action in scenario["required_actions"]:
+        if action["move"] not in move_vocabulary:
+            raise AssertionError(f"{scenario_id}: unknown required move {action['move']}")
+        if action["phase"] not in scenario["phase_plan"]:
+            raise AssertionError(f"{scenario_id}: required action uses an unknown phase")
+
+    rubrics = scenario["instance_rubrics"]
+    rubric_ids = [item["rubric_id"] for item in rubrics]
+    if len(rubric_ids) != len(set(rubric_ids)):
+        raise AssertionError(f"{scenario_id}: duplicate rubric ID")
+    targets = {item["target"] for item in rubrics}
+    if "candidate" not in targets or not ({"ai_system", "episode"} & targets):
+        raise AssertionError(
+            f"{scenario_id}: candidate and environment rubrics are both required"
+        )
+
+    for rubric in rubrics:
+        rule = rubric["rule"]
+        rule_type = rule["rule_type"]
+        deterministic_id = rule["deterministic_rule_id"]
+        judge_ids = set(rule["judge_question_ids"])
+        if deterministic_id is not None and deterministic_id not in rubric_rule_vocabulary:
+            raise AssertionError(
+                f"{scenario_id}: rubric {rubric['rubric_id']} uses unknown deterministic "
+                f"rule {deterministic_id}"
+            )
+        unknown_questions = judge_ids - question_ids
+        if unknown_questions:
+            raise AssertionError(
+                f"{scenario_id}: rubric {rubric['rubric_id']} uses unknown judge "
+                f"questions {sorted(unknown_questions)}"
+            )
+        if rule_type == "deterministic" and judge_ids:
+            raise AssertionError(f"{scenario_id}: deterministic rubric cannot use judge questions")
+        if rule_type == "judge" and deterministic_id is not None:
+            raise AssertionError(f"{scenario_id}: judge rubric cannot use a deterministic rule")
+        if rubric["target"] == "candidate" and not judge_ids:
+            raise AssertionError(
+                f"{scenario_id}: candidate rubric {rubric['rubric_id']} needs judge questions"
+            )
+        if rubric["target"] == "candidate" and not rubric["affected_dimensions"]:
+            raise AssertionError(
+                f"{scenario_id}: candidate rubric {rubric['rubric_id']} needs dimensions"
+            )
 
     shared_text = json.dumps(scenario["shared_context"], ensure_ascii=False)
-    if any(str(concern) in shared_text for concern in private_concerns):
-        raise AssertionError(f"private concern leaked into shared context: {scenario['scenario_id']}")
+    if any(str(concern) in shared_text for concern in concerns):
+        raise AssertionError(f"{scenario_id}: private concern leaked into shared context")
+    return counts
 
 
-def validate_pack_coverage(scenarios: list[dict[str, Any]]) -> dict[str, int]:
-    scenario_ids = [scenario["scenario_id"] for scenario in scenarios]
-    if len(scenario_ids) != len(set(scenario_ids)):
-        raise AssertionError("duplicate scenario ID in pack")
+def validate_pack_coverage(counts_by_scenario: list[Counter[str]]) -> dict[str, int]:
     totals = {dimension: 0 for dimension in DIMENSIONS}
-    for scenario in scenarios:
-        for dimension, count in scenario["evaluation_opportunities"].items():
-            totals[dimension] += count
+    for counts in counts_by_scenario:
+        for dimension in DIMENSIONS:
+            totals[dimension] += counts[dimension]
     missing = {dimension: count for dimension, count in totals.items() if count < 2}
     if missing:
         raise AssertionError(f"insufficient opportunity coverage: {missing}")
@@ -120,27 +180,46 @@ def validate_pack_coverage(scenarios: list[dict[str, Any]]) -> dict[str, int]:
 def trace_indexes(case: dict[str, Any]) -> tuple[dict[str, dict[str, Any]], dict[str, dict[str, Any]]]:
     events: dict[str, dict[str, Any]] = {}
     messages: dict[str, dict[str, Any]] = {}
+    all_ids: set[str] = set()
     for item in case["trace_excerpt"]:
+        if item["id"] in all_ids:
+            raise AssertionError(f"{case['case_id']}: duplicate trace ID {item['id']}")
+        all_ids.add(item["id"])
         target = events if item["kind"] == "event" else messages
-        if item["id"] in target:
-            raise AssertionError(f"duplicate trace ID: {item['id']}")
         target[item["id"]] = item
     return events, messages
 
 
-def validate_case_semantics(case: dict[str, Any], scenario_ids: set[str]) -> None:
-    if case["scenario_id"] not in scenario_ids:
-        raise AssertionError(f"unknown scenario in opportunity case: {case['scenario_id']}")
+def validate_case_semantics(
+    case: dict[str, Any], scenarios_by_id: dict[str, dict[str, Any]]
+) -> None:
+    scenario = scenarios_by_id.get(case["scenario_id"])
+    if scenario is None:
+        raise AssertionError(f"{case['case_id']}: unknown scenario")
+    opportunities = {item["opportunity_id"]: item for item in scenario["evaluation_opportunities"]}
+    for opportunity_id in case["opportunity_ids"]:
+        opportunity = opportunities.get(opportunity_id)
+        if opportunity is None:
+            raise AssertionError(
+                f"{case['case_id']}: unknown opportunity ID {opportunity_id}"
+            )
+        if opportunity["dimension"] != case["dimension"]:
+            raise AssertionError(
+                f"{case['case_id']}: opportunity dimension does not match the case"
+            )
+
     events, messages = trace_indexes(case)
     for event_id in case["opportunity_event_ids"]:
         if event_id not in events:
-            raise AssertionError(f"unknown opportunity event ID: {event_id}")
+            raise AssertionError(f"{case['case_id']}: unknown opportunity event ID {event_id}")
     for message_id in case["candidate_message_ids"]:
         message = messages.get(message_id)
         if message is None:
-            raise AssertionError(f"unknown candidate message ID: {message_id}")
+            raise AssertionError(f"{case['case_id']}: unknown candidate message ID {message_id}")
         if message["speaker_type"] != "user":
-            raise AssertionError(f"candidate evidence is not a user message: {message_id}")
+            raise AssertionError(
+                f"{case['case_id']}: candidate evidence is not a user message"
+            )
 
     outcome = case["expected_outcome"]
     if outcome == "scoreable_positive":
@@ -152,7 +231,7 @@ def validate_case_semantics(case: dict[str, Any], scenario_ids: set[str]) -> Non
             and case["expected_score_band"] == "3-4"
             and case["expected_ne_reason"] is None
         ):
-            raise AssertionError("positive case semantics are inconsistent")
+            raise AssertionError(f"{case['case_id']}: positive case semantics are inconsistent")
     elif outcome == "scoreable_low":
         if not (
             case["scenario_integrity"] == "valid"
@@ -162,102 +241,131 @@ def validate_case_semantics(case: dict[str, Any], scenario_ids: set[str]) -> Non
             and case["expected_score_band"] == "1-2"
             and case["expected_ne_reason"] is None
         ):
-            raise AssertionError("negative case semantics are inconsistent")
+            raise AssertionError(f"{case['case_id']}: negative case semantics are inconsistent")
     elif outcome == "NE":
         if case["candidate_message_ids"]:
-            raise AssertionError("NE case must not contain candidate score evidence")
+            raise AssertionError(f"{case['case_id']}: NE case cannot contain score evidence")
         if case["expected_score_band"] is not None or not case["expected_ne_reason"]:
-            raise AssertionError("NE case must have no score band and an NE reason")
+            raise AssertionError(
+                f"{case['case_id']}: NE case needs a reason and no score band"
+            )
         if case["scenario_integrity"] == "valid" and case["opportunity_status"] == "offered":
-            raise AssertionError("valid offered opportunity cannot be NE in this fixture contract")
+            raise AssertionError(
+                f"{case['case_id']}: valid offered opportunity cannot be NE"
+            )
 
 
-def expect_failure(label: str, fn: Callable[[], None]) -> None:
+def expect_failure(
+    label: str,
+    expected_text: str,
+    fn: Callable[[], None],
+) -> None:
     try:
         fn()
-    except Exception:
+    except (AssertionError, ValidationError) as exc:
+        if expected_text not in str(exc):
+            raise AssertionError(
+                f"{label}: failed for the wrong reason: {exc}"
+            ) from exc
         return
-    raise AssertionError(f"negative case unexpectedly passed: {label}")
+    raise AssertionError(f"{label}: negative case unexpectedly passed")
 
 
 def main() -> None:
     scenario_schema = load_json(ROOT / "schemas/scenario-v0.1.schema.json")
     case_schema = load_json(ROOT / "schemas/opportunity-case-v0.1.schema.json")
-    scenarios = [load_json(ROOT / "fixtures/scenarios" / name) for name in SCENARIO_FILES]
-    cases = [load_json(ROOT / "fixtures/opportunity-cases" / name) for name in CASE_FILES]
+    move_vocabulary = set(load_json(ROOT / "contracts/move-vocabulary-v0.1.json")["moves"])
+    rules = load_json(ROOT / "contracts/deterministic-rule-vocabulary-v0.1.json")
+    rubric_rule_vocabulary = set(rules["rubric_rules"])
+    prohibited_rule_vocabulary = set(rules["prohibited_rules"])
+    candidate_rubric = load_json(ROOT / "rubrics/candidate-behavior/v0.1.json")
+    question_ids = {
+        question["id"]
+        for dimension in candidate_rubric["dimensions"]
+        for question in dimension["questions"]
+    }
 
+    scenarios = [
+        load_json(ROOT / "fixtures/scenarios" / file_name)
+        for file_name in SCENARIO_FILES
+    ]
+    counts_by_scenario = []
     for scenario in scenarios:
         validate_schema(scenario, scenario_schema, scenario["scenario_id"])
-        validate_scenario_semantics(scenario)
-    totals = validate_pack_coverage(scenarios)
+        counts_by_scenario.append(
+            validate_scenario_semantics(
+                scenario,
+                move_vocabulary,
+                rubric_rule_vocabulary,
+                prohibited_rule_vocabulary,
+                question_ids,
+            )
+        )
+    totals = validate_pack_coverage(counts_by_scenario)
+    scenarios_by_id = {scenario["scenario_id"]: scenario for scenario in scenarios}
 
-    scenario_ids = {scenario["scenario_id"] for scenario in scenarios}
+    cases = [
+        load_json(ROOT / "fixtures/opportunity-cases" / file_name)
+        for file_name in CASE_FILES
+    ]
     for case in cases:
         validate_schema(case, case_schema, case["case_id"])
-        validate_case_semantics(case, scenario_ids)
+        validate_case_semantics(case, scenarios_by_id)
 
-    def schema_case(base: dict[str, Any], mutate: Callable[[dict[str, Any]], None], schema: dict[str, Any], label: str) -> None:
-        item = copy.deepcopy(base)
-        mutate(item)
-        validate_schema(item, schema, label)
+    negative_tests: list[tuple[str, str, Callable[[], None]]] = []
 
-    negative_cases: list[tuple[str, Callable[[], None]]] = []
+    bad_duplicate_opportunity = copy.deepcopy(scenarios[0])
+    bad_duplicate_opportunity["evaluation_opportunities"][1]["opportunity_id"] = (
+        bad_duplicate_opportunity["evaluation_opportunities"][0]["opportunity_id"]
+    )
+    negative_tests.append(("duplicate_opportunity_id", "duplicate opportunity ID", lambda: validate_scenario_semantics(bad_duplicate_opportunity, move_vocabulary, rubric_rule_vocabulary, prohibited_rule_vocabulary, question_ids)))
 
-    bad_missing_concern = copy.deepcopy(scenarios[0])
-    bad_missing_concern["ai_participants"][0]["private_concern"] = None
-    negative_cases.append(("missing_private_concern", lambda: validate_scenario_semantics(bad_missing_concern)))
+    bad_unknown_invalidator = copy.deepcopy(scenarios[0])
+    bad_unknown_invalidator["evaluation_opportunities"][0]["invalidated_by"] = ["missing"]
+    negative_tests.append(("unknown_invalidator", "unknown invalidators", lambda: validate_scenario_semantics(bad_unknown_invalidator, move_vocabulary, rubric_rule_vocabulary, prohibited_rule_vocabulary, question_ids)))
 
-    bad_duplicate_agent = copy.deepcopy(scenarios[0])
-    bad_duplicate_agent["ai_participants"][1]["agent_id"] = bad_duplicate_agent["ai_participants"][0]["agent_id"]
-    negative_cases.append(("duplicate_agent_id", lambda: validate_scenario_semantics(bad_duplicate_agent)))
+    bad_unknown_move = copy.deepcopy(scenarios[0])
+    bad_unknown_move["required_actions"][0]["move"] = "invented_move"
+    negative_tests.append(("unknown_required_move", "unknown required move", lambda: validate_scenario_semantics(bad_unknown_move, move_vocabulary, rubric_rule_vocabulary, prohibited_rule_vocabulary, question_ids)))
 
-    bad_phase_order = copy.deepcopy(scenarios[0])
-    bad_phase_order["phase_plan"][1], bad_phase_order["phase_plan"][2] = bad_phase_order["phase_plan"][2], bad_phase_order["phase_plan"][1]
-    negative_cases.append(("phase_order", lambda: validate_scenario_semantics(bad_phase_order)))
+    bad_natural_language_rule = copy.deepcopy(scenarios[0])
+    bad_natural_language_rule["instance_rubrics"][0]["rule"]["deterministic_rule_id"] = "最初にユーザーが発言していれば合格"
+    negative_tests.append(("unregistered_rule", "unknown deterministic rule", lambda: validate_scenario_semantics(bad_natural_language_rule, move_vocabulary, rubric_rule_vocabulary, prohibited_rule_vocabulary, question_ids)))
 
-    bad_no_candidate_rubric = copy.deepcopy(scenarios[0])
-    bad_no_candidate_rubric["instance_rubrics"] = [rubric for rubric in bad_no_candidate_rubric["instance_rubrics"] if rubric["target"] != "candidate"]
-    negative_cases.append(("missing_candidate_rubric", lambda: validate_scenario_semantics(bad_no_candidate_rubric)))
+    bad_unknown_question = copy.deepcopy(scenarios[0])
+    bad_unknown_question["instance_rubrics"][2]["rule"]["judge_question_ids"] = ["UNKNOWN"]
+    negative_tests.append(("unknown_question", "unknown judge questions", lambda: validate_scenario_semantics(bad_unknown_question, move_vocabulary, rubric_rule_vocabulary, prohibited_rule_vocabulary, question_ids)))
 
-    bad_move_conflict = copy.deepcopy(scenarios[0])
-    bad_move_conflict["forbidden_moves"].append(bad_move_conflict["required_moves"][0])
-    negative_cases.append(("required_forbidden_conflict", lambda: validate_scenario_semantics(bad_move_conflict)))
+    bad_coverage = copy.deepcopy(counts_by_scenario)
+    for counts in bad_coverage:
+        counts["process_and_time_management"] = 0
+    negative_tests.append(("insufficient_pack_coverage", "insufficient opportunity coverage", lambda: validate_pack_coverage(bad_coverage)))
 
-    bad_coverage = copy.deepcopy(scenarios)
-    for scenario in bad_coverage:
-        scenario["evaluation_opportunities"]["process_and_time_management"] = 0
-    negative_cases.append(("insufficient_pack_coverage", lambda: validate_pack_coverage(bad_coverage)))
+    bad_case_opportunity = copy.deepcopy(cases[0])
+    bad_case_opportunity["opportunity_ids"] = ["missing"]
+    negative_tests.append(("unknown_case_opportunity", "unknown opportunity ID", lambda: validate_case_semantics(bad_case_opportunity, scenarios_by_id)))
 
-    positive = cases[0]
-    negative = cases[1]
-    ne_case = cases[2]
-    negative_cases.extend([
-        ("positive_without_candidate_evidence", lambda: schema_case(positive, lambda x: x.__setitem__("candidate_message_ids", []), case_schema, "bad_positive")),
-        ("negative_marked_ne", lambda: schema_case(negative, lambda x: x.__setitem__("expected_outcome", "NE"), case_schema, "bad_negative")),
-        ("ne_with_candidate_evidence", lambda: schema_case(ne_case, lambda x: x.__setitem__("candidate_message_ids", ["msg_missing"]), case_schema, "bad_ne")),
-    ])
+    bad_case_dimension = copy.deepcopy(cases[0])
+    bad_case_dimension["dimension"] = "logical_reasoning"
+    negative_tests.append(("case_dimension_mismatch", "opportunity dimension does not match", lambda: validate_case_semantics(bad_case_dimension, scenarios_by_id)))
 
-    bad_unknown_trace = copy.deepcopy(positive)
-    bad_unknown_trace["candidate_message_ids"] = ["unknown_message"]
-    negative_cases.append(("unknown_candidate_message", lambda: validate_case_semantics(bad_unknown_trace, scenario_ids)))
+    bad_ai_evidence = copy.deepcopy(cases[0])
+    bad_ai_evidence["trace_excerpt"][1]["speaker_type"] = "ai"
+    negative_tests.append(("ai_message_as_candidate_evidence", "not a user message", lambda: validate_case_semantics(bad_ai_evidence, scenarios_by_id)))
 
-    bad_ai_message = copy.deepcopy(positive)
-    bad_ai_message["trace_excerpt"][1]["speaker_type"] = "ai"
-    negative_cases.append(("ai_message_as_candidate_evidence", lambda: validate_case_semantics(bad_ai_message, scenario_ids)))
+    bad_ne_evidence = copy.deepcopy(cases[2])
+    bad_ne_evidence["trace_excerpt"].append({"id":"msg_ne_user","kind":"message","speaker_type":"user","text":"形式的な発言。"})
+    bad_ne_evidence["candidate_message_ids"] = ["msg_ne_user"]
+    negative_tests.append(("ne_with_candidate_evidence", "NE case cannot contain", lambda: validate_case_semantics(bad_ne_evidence, scenarios_by_id)))
 
-    bad_valid_offered_ne = copy.deepcopy(ne_case)
-    bad_valid_offered_ne["scenario_integrity"] = "valid"
-    bad_valid_offered_ne["opportunity_status"] = "offered"
-    negative_cases.append(("valid_offered_ne", lambda: validate_case_semantics(bad_valid_offered_ne, scenario_ids)))
+    for label, expected, fn in negative_tests:
+        expect_failure(label, expected, fn)
 
-    for label, fn in negative_cases:
-        expect_failure(label, fn)
-
-    print("Candidate assessment scenario pack v0.1 OK")
+    print("Candidate assessment scenario pack v0.1 hardened OK")
     print(f"Scenarios: {len(scenarios)}")
     print("Opportunity totals: " + json.dumps(totals, ensure_ascii=False, sort_keys=True))
     print(f"Positive/negative/NE cases: {len(cases)} passed")
-    print(f"Negative scenario pack tests: {len(negative_cases)} passed")
+    print(f"Targeted negative tests: {len(negative_tests)} passed")
 
 
 if __name__ == "__main__":

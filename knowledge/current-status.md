@@ -10,13 +10,13 @@ updated: 2026-08-04
 
 ## Observations
 
-- [phase] Candidate Assessment Scenario Pack v0.1の実装
+- [phase] Contract and Scenario Hardening v0.1の実装
 - [completed] 評価研究を`gd-app`から別リポジトリへ分離した
 - [completed] 利用者7軸、表示3領域、1〜4＋NE、AI品質分離の方針を決めた
 - [completed] Scenario、Episode、Annotation、Evaluation Result契約v0.1を作成した
 - [completed] 証拠先行の人間評価ガイド、Rater Sheet、Adjudication、検証計画を実装した
-- [completed] 評価システム完成ロードマップv0.2を4専門役で確定した
-- [in_progress] 標準演習A・B・C、評価機会マトリクス、positive/negative/NE fixtureを実装する
+- [completed] 標準演習A・B・C、評価機会マトリクス、positive/negative/NE fixtureを実装した
+- [in_progress] 評価機会ID、構造化rule、共通NE、証拠所有者、3領域暫定出力、move語彙を堅牢化する
 - [next] 1演習・1Episode・1評価を最後まで通す縦切り試験を作る
 - [next] 35マイクロアンカーと12完全Episodeを仕様に従って作成する
 - [later] System Quality Gate、Evidence-first Judge、GD APP Episode Exporterへ進む
@@ -24,5 +24,5 @@ updated: 2026-08-04
 ## Relations
 
 - part_of [[GD Evaluation Lab Project Overview]]
-- follows [[Validation and Human Annotation Foundation Decision]]
-- informed_by [[Candidate Assessment Scenario Pack v0.1 Decision]]
+- follows [[Candidate Assessment Scenario Pack v0.1 Decision]]
+- informed_by [[Contract and Scenario Hardening v0.1 Decision]]

@@ -1,0 +1,16 @@
+{
+  "version": "ne-reason-codes-v0.1",
+  "codes": [
+    "INSUFFICIENT_OPPORTUNITY",
+    "AI_QUALITY_FAILURE",
+    "TRANSCRIPT_INCOMPLETE",
+    "EVENT_ORDER_INVALID",
+    "SYSTEM_ERROR",
+    "SCENARIO_CONDITION_UNFAIR",
+    "SCENARIO_CONTRACT_FAILURE",
+    "INSUFFICIENT_EVIDENCE",
+    "JUDGE_FAILURE",
+    "OTHER_REVIEW_REQUIRED"
+  ],
+  "description": "GD評価契約全体で共通利用するNE理由コードの正本。"
+}

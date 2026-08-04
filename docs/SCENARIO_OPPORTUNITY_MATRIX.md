@@ -4,9 +4,9 @@
 
 標準演習A・B・Cが、内部7サブディメンションを評価するための機会をどの程度提供するかを明示する。
 
-数値は期待点ではなく、利用者が対象行動を選べる独立した場面の設計数である。
+各数値はScenario JSONの`evaluation_opportunities`配列から`check_candidate_scenario_pack.py`が導出する。表の手入力値だけを検査根拠にしない。
 
-## 2. マトリクス
+## 2. 導出結果
 
 | Dimension | A 曖昧課題 | B 利害対立 | C 時間制約 | 合計 |
 |---|---:|---:|---:|---:|
@@ -20,17 +20,19 @@
 
 全7軸についてScenario Pack全体で最低2機会を満たす。
 
-## 3. 機会の定義
+## 3. 機会オブジェクト
 
-評価機会は次を全て満たす場面である。
+各機会は次を持つ。
 
-1. 利用者が複数の行動を選択できる
-2. AIが期待行動を先回りして完了していない
-3. 対象行動に必要な情報が共有または質問可能である
-4. 利用者の応答後に議論状態が変化し得る
-5. 発言・イベントIDとして記録できる
+- 一意な`opportunity_id`
+- 対象`dimension`
+- 発生`phase`
+- `trigger`
+- `expected_actor`
+- 必要な`required_context`
+- 機会を無効化する`invalidated_by`
 
-AIが結論を確定した後に形式的に意見を聞く場面は、有効な評価機会に数えない。
+positive / negative / NE fixtureは、集計数ではなく具体的な`opportunity_id`を参照する。
 
 ## 4. シナリオ欠陥と利用者未行動
 
@@ -46,21 +48,22 @@ AIが結論を確定した後に形式的に意見を聞く場面は、有効な
 ### シナリオ欠陥
 
 - AIが対象行動を先回りする
-- required eventが発生しない
-- hidden constraintが結論後まで提示されない
+- required actionが発生しない
+- private concernが不正な時点で開示される
 - ユーザー入力前にphaseを終了する
 - ログ欠損で機会の有無が判定できない
 
-この場合は利用者へ低得点を付けず、`INSUFFICIENT_OPPORTUNITY`、`AI_QUALITY_FAILURE`、または`SCENARIO_CONTRACT_FAILURE`としてNEにする。
+この場合は利用者へ低得点を付けず、共通NEコードを使用する。
 
 ## 5. 検査
 
 `python scripts/check_candidate_scenario_pack.py`は次を確認する。
 
-- 標準3演習がScenario Schemaへ適合する
-- AI役割・private concern・rubric IDが重複しない
-- phase順序が標準順である
-- required/forbidden moveが矛盾しない
-- 各ScenarioにAI側と利用者側のrubricがある
-- 全7軸に合計2機会以上ある
-- positive / negative / NE fixtureの意味条件が一致する
+- 機会ID・action ID・禁止条件ID・rubric IDの一意性
+- Opportunity Matrixを配列から再計算
+- moveとdeterministic ruleが正本語彙に存在する
+- required actionにactor・phase・最低回数がある
+- rubricが構造化ruleを持つ
+- candidate rubricが実在するJudge質問IDを参照する
+- opportunity caseが実在する`opportunity_id`を参照する
+- 負例が期待した理由で失敗する
