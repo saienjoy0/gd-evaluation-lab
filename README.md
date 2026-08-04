@@ -28,6 +28,8 @@ Evaluation Contract v0.1では、次を正本として管理します。
 - `annotation/HUMAN_ANNOTATION_GUIDE.md`
 - `docs/MICRO_ANCHOR_SPEC.md`
 - `docs/FULL_EPISODE_SPEC.md`
+- `docs/CANDIDATE_ASSESSMENT_SCENARIO_PACK.md`
+- `docs/SCENARIO_OPPORTUNITY_MATRIX.md`
 
 機械可読な正本:
 
@@ -41,7 +43,7 @@ Evaluation Contract v0.1では、次を正本として管理します。
 - `annotation/`: 人間評価者の手順
 - `rubrics/`: 版管理された行動アンカーとJudge質問
 - `schemas/`: gd-appと評価ラボ間のJSON契約
-- `fixtures/`: 匿名化・合成の検証データ
+- `fixtures/`: 匿名化・合成の検証データ、標準演習、評価機会ケース
 - `knowledge/`: 長期的に残す決定と現在地
 - Beads (`bd`): 未完了タスクと依存関係
 - `TASKS_FALLBACK.md`: Beads初期化前だけ使う一時タスクリスト
@@ -52,6 +54,7 @@ Evaluation Contract v0.1では、次を正本として管理します。
 python scripts/check_knowledge.py
 python scripts/check_evaluation_contract.py
 python scripts/check_annotation_foundation.py
+python scripts/check_candidate_scenario_pack.py
 ```
 
 ## 評価者の基本手順
