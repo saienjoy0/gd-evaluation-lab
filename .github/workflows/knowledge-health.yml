@@ -25,3 +25,5 @@ jobs:
         run: python scripts/check_candidate_scenario_pack.py
       - name: Validate contract and scenario hardening
         run: python scripts/check_contract_hardening.py
+      - name: Validate Exercise A medium vertical slice
+        run: python scripts/check_exercise_a_medium_vertical_slice.py
