@@ -1,1 +1,54 @@
-{"contract_version":"0.1","scenario_id":"market-entry-001","version":"scenario-001-v0.1","topic":"地方スーパーの若年層利用を増やす施策","duration_seconds":900,"shared_context":{"budget":"1000万円","target":"18〜29歳","goal":"半年以内に来店頻度を20%増やす"},"ai_participants":[{"agent_id":"ai_01","role":"実現可能性を重視する参加者","initial_position":"アプリ施策を支持","private_concern":"高齢利用者を排除する危険","allowed_moves":["propose_idea","challenge","integrate"]},{"agent_id":"ai_02","role":"費用対効果を重視する参加者","initial_position":"店舗イベントを支持","private_concern":"運営人員が不足","allowed_moves":["propose_idea","ask_question","compare_options"]}],"phase_plan":["problem_definition","idea_generation","option_comparison","decision","summary"],"evaluation_opportunities":{"issue_framing":1,"logical_reasoning":1,"listening_and_response":2,"valuable_contribution":2,"collaboration_and_relationship":1,"decision_and_consensus":1,"process_and_time_management":1},"required_moves":["define_criteria","compare_options","confirm_consensus"],"forbidden_moves":["finalize_before_user_input"],"constraints":{"max_budget_yen":10000000,"must_compare_options":2},"instance_rubrics":[{"rubric_id":"R01","target":"ai_system","description":"最初の案比較前にユーザー発言が1回以上ある。","type":"binary","pass_condition":"option_comparison前にuser messageが存在する","severity":"critical","affected_dimensions":["valuable_contribution","decision_and_consensus"]},{"rubric_id":"R02","target":"episode","description":"異なる2案以上と比較基準がログに存在する。","type":"binary","pass_condition":"2案以上かつdefine_criteria moveが存在する","severity":"major","affected_dimensions":["decision_and_consensus"]},{"rubric_id":"R03","target":"ai_system","description":"最終結論が予算条件と矛盾しない。","type":"binary","pass_condition":"summaryが1000万円上限を維持する","severity":"major","affected_dimensions":[]}]}
+{
+  "contract_version": "0.1",
+  "scenario_id": "market-entry-001",
+  "version": "scenario-001-v0.1",
+  "topic": "地方スーパーの若年層利用を増やす施策",
+  "duration_seconds": 900,
+  "shared_context": {
+    "budget": "1000万円",
+    "target": "18〜29歳",
+    "goal": "半年以内に来店頻度を20%増やす"
+  },
+  "ai_participants": [
+    {
+      "agent_id": "ai_01",
+      "role": "実現可能性を重視する参加者",
+      "initial_position": "アプリ施策を支持",
+      "private_concern": "高齢利用者を排除する危険",
+      "allowed_moves": ["propose_idea", "challenge", "integrate"]
+    },
+    {
+      "agent_id": "ai_02",
+      "role": "費用対効果を重視する参加者",
+      "initial_position": "店舗イベントを支持",
+      "private_concern": "運営人員が不足",
+      "allowed_moves": ["propose_idea", "ask_question", "compare_options"]
+    }
+  ],
+  "phase_plan": ["problem_definition", "idea_generation", "option_comparison", "decision", "summary"],
+  "evaluation_opportunities": [
+    {"opportunity_id":"M-OP-IS-01","dimension":"issue_framing","phase":"problem_definition","trigger":"after_topic_open","expected_actor":"candidate","required_context":["goal_and_target_available"],"invalidated_by":["M-PROH-01"]},
+    {"opportunity_id":"M-OP-LO-01","dimension":"logical_reasoning","phase":"option_comparison","trigger":"after_two_options_present","expected_actor":"candidate","required_context":["two_options_available"],"invalidated_by":[]},
+    {"opportunity_id":"M-OP-LI-01","dimension":"listening_and_response","phase":"idea_generation","trigger":"after_ai_question","expected_actor":"candidate","required_context":["ai_question_open"],"invalidated_by":[]},
+    {"opportunity_id":"M-OP-LI-02","dimension":"listening_and_response","phase":"option_comparison","trigger":"after_operational_concern","expected_actor":"candidate","required_context":["concern_requires_response"],"invalidated_by":[]},
+    {"opportunity_id":"M-OP-VA-01","dimension":"valuable_contribution","phase":"idea_generation","trigger":"after_initial_positions","expected_actor":"candidate","required_context":["idea_space_open"],"invalidated_by":["M-PROH-01"]},
+    {"opportunity_id":"M-OP-VA-02","dimension":"valuable_contribution","phase":"option_comparison","trigger":"after_tradeoff","expected_actor":"candidate","required_context":["improvement_possible"],"invalidated_by":[]},
+    {"opportunity_id":"M-OP-CO-01","dimension":"collaboration_and_relationship","phase":"idea_generation","trigger":"after_position_difference","expected_actor":"candidate","required_context":["multiple_positions_active"],"invalidated_by":[]},
+    {"opportunity_id":"M-OP-DE-01","dimension":"decision_and_consensus","phase":"decision","trigger":"before_final_selection","expected_actor":"candidate","required_context":["criteria_and_options_available"],"invalidated_by":["M-PROH-01"]},
+    {"opportunity_id":"M-OP-PR-01","dimension":"process_and_time_management","phase":"summary","trigger":"before_session_close","expected_actor":"candidate","required_context":["remaining_time_visible"],"invalidated_by":[]}
+  ],
+  "required_actions": [
+    {"action_id":"M-ACT-01","actor":"candidate","move":"define_criteria","phase":"problem_definition","minimum_occurrences":1},
+    {"action_id":"M-ACT-02","actor":"candidate","move":"compare_options","phase":"option_comparison","minimum_occurrences":1},
+    {"action_id":"M-ACT-03","actor":"candidate","move":"confirm_consensus","phase":"decision","minimum_occurrences":1}
+  ],
+  "prohibited_conditions": [
+    {"condition_id":"M-PROH-01","actor":"ai_system","rule_id":"finalize_before_user_input","severity":"critical","affected_dimensions":["valuable_contribution","decision_and_consensus"]}
+  ],
+  "constraints": {"max_budget_yen":10000000,"must_compare_options":2},
+  "instance_rubrics": [
+    {"rubric_id":"R01","target":"ai_system","description":"最初の案比較前にユーザー発言が1回以上ある。","severity":"critical","affected_dimensions":["valuable_contribution","decision_and_consensus"],"rule":{"rule_type":"deterministic","deterministic_rule_id":"user_message_before_phase","judge_question_ids":[],"params":{"before_phase":"option_comparison","minimum_user_messages":1}}},
+    {"rubric_id":"R02","target":"episode","description":"異なる2案以上と比較基準がログに存在する。","severity":"major","affected_dimensions":["decision_and_consensus"],"rule":{"rule_type":"deterministic","deterministic_rule_id":"options_and_move_present","judge_question_ids":[],"params":{"minimum_options":2,"required_move":"define_criteria"}}},
+    {"rubric_id":"R03","target":"ai_system","description":"最終結論が予算条件と矛盾しない。","severity":"major","affected_dimensions":[],"rule":{"rule_type":"deterministic","deterministic_rule_id":"numeric_constraint_preserved","judge_question_ids":[],"params":{"field":"budget_yen","maximum":10000000}}}
+  ]
+}
