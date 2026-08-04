@@ -19,3 +19,5 @@ jobs:
         run: python scripts/check_knowledge.py
       - name: Validate evaluation contract
         run: python scripts/check_evaluation_contract.py
+      - name: Validate human annotation foundation
+        run: python scripts/check_annotation_foundation.py
