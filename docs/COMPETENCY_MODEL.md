@@ -16,8 +16,6 @@
 
 ## 2. 利用者表示用3領域
 
-画面では理解しやすさを優先し、7軸を次の3領域へまとめる。
-
 ### 考える力
 
 - 課題設定・論点形成
@@ -34,7 +32,7 @@
 - 意思決定・合意形成
 - 時間・議論プロセス管理
 
-3領域の値は、内部7軸を隠すためではなく、利用者向けの要約として扱う。
+3領域は利用者向けの要約であり、校正前に7軸の単純平均を表示しない。v0.1では`coverage`、`bottleneck_dimension`、要約を返し、3領域の数値は`null`とする。
 
 ## 3. 旧5項目との対応
 
@@ -53,24 +51,28 @@
 - 発言回数だけ
 - 発言時間だけ
 - フィラー回数だけ
-- 役割名（司会、タイムキーパー等）だけ
+- 役割名だけ
 - 同意回数だけ
 - 音声・映像から推定した人格や属性
 
-これらは文脈判断を補助する統計としてのみ使用できる。
-
 ## 5. 複数機会の原則
 
-一つの発言から全軸を採点しない。シナリオは、各軸について評価機会を明示する。
+一つの発言から全軸を採点しない。シナリオは、各軸の機会をID付きで明示する。
 
 ```json
 {
-  "evaluation_opportunities": {
-    "issue_framing": 1,
-    "listening_and_response": 2,
-    "decision_and_consensus": 1
-  }
+  "evaluation_opportunities": [
+    {
+      "opportunity_id": "A-OP-IS-01",
+      "dimension": "issue_framing",
+      "phase": "problem_definition",
+      "trigger": "after_initial_positions",
+      "expected_actor": "candidate",
+      "required_context": ["priority_target_undefined"],
+      "invalidated_by": ["A-PROH-01"]
+    }
+  ]
 }
 ```
 
-必要な評価機会が提供されなかった場合、影響する軸は`NE`とする。
+機会数は配列から算出する。必要な評価機会が提供されなかった場合、影響する軸は`NE`とする。
