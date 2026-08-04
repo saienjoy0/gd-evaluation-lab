@@ -21,3 +21,5 @@ jobs:
         run: python scripts/check_evaluation_contract.py
       - name: Validate human annotation foundation
         run: python scripts/check_annotation_foundation.py
+      - name: Validate candidate assessment scenario pack
+        run: python scripts/check_candidate_scenario_pack.py
