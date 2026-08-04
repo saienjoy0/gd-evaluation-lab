@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Local-only tool configuration
+.beads/config.local.yaml
+.env
+.env.*
+
+# Never commit raw user data
+data/raw/
+data/private/
+audio/
+transcripts/raw/
