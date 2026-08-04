@@ -22,6 +22,13 @@ Evaluation Contract v0.1では、次を正本として管理します。
 - `docs/RUBRIC_DESIGN.md`
 - `docs/EVALUATION_CONTRACT_V0.1.md`
 
+検証・人間評価入口:
+
+- `docs/VALIDATION_PLAN.md`
+- `annotation/HUMAN_ANNOTATION_GUIDE.md`
+- `docs/MICRO_ANCHOR_SPEC.md`
+- `docs/FULL_EPISODE_SPEC.md`
+
 機械可読な正本:
 
 - `rubrics/candidate-behavior/v0.1.json`
@@ -30,7 +37,8 @@ Evaluation Contract v0.1では、次を正本として管理します。
 
 ## 役割分担
 
-- `docs/`: 人間向けの評価仕様
+- `docs/`: 人間向けの評価仕様と検証計画
+- `annotation/`: 人間評価者の手順
 - `rubrics/`: 版管理された行動アンカーとJudge質問
 - `schemas/`: gd-appと評価ラボ間のJSON契約
 - `fixtures/`: 匿名化・合成の検証データ
@@ -43,7 +51,17 @@ Evaluation Contract v0.1では、次を正本として管理します。
 ```bash
 python scripts/check_knowledge.py
 python scripts/check_evaluation_contract.py
+python scripts/check_annotation_foundation.py
 ```
+
+## 評価者の基本手順
+
+1. AIスコアを非表示にする
+2. 評価機会を確認する
+3. 点数より先に利用者本人の証拠発言を選ぶ
+4. BARSアンカーへ照合する
+5. 1〜4またはNEを記録する
+6. 二重評価後に不一致理由を調停する
 
 ## 毎日の使い方
 
