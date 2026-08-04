@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/gd-evaluation/schemas/annotation-v0.1.schema.json",
+  "title": "Human Annotation v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["contract_version", "annotation_id", "session_id", "annotator_id", "rubric_version", "created_at", "dimensions"],
+  "$defs": {
+    "dimensionEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dimension", "score", "evidence_message_ids", "comment", "not_evaluable_reason"],
+      "properties": {
+        "dimension": {
+          "enum": [
+            "issue_framing",
+            "logical_reasoning",
+            "listening_and_response",
+            "valuable_contribution",
+            "collaboration_and_relationship",
+            "decision_and_consensus",
+            "process_and_time_management"
+          ]
+        },
+        "score": {
+          "oneOf": [
+            {"type": "integer", "minimum": 1, "maximum": 4},
+            {"const": "NE"}
+          ]
+        },
+        "evidence_message_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "comment": {"type": "string"},
+        "not_evaluable_reason": {"type": ["string", "null"]}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"score": {"const": "NE"}}, "required": ["score"]},
+          "then": {
+            "properties": {
+              "not_evaluable_reason": {"type": "string", "minLength": 1},
+              "evidence_message_ids": {"maxItems": 0}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"score": {"type": "integer"}}, "required": ["score"]},
+          "then": {
+            "properties": {
+              "not_evaluable_reason": {"type": "null"},
+              "evidence_message_ids": {"minItems": 1}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"score": {"const": 4}}, "required": ["score"]},
+          "then": {"properties": {"evidence_message_ids": {"minItems": 2}}}
+        }
+      ]
+    }
+  },
+  "properties": {
+    "contract_version": {"const": "0.1"},
+    "annotation_id": {"type": "string", "minLength": 1},
+    "session_id": {"type": "string", "minLength": 1},
+    "annotator_id": {"type": "string", "minLength": 1},
+    "rubric_version": {"const": "candidate-behavior-v0.1"},
+    "created_at": {"type": "string", "format": "date-time"},
+    "dimensions": {
+      "type": "array",
+      "minItems": 7,
+      "maxItems": 7,
+      "items": {"$ref": "#/$defs/dimensionEntry"},
+      "allOf": [
+        {"contains": {"properties": {"dimension": {"const": "issue_framing"}}, "required": ["dimension"]}, "minContains": 1, "maxContains": 1},
+        {"contains": {"properties": {"dimension": {"const": "logical_reasoning"}}, "required": ["dimension"]}, "minContains": 1, "maxContains": 1},
+        {"contains": {"properties": {"dimension": {"const": "listening_and_response"}}, "required": ["dimension"]}, "minContains": 1, "maxContains": 1},
+        {"contains": {"properties": {"dimension": {"const": "valuable_contribution"}}, "required": ["dimension"]}, "minContains": 1, "maxContains": 1},
+        {"contains": {"properties": {"dimension": {"const": "collaboration_and_relationship"}}, "required": ["dimension"]}, "minContains": 1, "maxContains": 1},
+        {"contains": {"properties": {"dimension": {"const": "decision_and_consensus"}}, "required": ["dimension"]}, "minContains": 1, "maxContains": 1},
+        {"contains": {"properties": {"dimension": {"const": "process_and_time_management"}}, "required": ["dimension"]}, "minContains": 1, "maxContains": 1}
+      ]
+    }
+  }
+}

@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/gd-evaluation/schemas/episode-v0.1.schema.json",
+  "title": "GD Episode v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "session_id",
+    "scenario_id",
+    "scenario_version",
+    "started_at",
+    "ended_at",
+    "participants",
+    "messages",
+    "events",
+    "versions",
+    "transcript_hash"
+  ],
+  "properties": {
+    "contract_version": {"const": "0.1"},
+    "session_id": {"type": "string", "minLength": 1},
+    "scenario_id": {"type": "string", "minLength": 1},
+    "scenario_version": {"type": "string", "minLength": 1},
+    "started_at": {"type": "string", "format": "date-time"},
+    "ended_at": {"type": "string", "format": "date-time"},
+    "participants": {
+      "type": "array",
+      "minItems": 2,
+      "allOf": [
+        {"contains": {"type": "object", "properties": {"speaker_type": {"const": "user"}}, "required": ["speaker_type"]}, "minContains": 1},
+        {"contains": {"type": "object", "properties": {"speaker_type": {"const": "ai"}}, "required": ["speaker_type"]}, "minContains": 1}
+      ],
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["participant_id", "speaker_type"],
+        "properties": {
+          "participant_id": {"type": "string", "minLength": 1},
+          "speaker_type": {"enum": ["user", "ai"]},
+          "agent_role": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "messages": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["message_id", "participant_id", "speaker_type", "text", "phase", "move", "start_ms", "end_ms"],
+        "properties": {
+          "message_id": {"type": "string", "minLength": 1},
+          "participant_id": {"type": "string", "minLength": 1},
+          "speaker_type": {"enum": ["user", "ai"]},
+          "text": {"type": "string", "minLength": 1},
+          "phase": {"enum": ["problem_definition", "idea_generation", "option_comparison", "decision", "summary"]},
+          "move": {"type": "string", "minLength": 1},
+          "start_ms": {"type": "integer", "minimum": 0},
+          "end_ms": {"type": "integer", "minimum": 0},
+          "generation_id": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["event_id", "event", "timestamp_ms"],
+        "properties": {
+          "event_id": {"type": "string", "minLength": 1},
+          "event": {"type": "string", "minLength": 1},
+          "timestamp_ms": {"type": "integer", "minimum": 0},
+          "participant_id": {"type": ["string", "null"]},
+          "generation_id": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "versions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["orchestrator_version", "prompt_version", "model_provider", "model_name"],
+      "properties": {
+        "orchestrator_version": {"type": "string", "minLength": 1},
+        "prompt_version": {"type": "string", "minLength": 1},
+        "model_provider": {"type": "string", "minLength": 1},
+        "model_name": {"type": "string", "minLength": 1},
+        "model_parameters": {"type": "object"}
+      }
+    },
+    "transcript_hash": {"type": "string", "minLength": 16},
+    "legacy_evaluation": {"type": ["object", "null"]}
+  }
+}
