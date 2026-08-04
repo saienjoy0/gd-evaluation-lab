@@ -1,0 +1,31 @@
+{
+  "version": "deterministic-rule-vocabulary-v0.1",
+  "rubric_rules": [
+    "user_message_before_action",
+    "resolved_context_keys",
+    "candidate_move_types",
+    "private_concern_triggered_release",
+    "summary_contains_fields",
+    "positions_and_challenge_before_phase",
+    "candidate_response_to_concern",
+    "candidate_integrates_positions",
+    "decision_contains_fields",
+    "challenge_after_first_candidate_proposal",
+    "time_checkpoints_followed_by_candidate_turn",
+    "private_concern_revealed_before_phase",
+    "candidate_prioritizes_after_time_check",
+    "candidate_compares_and_revises",
+    "user_message_before_phase",
+    "options_and_move_present",
+    "numeric_constraint_preserved"
+  ],
+  "prohibited_rules": [
+    "ai_defines_scope_before_candidate",
+    "private_concern_revealed_without_trigger",
+    "finalize_before_conflict",
+    "silence_minority_concern",
+    "finalize_before_risk_reveal",
+    "skip_summary",
+    "finalize_before_user_input"
+  ]
+}
