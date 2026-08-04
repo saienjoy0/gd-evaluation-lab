@@ -23,3 +23,5 @@ jobs:
         run: python scripts/check_annotation_foundation.py
       - name: Validate candidate assessment scenario pack
         run: python scripts/check_candidate_scenario_pack.py
+      - name: Validate contract and scenario hardening
+        run: python scripts/check_contract_hardening.py
