@@ -1,0 +1,22 @@
+{
+  "version": "move-vocabulary-v0.1",
+  "moves": [
+    "clarify_goal",
+    "define_scope",
+    "define_criteria",
+    "propose_idea",
+    "ask_question",
+    "respond_to_question",
+    "support",
+    "challenge",
+    "integrate",
+    "compare_options",
+    "invite_participant",
+    "time_check",
+    "prioritize",
+    "summarize",
+    "propose_decision",
+    "confirm_consensus"
+  ],
+  "description": "Scenario、Episode、rubricで共通利用する行動語彙。"
+}
