@@ -57,11 +57,11 @@ def user_message_before_action(
         )
         < minimum
     ]
+    initial_phase = user_messages[0].get("phase") if user_messages else None
     evidence = [
         message["message_id"]
         for message in user_messages
-        if message.get("phase") == "problem_definition"
-        and message.get("move") in {"clarify_goal", "define_scope", "define_criteria"}
+        if message.get("phase") == initial_phase
     ]
     return {
         "ok": not preemptions,
@@ -125,10 +125,16 @@ def private_concern_triggered_release(
         for event in episode.get("events", [])
         if event.get("event") == "PRIVATE_CONCERN_REVEALED"
     ]
-    valid = bool(concerns) and all(
+    valid = all(
         event.get("trigger_move") in allowed
         and event.get("message_id") in messages
         and messages[event["message_id"]].get("speaker_type") == "ai"
+        and any(
+            message.get("move") == event.get("trigger_move")
+            and message.get("end_ms", 0) <= event.get("timestamp_ms", 0)
+            and message.get("message_id") != event.get("message_id")
+            for message in messages.values()
+        )
         for event in concerns
     )
     return {

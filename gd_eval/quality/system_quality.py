@@ -49,10 +49,18 @@ def _private_concern_revealed_without_trigger(
         for event in episode.get("events", [])
         if event.get("event") == "PRIVATE_CONCERN_REVEALED"
     ]
+    messages = {message["message_id"]: message for message in episode.get("messages", [])}
     invalid = [
         event
         for event in concerns
         if event.get("trigger_move") not in {"ask_question", "compare_options", "challenge"}
+        or event.get("message_id") not in messages
+        or not any(
+            message.get("move") == event.get("trigger_move")
+            and message.get("end_ms", 0) <= event.get("timestamp_ms", 0)
+            and message.get("message_id") != event.get("message_id")
+            for message in messages.values()
+        )
     ]
     return {
         "failed": bool(invalid),
@@ -119,10 +127,9 @@ def build_system_quality(
         )
 
     status = _quality_status(results)
-    agency_ok = all(
-        result["outcome"] == "pass"
+    agency_ok = not any(
+        result["outcome"] == "fail" and result["severity"] == "critical"
         for result in results
-        if result["rule_id"] in {"A-R01", "A-PROH-01"}
     )
     dimension_scores = {
         "goal_progression": 4,

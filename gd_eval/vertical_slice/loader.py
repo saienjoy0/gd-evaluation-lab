@@ -140,6 +140,19 @@ def load_case(case_dir: Path, repo_root: Path | None = None) -> LoadedCase:
     )
     adjudication_path = _safe_path(repo_root, case_dir, profile.adjudication_path)
 
+    scenario = load_json(scenario_path)
+    episode = load_json(episode_path)
+    candidate_rubric = load_json(candidate_rubric_path)
+    ai_quality_rubric = load_json(ai_quality_rubric_path)
+    rater_sheets = tuple(load_json(path) for path in rater_paths)
+    adjudication = load_json(adjudication_path)
+
+    _validate_schema(scenario, repo_root / "schemas/scenario-v0.1.schema.json")
+    _validate_schema(episode, repo_root / "schemas/episode-v0.1.schema.json")
+    for sheet in rater_sheets:
+        _validate_schema(sheet, repo_root / "schemas/rater-sheet-v0.1.schema.json")
+    _validate_schema(adjudication, repo_root / "schemas/adjudication-v0.1.schema.json")
+
     runtime = RuntimeCase(
         repo_root=repo_root,
         case_dir=case_dir,
@@ -152,12 +165,12 @@ def load_case(case_dir: Path, repo_root: Path | None = None) -> LoadedCase:
         ai_quality_rubric_path=ai_quality_rubric_path,
         rater_sheet_paths=rater_paths,
         adjudication_path=adjudication_path,
-        scenario=load_json(scenario_path),
-        episode=load_json(episode_path),
-        candidate_rubric=load_json(candidate_rubric_path),
-        ai_quality_rubric=load_json(ai_quality_rubric_path),
-        rater_sheets=tuple(load_json(path) for path in rater_paths),
-        adjudication=load_json(adjudication_path),
+        scenario=scenario,
+        episode=episode,
+        candidate_rubric=candidate_rubric,
+        ai_quality_rubric=ai_quality_rubric,
+        rater_sheets=rater_sheets,
+        adjudication=adjudication,
         versions=profile.versions,
     )
     _cross_validate(runtime)
