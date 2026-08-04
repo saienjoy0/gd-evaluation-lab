@@ -11,6 +11,7 @@
 ```text
 Scenario A
 → Episode
+→ DeterministicRuleResult
 → SystemQualityResult
 → OpportunityResolution
 → Rater Sheet A / B
@@ -18,6 +19,8 @@ Scenario A
 → EvaluationResult
 → 3領域フィードバック
 ```
+
+`DeterministicRuleResult`はAI、Episode、利用者を対象とする構造化ruleの結果を保持する。`SystemQualityResult`には、そのうちAI/system対象のruleと禁止条件だけを入れる。利用者の未達をAI品質不良として扱わない。
 
 ## 3. mediumケース
 
@@ -31,11 +34,15 @@ Scenario A
 
 ## 4. 決定論的再生成
 
-`scripts/evaluate_exercise_a_medium.py`はEpisode内の構造化イベントから次を再生成する。
+`scripts/evaluate_exercise_a_medium.py`はEpisode内の構造化イベントから次を順番に再生成する。
 
+- Deterministic Rule Result
 - System Quality Result
 - Opportunity Resolution
 - Evaluation Result
+- Evidence-based Feedback
+
+FeedbackをEvaluationResultの入力には使用しない。EvaluationResultを作成した後、その内容からFeedbackを生成する。
 
 `check_exercise_a_medium_vertical_slice.py`は再生成結果をgolden fixtureと完全一致で比較する。
 
@@ -49,12 +56,14 @@ Scenario本体は既存の標準演習Aを参照し、複製しない。
 
 ## 6. 受入れ条件
 
-- 3つの新規Schemaと既存Schemaへ適合する
-- Scenario、Episode、Resultの版が一致する
+- 4つの新規Schemaと既存Schemaへ適合する
+- Scenario、Episode、各中間結果の版が一致する
 - transcript hashを再計算できる
 - 12の評価機会IDが全て解決される
-- 証拠が対象利用者本人の発言である
+- 評価機会の応答と能力評価の証拠が対象利用者本人の発言である
+- AI/system ruleだけがSystemQualityResultへ入る
 - 二重評価と調停結果が一致する
 - 3領域の数値は校正前のため`null`
-- 同一入力から同一出力を再生成できる
-- 10件の負例が意図した理由で失敗する
+- 同一入力から9成果物の同じ内容を再生成できる
+- 14件の負例が意図した理由で失敗する
+- AIが利用者より先にscopeを定義した場合、critical failureを検出する
