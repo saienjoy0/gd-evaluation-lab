@@ -8,6 +8,12 @@ updated: 2026-08-04
 
 # Contract and Scenario Hardening v0.1
 
+## Observations
+
+- 評価機会数が整数の自己申告で、具体的な場面と対応していなかった
+- instance rubricの合否条件が自由記述で、再現可能な機械判定へ接続できなかった
+- NE理由、証拠所有者、3領域集約、move語彙が契約間で一貫していなかった
+
 ## Decision
 
 縦切り試験へ進む前に、評価契約と標準Scenarioを次の6点で堅牢化する。
@@ -30,3 +36,9 @@ updated: 2026-08-04
 ## Consequence
 
 次の縦切り試験は、曖昧な自然文条件や恣意的な3領域平均を実装側で補わずに実行できる。
+
+## Relations
+
+- follows [[Candidate Assessment Scenario Pack v0.1 Decision]]
+- updates [[Evaluation Contract v0.1 Decision]]
+- informs [[GD Evaluation Lab Project Overview]]
