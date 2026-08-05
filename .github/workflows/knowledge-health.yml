@@ -5,26 +5,16 @@ on:
   push:
     branches: [main]
 
-permissions:
-  contents: write
-
 jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - name: Install validation dependencies
         run: python -m pip install --disable-pip-version-check "jsonschema[format]>=4.23,<5"
-      - name: Generate Exercise B high/low fixtures
-        run: |
-          python scripts/generate_exercise_b_high_low.py
-          mv fixtures/calibration/full-episodes/stakeholder-conflict/high/feedback.json fixtures/calibration/full-episodes/stakeholder-conflict/high/expected-feedback.json
-          mv fixtures/calibration/full-episodes/stakeholder-conflict/low/feedback.json fixtures/calibration/full-episodes/stakeholder-conflict/low/expected-feedback.json
       - name: Validate knowledge notes
         run: python scripts/check_knowledge.py
       - name: Validate evaluation contract
@@ -49,13 +39,3 @@ jobs:
         run: python scripts/check_exercise_b_medium.py
       - name: Validate Exercise B high/low calibration
         run: python scripts/check_exercise_b_high_low.py
-      - name: Commit generated Exercise B fixtures
-        if: github.event_name == 'pull_request'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add fixtures/calibration/full-episodes/stakeholder-conflict/high fixtures/calibration/full-episodes/stakeholder-conflict/low
-          if ! git diff --cached --quiet; then
-            git commit -m "Add generated Exercise B high low fixtures"
-            git push origin HEAD:${{ github.head_ref }}
-          fi
