@@ -67,7 +67,7 @@ Exercise C「時間制約下の意思決定」を、共通Full-Episode runnerで
 
 ### C-R05
 
-最終要約に次の三項目を含める。
+候補者本人のsummary発言に次の三項目と値を含める。
 
 - `mode`
 - `exception`
@@ -126,33 +126,30 @@ score profileは`2/3/3/2/2/3/3`である。
 
 ## 9. Episode正本
 
-Episodeは次の圧縮正本から決定論的に復元する。
+Episodeは次のJSONファイルを直接の正本とする。
 
 ```text
-fixtures/calibration/full-episodes/time-boxed-decision/medium/episode.json.gz.b64
+fixtures/calibration/full-episodes/time-boxed-decision/medium/episode.json
 ```
 
-復元入口:
+`case.json`から共通loaderで直接読み込めるため、Exercise A・Bと同じFull-Episode契約で扱える。
 
-```bash
-python scripts/materialize_exercise_c_medium_episode.py
-```
-
-復元後の`transcript_hash`は次で固定する。
+`transcript_hash`は次で固定する。
 
 ```text
 84ddd149a37e39fff933357d1a60e75ca1dde9afaa73724a8ebdf55c1b9ca1f6
 ```
 
+時間通知、三案提示、遅延リスク、比較、revision、要約などの構造化イベントは、対応する発言IDと発言時間帯へ結び付けて検査する。イベント名や任意時刻だけでは証拠として扱わない。
+
 ## 10. 検査
 
 ```bash
-python scripts/materialize_exercise_c_medium_episode.py
 python scripts/generate_exercise_c_medium.py
 python scripts/check_exercise_c_medium.py
 ```
 
-checkerは正常系に加え、時間通知欠落、時刻逸脱、リスクの決定後開示、誤ったconcern、優先順位更新欠落、三案比較不足、revision欠落、要約field欠落、AI先回り決定、summary欠落、証拠所有者不整合をfail-closedで検査する。
+checkerは正常系に加え、trigger名前空間衝突、イベント時刻偽装、時間通知欠落、通知後ターン欠落、遅延リスクの誤開示、優先順位更新欠落、三案比較不足、revision不整合、要約の所有者・値、AI先回り決定、summary欠落、未実装trigger/context、phase・dimension・証拠所有者不整合を32件の負例でfail-closedに検査する。
 
 ## 11. 完了条件
 
