@@ -43,14 +43,14 @@ TRIGGER_HANDLERS={
  "after_late_risk_reveal":_event_before("PRIVATE_CONCERN_REVEALED",lambda x:bool(x.get("late_risk"))),
  "after_security_question":_event_before("SECURITY_CONCERN_STATUS",lambda x:x.get("status")=="open"),
  "after_constraint_collision":_event_before("CONSTRAINT_COLLISION_RECORDED",lambda x:len(x.get("constraints",[]))>=2),
- "before_final_alignment":_before_future("confirm_consensus"),
- "after_criteria_defined":_event_before("CRITERIA_RECORDED"),
- "before_consensus_confirmation":_before_future("confirm_consensus"),
+ "before_training_final_alignment":_before_future("confirm_consensus"),
+ "after_training_criteria_defined":_event_before("CRITERIA_RECORDED"),
+ "before_training_consensus_confirmation":_before_future("confirm_consensus"),
  "at_40_percent_time_checkpoint":_checkpoint(40),
  "at_75_percent_time_checkpoint":_checkpoint(75),
 }
 CONTEXT_HANDLERS={
- "decision_criteria_incomplete":_decision_criteria_incomplete,"three_options_available":_three_options_available,"risk_requires_reassessment":_risk_requires_reassessment,
+ "decision_criteria_incomplete":_decision_criteria_incomplete,"training_three_options_available":_three_options_available,"risk_requires_reassessment":_risk_requires_reassessment,
  "security_concern_open":_security_open,"risk_requires_response":_risk_response,"solution_space_open":_solution_open,"hybrid_solution_possible":_hybrid_possible,
  "regional_access_concern_present":_regional_open,"decision_requires_revision":_decision_requires_revision,"implementation_condition_required":_implementation_required,
  "unresolved_items_visible":_unresolved,"summary_required":_summary_required,
