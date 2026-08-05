@@ -3,10 +3,19 @@ title: Exercise B High Low Calibration v0.1 Decision
 type: decision
 tags: [gd, evaluation, calibration, exercise-b]
 permalink: exercise-b-high-low-v0-1-decision
-date: 2026-08-05
+updated: 2026-08-05
 ---
 
 # Exercise B High / Low Calibration v0.1 Decision
+
+## Observations
+
+- Exercise B mediumは15評価機会すべてが`offered + observed`で、7軸を`3/3/3/3/3/3/2`として確定している
+- high / lowの比較では、AI発言や機会供給が変わると候補者行動の差だけを校正できない
+- lowを沈黙や機会欠落で作ると、低得点とNEの分離が崩れる
+- score 4は単発の良い発言ではなく、複数局面で再現された行動証拠を必要とする
+- Exercise A専用checkerの複製を続けると、Exercise C追加時に同じ横断検査が重複する
+- state名を評価コアへ持ち込むと、generic runnerのstate非依存契約を壊す
 
 ## Decision
 
@@ -50,7 +59,7 @@ lowでは次を候補者行動のfailとして扱う。
 - B-PROH-01: pass
 - B-PROH-02: pass
 
-## Consequences
+## Consequence
 
 この決定により、Exercise B system_failureでは候補者低品質とAI品質不良を独立して比較できる。次のPRでは、AIが対立前に配分を確定する失敗を作り、影響軸だけをNEにする。
 
@@ -58,4 +67,5 @@ lowでは次を候補者行動のfailとして扱う。
 
 - follows [[Exercise B Medium Vertical Slice v0.1 Decision]]
 - informed_by [[Exercise A Four-State Matrix v0.1 Decision]]
+- informs [[GD Evaluation Current Status]]
 - part_of [[GD Evaluation Lab Project Overview]]
