@@ -1,0 +1,174 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/gd-evaluation/schemas/exercise-four-state-matrix-v0.1.schema.json",
+  "title": "Exercise Four-State Matrix v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "matrix_id",
+    "exercise_id",
+    "scenario_version",
+    "runner_version",
+    "states",
+    "dimensions",
+    "controls",
+    "cases",
+    "assertions"
+  ],
+  "$defs": {
+    "score": {
+      "oneOf": [
+        {"type": "integer", "minimum": 1, "maximum": 4},
+        {"const": "NE"}
+      ]
+    },
+    "scores": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "issue_framing",
+        "logical_reasoning",
+        "listening_and_response",
+        "valuable_contribution",
+        "collaboration_and_relationship",
+        "decision_and_consensus",
+        "process_and_time_management"
+      ],
+      "properties": {
+        "issue_framing": {"$ref": "#/$defs/score"},
+        "logical_reasoning": {"$ref": "#/$defs/score"},
+        "listening_and_response": {"$ref": "#/$defs/score"},
+        "valuable_contribution": {"$ref": "#/$defs/score"},
+        "collaboration_and_relationship": {"$ref": "#/$defs/score"},
+        "decision_and_consensus": {"$ref": "#/$defs/score"},
+        "process_and_time_management": {"$ref": "#/$defs/score"}
+      }
+    },
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "case_id",
+        "session_id",
+        "system_quality",
+        "failed_system_rules",
+        "opportunities",
+        "numeric_dimensions",
+        "ne_dimensions",
+        "scores"
+      ],
+      "properties": {
+        "state": {"enum": ["high", "medium", "low", "system_failure"]},
+        "case_id": {"type": "string", "minLength": 1},
+        "session_id": {"type": "string", "minLength": 1},
+        "system_quality": {"enum": ["pass", "fail"]},
+        "failed_system_rules": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "opportunities": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["offered", "not_offered", "invalid", "with_candidate_response"],
+          "properties": {
+            "offered": {"type": "integer", "minimum": 0},
+            "not_offered": {"type": "integer", "minimum": 0},
+            "invalid": {"type": "integer", "minimum": 0},
+            "with_candidate_response": {"type": "integer", "minimum": 0}
+          }
+        },
+        "numeric_dimensions": {"type": "integer", "minimum": 0, "maximum": 7},
+        "ne_dimensions": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"enum": [
+            "issue_framing",
+            "logical_reasoning",
+            "listening_and_response",
+            "valuable_contribution",
+            "collaboration_and_relationship",
+            "decision_and_consensus",
+            "process_and_time_management"
+          ]}
+        },
+        "scores": {"$ref": "#/$defs/scores"}
+      }
+    }
+  },
+  "properties": {
+    "contract_version": {"const": "0.1"},
+    "matrix_id": {"const": "exercise-a-four-state-v0.1"},
+    "exercise_id": {"const": "candidate-assessment-a-ambiguous-structure"},
+    "scenario_version": {"const": "candidate-assessment-a-v0.1"},
+    "runner_version": {"const": "generic-full-episode-runner-v0.1"},
+    "states": {
+      "const": ["high", "medium", "low", "system_failure"]
+    },
+    "dimensions": {
+      "const": [
+        "issue_framing",
+        "logical_reasoning",
+        "listening_and_response",
+        "valuable_contribution",
+        "collaboration_and_relationship",
+        "decision_and_consensus",
+        "process_and_time_management"
+      ]
+    },
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "normal_state_ai_messages_equal",
+        "normal_state_system_quality_equal",
+        "normal_state_opportunity_supply_equal",
+        "runner_receives_state_label",
+        "core_state_literals"
+      ],
+      "properties": {
+        "normal_state_ai_messages_equal": {"type": "boolean"},
+        "normal_state_system_quality_equal": {"type": "boolean"},
+        "normal_state_opportunity_supply_equal": {"type": "boolean"},
+        "runner_receives_state_label": {"type": "boolean"},
+        "core_state_literals": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/case"},
+      "allOf": [
+        {"contains": {"properties": {"state": {"const": "high"}}, "required": ["state"]}, "minContains": 1, "maxContains": 1},
+        {"contains": {"properties": {"state": {"const": "medium"}}, "required": ["state"]}, "minContains": 1, "maxContains": 1},
+        {"contains": {"properties": {"state": {"const": "low"}}, "required": ["state"]}, "minContains": 1, "maxContains": 1},
+        {"contains": {"properties": {"state": {"const": "system_failure"}}, "required": ["state"]}, "minContains": 1, "maxContains": 1}
+      ]
+    },
+    "assertions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "normal_score_order",
+        "low_all_numeric",
+        "system_failure_ne_scope",
+        "system_failure_unaffected_matches_medium",
+        "system_failure_failed_rules"
+      ],
+      "properties": {
+        "normal_score_order": {"const": "high > medium > low"},
+        "low_all_numeric": {"type": "boolean"},
+        "system_failure_ne_scope": {"const": ["issue_framing", "valuable_contribution"]},
+        "system_failure_unaffected_matches_medium": {"type": "boolean"},
+        "system_failure_failed_rules": {"const": ["A-PROH-01", "A-R01"]}
+      }
+    }
+  }
+}
