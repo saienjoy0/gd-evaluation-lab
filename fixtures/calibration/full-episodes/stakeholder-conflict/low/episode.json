@@ -821,18 +821,7 @@
         "tourism"
       ],
       "allocation_total_yen": 30000000,
-      "priority_count": 2,
-      "mitigation": {
-        "tourism": "既存広報枠と事業者ネットワークによる通年企画を半年後に再評価"
-      }
-    },
-    {
-      "event_id": "ev_minority_status",
-      "event": "MINORITY_CONCERN_STATUS",
-      "timestamp_ms": 358000,
-      "message_id": "m027",
-      "concern_id": "tourism_seasonality",
-      "status": "addressed"
+      "priority_count": 2
     },
     {
       "event_id": "ev_summary_fields",
@@ -840,10 +829,7 @@
       "timestamp_ms": 448000,
       "message_id": "m035",
       "fields": [
-        "criteria",
-        "allocation",
-        "mitigation",
-        "review_point"
+        "allocation"
       ]
     },
     {
@@ -999,7 +985,7 @@
   ],
   "versions": {
     "orchestrator_version": "synthetic-orchestrator-v0.1",
-    "prompt_version": "exercise-b-low-script-v0.1",
+    "prompt_version": "exercise-b-medium-script-v0.1",
     "model_provider": "synthetic",
     "model_name": "deterministic-fixture",
     "model_parameters": {

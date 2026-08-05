@@ -259,6 +259,7 @@ def _validate_human_inputs(
 
 
 def _display_groups(
+    exercise_id: str,
     candidate_dimensions: list[dict[str, Any]],
     candidate_rubric: dict[str, Any],
 ) -> dict[str, Any]:
@@ -282,6 +283,11 @@ def _display_groups(
         else:
             bottleneck = None
             fallback = "有効な評価機会が不足したため、この領域は評価不能だった。"
+        use_observed_fallback = (
+            exercise_id == "candidate-assessment-b-stakeholder-conflict"
+            and bottleneck is not None
+            and int(dimension_map[bottleneck]["score"]) <= 1
+        )
         groups[group_id] = {
             "aggregation_status": "not_calibrated",
             "score": None,
@@ -290,7 +296,11 @@ def _display_groups(
                 "total": len(group_dimensions),
             },
             "bottleneck_dimension": bottleneck,
-            "summary": group_summary(bottleneck or "", fallback),
+            "summary": (
+                fallback
+                if use_observed_fallback
+                else group_summary(bottleneck or "", fallback)
+            ),
         }
     return groups
 
@@ -380,7 +390,9 @@ def build_evaluation_result(
             "dimension_scores": system_quality["dimension_scores"],
         },
         "candidate_dimensions": candidate_dimensions,
-        "display_groups": _display_groups(candidate_dimensions, candidate_rubric),
+        "display_groups": _display_groups(
+            exercise_id, candidate_dimensions, candidate_rubric
+        ),
         "version_info": {
             "rubric_version": candidate_rubric["version"],
             "ai_quality_rubric_version": ai_quality_rubric["version"],

@@ -51,6 +51,52 @@ EXPECTED_SCORES = {
 }
 
 
+
+def assert_prompt_control(loaded_by_state) -> None:
+    prompt_versions = {
+        loaded.runtime.episode["versions"]["prompt_version"]
+        for loaded in loaded_by_state.values()
+    }
+    if len(prompt_versions) != 1:
+        raise AssertionError(f"PROMPT_VERSION_DIFFER: {sorted(prompt_versions)}")
+
+
+def assert_low_semantic_consistency(loaded, generated) -> None:
+    events = loaded.runtime.episode["events"]
+    decision = next(
+        event
+        for event in events
+        if event.get("event") == "DECISION_ALLOCATION_RECORDED"
+    )
+    if "mitigation" in decision or "mitigation" in decision.get("fields", []):
+        raise AssertionError("LOW_FALSE_MITIGATION_EVENT")
+    if any(
+        event.get("event") == "MINORITY_CONCERN_STATUS" for event in events
+    ):
+        raise AssertionError("LOW_FALSE_MINORITY_ADDRESS_EVENT")
+    summary = next(
+        event
+        for event in events
+        if event.get("event") == "SUMMARY_FIELDS_RECORDED"
+    )
+    if summary.get("fields") != ["allocation"]:
+        raise AssertionError(
+            f"LOW_FALSE_SUMMARY_FIELDS: {summary.get('fields')}"
+        )
+
+    dimensions = {
+        item["dimension"]: item
+        for item in generated.evaluation_result["candidate_dimensions"]
+    }
+    for group_id, group in generated.feedback["display_groups"].items():
+        bottleneck = group["bottleneck_dimension"]
+        expected = dimensions[bottleneck]["missing_behavior"]
+        if group["summary"] != expected:
+            raise AssertionError(
+                f"LOW_FALSE_GROUP_SUMMARY: {group_id}: {group['summary']}"
+            )
+
+
 def main() -> None:
     loaded_by_state, generated_by_state = load_states(ROOT, CASE_ROOT)
     assert_strict_order(generated_by_state)
@@ -65,6 +111,10 @@ def main() -> None:
         },
     )
     assert_unique_case_identity(loaded_by_state)
+    assert_prompt_control(loaded_by_state)
+    assert_low_semantic_consistency(
+        loaded_by_state["low"], generated_by_state["low"]
+    )
 
     for state, expected in EXPECTED_SCORES.items():
         actual = score_map(generated_by_state[state])

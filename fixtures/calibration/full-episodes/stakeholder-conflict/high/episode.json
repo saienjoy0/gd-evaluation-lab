@@ -1017,7 +1017,7 @@
   ],
   "versions": {
     "orchestrator_version": "synthetic-orchestrator-v0.1",
-    "prompt_version": "exercise-b-high-script-v0.1",
+    "prompt_version": "exercise-b-medium-script-v0.1",
     "model_provider": "synthetic",
     "model_name": "deterministic-fixture",
     "model_parameters": {

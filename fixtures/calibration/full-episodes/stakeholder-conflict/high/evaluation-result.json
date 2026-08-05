@@ -160,7 +160,7 @@
     "judge_model": "human-adjudication",
     "judge_version": "not-applied-v0.1",
     "orchestrator_version": "synthetic-orchestrator-v0.1",
-    "prompt_version": "exercise-b-high-script-v0.1",
+    "prompt_version": "exercise-b-medium-script-v0.1",
     "rubric_version": "candidate-behavior-v0.1",
     "scenario_version": "candidate-assessment-b-v0.1",
     "transcript_hash": "9df7dfa032e047df2aa91e4bd95edce66d2e3f7fb86a5a9378d2399af165bfb1"

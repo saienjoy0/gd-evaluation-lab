@@ -2,7 +2,6 @@
 """Generate Exercise B high/low source fixtures and deterministic goldens."""
 from __future__ import annotations
 
-import copy
 import json
 import shutil
 import sys
@@ -167,7 +166,6 @@ def build_episode(state: str) -> dict[str, Any]:
     episode["session_id"] = session
     episode["started_at"] = "2026-08-05T08:00:00Z" if state == "high" else "2026-08-05T10:00:00Z"
     episode["ended_at"] = "2026-08-05T08:15:00Z" if state == "high" else "2026-08-05T10:15:00Z"
-    episode.setdefault("versions", {})["prompt_version"] = f"exercise-b-{state}-script-v0.1"
     texts = HIGH_TEXT if state == "high" else LOW_TEXT
     for message in episode["messages"]:
         if message["message_id"] in USER_MESSAGE_IDS:
@@ -176,15 +174,22 @@ def build_episode(state: str) -> dict[str, Any]:
         episode["events"] = [
             event
             for event in episode["events"]
-            if event.get("event") != "POSITIONS_INTEGRATED"
+            if event.get("event")
+            not in {"POSITIONS_INTEGRATED", "MINORITY_CONCERN_STATUS"}
         ]
         for event in episode["events"]:
-            if event.get("event") == "PRIVATE_CONCERN_REVEALED":
+            event_type = event.get("event")
+            if event_type == "PRIVATE_CONCERN_REVEALED":
                 event["candidate_response_message_ids"] = []
-            if event.get("event") == "DECISION_ALLOCATION_RECORDED":
+            elif event_type == "DECISION_ALLOCATION_RECORDED":
                 event["fields"] = [
-                    field for field in event.get("fields", []) if field != "mitigation"
+                    field
+                    for field in event.get("fields", [])
+                    if field != "mitigation"
                 ]
+                event.pop("mitigation", None)
+            elif event_type == "SUMMARY_FIELDS_RECORDED":
+                event["fields"] = ["allocation"]
     episode["transcript_hash"] = transcript_hash(episode["messages"])
     return episode
 
