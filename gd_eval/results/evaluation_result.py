@@ -43,28 +43,35 @@ def _validate_human_inputs(
         for event_id in item["trigger_event_ids"]:
             event_to_opportunity[event_id] = item
 
-    score_maps: list[dict[str, int | str]] = []
-    for sheet in rater_sheets:
-        dimensions = {item["dimension"]: item for item in sheet["dimensions"]}
-        score_maps.append({key: item["score"] for key, item in dimensions.items()})
-        for dimension, item in dimensions.items():
-            if any(mid not in target_messages for mid in item["selected_evidence_message_ids"]):
-                raise EvaluationBuildError(f"EVIDENCE_OWNER_MISMATCH: {sheet['sheet_id']}:{dimension}")
-            for event_id in item["opportunity_evidence_event_ids"]:
-                opportunity = event_to_opportunity.get(event_id)
-                if opportunity is None:
-                    raise EvaluationBuildError(f"UNKNOWN_OPPORTUNITY_EVENT: {event_id}")
-                if opportunity["dimension"] != dimension or opportunity["status"] != "offered":
-                    raise EvaluationBuildError(
-                        f"INVALIDATED_OPPORTUNITY_NUMERIC_SCORE: {dimension}"
-                    )
-
     failed_dimensions = {
         dimension
         for result in system_quality["rule_results"]
         if result["outcome"] == "fail"
         for dimension in result["affected_dimensions"]
     }
+
+    score_maps: list[dict[str, int | str]] = []
+    for sheet in rater_sheets:
+        dimensions = {item["dimension"]: item for item in sheet["dimensions"]}
+        score_maps.append({key: item["score"] for key, item in dimensions.items()})
+        for dimension, item in dimensions.items():
+            if any(mid not in target_messages for mid in item["selected_evidence_message_ids"]):
+                raise EvaluationBuildError(
+                    f"EVIDENCE_OWNER_MISMATCH: {sheet['sheet_id']}:{dimension}"
+                )
+            for event_id in item["opportunity_evidence_event_ids"]:
+                opportunity = event_to_opportunity.get(event_id)
+                if opportunity is None:
+                    raise EvaluationBuildError(f"UNKNOWN_OPPORTUNITY_EVENT: {event_id}")
+                if opportunity["dimension"] != dimension:
+                    raise EvaluationBuildError(
+                        f"OPPORTUNITY_DIMENSION_MISMATCH: {dimension}:{event_id}"
+                    )
+                if item["score"] != "NE" and opportunity["status"] != "offered":
+                    raise EvaluationBuildError(
+                        f"INVALIDATED_OPPORTUNITY_NUMERIC_SCORE: {dimension}"
+                    )
+
     for resolution in adjudication["dimension_resolutions"]:
         dimension = resolution["dimension"]
         expected_scores = [score_maps[0][dimension], score_maps[1][dimension]]
@@ -81,15 +88,29 @@ def _validate_human_inputs(
             for item in by_dimension.get(dimension, [])
             if item["status"] == "offered" and item["response_status"] == "observed"
         ]
+        invalid = [
+            item
+            for item in by_dimension.get(dimension, [])
+            if item["status"] == "invalid"
+        ]
         if score != "NE" and (dimension in failed_dimensions or not offered):
             raise EvaluationBuildError(
                 f"INVALIDATED_OPPORTUNITY_NUMERIC_SCORE: {dimension}"
             )
-        if score == "NE" and not resolution.get("not_evaluable_reason"):
-            raise EvaluationBuildError(f"NE_REASON_MISSING: {dimension}")
+        if score == "NE":
+            reason = resolution.get("not_evaluable_reason")
+            if not reason:
+                raise EvaluationBuildError(f"NE_REASON_MISSING: {dimension}")
+            if reason == "AI_QUALITY_FAILURE" and (
+                dimension not in failed_dimensions or not invalid
+            ):
+                raise EvaluationBuildError(
+                    f"AI_QUALITY_NE_WITHOUT_INVALIDATION: {dimension}"
+                )
         if score == 4:
             message_by_id = {
-                message["message_id"]: message for message in episode.get("messages", [])
+                message["message_id"]: message
+                for message in episode.get("messages", [])
             }
             phases = {
                 message_by_id[mid]["phase"]
@@ -106,7 +127,9 @@ def _display_groups(
     dimension_map = {item["dimension"]: item for item in candidate_dimensions}
     groups: dict[str, Any] = {}
     for group_id, definition in candidate_rubric["display_groups"].items():
-        group_dimensions = [dimension_map[dimension] for dimension in definition["dimensions"]]
+        group_dimensions = [
+            dimension_map[dimension] for dimension in definition["dimensions"]
+        ]
         numeric = [item for item in group_dimensions if item["score"] != "NE"]
         if numeric:
             bottleneck = min(
@@ -124,7 +147,10 @@ def _display_groups(
         groups[group_id] = {
             "aggregation_status": "not_calibrated",
             "score": None,
-            "coverage": {"evaluated": len(numeric), "total": len(group_dimensions)},
+            "coverage": {
+                "evaluated": len(numeric),
+                "total": len(group_dimensions),
+            },
             "bottleneck_dimension": bottleneck,
             "summary": group_summary(bottleneck or "", fallback),
         }
