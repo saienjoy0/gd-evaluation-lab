@@ -79,6 +79,29 @@ def _parse_profile(raw: dict[str, Any]) -> CaseProfile:
     )
 
 
+def validate_adjudication_trigger_reasons(adjudication: dict[str, Any]) -> None:
+    """Reject adjudication reasons that are syntactically valid but factually false."""
+    reasons = set(adjudication.get("trigger_reasons", []))
+    if "SCORE_GAP_TWO_OR_MORE" not in reasons:
+        return
+
+    has_large_numeric_gap = False
+    for resolution in adjudication.get("dimension_resolutions", []):
+        scores = resolution.get("rater_scores", [])
+        if (
+            len(scores) == 2
+            and all(isinstance(score, int) and not isinstance(score, bool) for score in scores)
+            and abs(scores[0] - scores[1]) >= 2
+        ):
+            has_large_numeric_gap = True
+            break
+
+    if not has_large_numeric_gap:
+        raise CaseLoadError(
+            "ADJUDICATION_TRIGGER_REASON_INVALID: SCORE_GAP_TWO_OR_MORE"
+        )
+
+
 def _cross_validate(runtime: RuntimeCase) -> None:
     scenario = runtime.scenario
     episode = runtime.episode
@@ -121,6 +144,7 @@ def _cross_validate(runtime: RuntimeCase) -> None:
         raise CaseLoadError("ADJUDICATION_EPISODE_MISMATCH")
     if adjudication.get("scenario_id") != scenario.get("scenario_id"):
         raise CaseLoadError("ADJUDICATION_SCENARIO_MISMATCH")
+    validate_adjudication_trigger_reasons(adjudication)
 
 
 def load_case(case_dir: Path, repo_root: Path | None = None) -> LoadedCase:
