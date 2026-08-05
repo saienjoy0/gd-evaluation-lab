@@ -102,6 +102,55 @@ def core_state_literals(root: Path) -> list[str]:
     return hits
 
 
+def assert_controlled_case_inputs(
+    loaded_by_state: dict[str, Any],
+    config: FourStateMatrixConfig,
+) -> None:
+    """Verify that matrix metadata and shared evaluation inputs come from the cases."""
+    reference = loaded_by_state["medium"]
+    reference_contract = reference.profile.contract_version
+    reference_versions = reference.profile.versions
+    reference_scenario = reference.runtime.scenario
+    reference_candidate_rubric = reference.runtime.candidate_rubric
+    reference_ai_quality_rubric = reference.runtime.ai_quality_rubric
+
+    for state in STATES:
+        loaded = loaded_by_state[state]
+        profile = loaded.profile
+        runtime = loaded.runtime
+
+        if profile.exercise_id != config.exercise_id:
+            raise AssertionError(
+                f"EXERCISE_ID_MISMATCH: {state}: {profile.exercise_id}"
+            )
+        if runtime.exercise_id != config.exercise_id:
+            raise AssertionError(
+                f"RUNTIME_EXERCISE_ID_MISMATCH: {state}: {runtime.exercise_id}"
+            )
+        if runtime.scenario.get("scenario_id") != config.exercise_id:
+            raise AssertionError(
+                f"SCENARIO_ID_MISMATCH: {state}: "
+                f"{runtime.scenario.get('scenario_id')}"
+            )
+        if runtime.scenario.get("version") != config.scenario_version:
+            raise AssertionError(
+                f"SCENARIO_VERSION_MISMATCH: {state}: "
+                f"{runtime.scenario.get('version')}"
+            )
+        if profile.contract_version != reference_contract:
+            raise AssertionError(f"CONTRACT_VERSION_DIFFER: {state}")
+        if runtime.scenario != reference_scenario:
+            raise AssertionError(f"SCENARIO_CONTENT_DIFFER: {state}")
+        if profile.versions != reference_versions:
+            raise AssertionError(f"VERSION_PROFILE_DIFFER: {state}")
+        if runtime.versions != reference.runtime.versions:
+            raise AssertionError(f"RUNTIME_VERSION_PROFILE_DIFFER: {state}")
+        if runtime.candidate_rubric != reference_candidate_rubric:
+            raise AssertionError(f"CANDIDATE_RUBRIC_DIFFER: {state}")
+        if runtime.ai_quality_rubric != reference_ai_quality_rubric:
+            raise AssertionError(f"AI_QUALITY_RUBRIC_DIFFER: {state}")
+
+
 def load_four_states(
     root: Path, config: FourStateMatrixConfig
 ) -> tuple[dict[str, Any], dict[str, Any]]:
@@ -117,6 +166,8 @@ def load_four_states(
             raise AssertionError(f"NONDETERMINISTIC_CASE_OUTPUT: {state}")
         loaded_by_state[state] = loaded
         generated_by_state[state] = generated
+
+    assert_controlled_case_inputs(loaded_by_state, config)
     return loaded_by_state, generated_by_state
 
 
@@ -164,10 +215,10 @@ def build_matrix(
         if dimension not in config.system_failure_ne
     )
     return {
-        "contract_version": "0.1",
+        "contract_version": reference_loaded.profile.contract_version,
         "matrix_id": config.matrix_id,
-        "exercise_id": config.exercise_id,
-        "scenario_version": config.scenario_version,
+        "exercise_id": reference_loaded.profile.exercise_id,
+        "scenario_version": reference_loaded.runtime.scenario["version"],
         "runner_version": reference_loaded.profile.versions["runner_version"],
         "states": list(STATES),
         "dimensions": list(DIMENSIONS),
