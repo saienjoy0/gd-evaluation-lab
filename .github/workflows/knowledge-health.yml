@@ -5,11 +5,17 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: write
+
 jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -46,3 +52,17 @@ jobs:
             fixtures/calibration/full-episodes/stakeholder-conflict/high \
             fixtures/calibration/full-episodes/stakeholder-conflict/low
           python scripts/check_exercise_b_high_low.py
+      - name: Generate Exercise B system failure fixture
+        run: python scripts/generate_exercise_b_system_failure.py
+      - name: Validate Exercise B system failure separation
+        run: python scripts/check_exercise_b_system_failure.py
+      - name: Commit generated Exercise B system failure fixture
+        if: github.event_name == 'pull_request'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- fixtures/calibration/full-episodes/stakeholder-conflict/system_failure
+          if ! git diff --cached --quiet; then
+            git commit -m "Add Exercise B system failure fixture"
+            git push origin HEAD:${{ github.head_ref }}
+          fi
