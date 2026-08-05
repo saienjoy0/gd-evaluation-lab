@@ -5,44 +5,14 @@ on:
   push:
     branches: [main]
 
-permissions:
-  contents: write
-
 jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
-          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Apply Exercise B checker hash fix
-        if: github.event_name == 'pull_request'
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          path = Path("scripts/check_exercise_b_system_failure.py")
-          text = path.read_text(encoding="utf-8")
-          text = text.replace(
-              "from gd_eval.vertical_slice.runner import compare_oracles, run_full_episode  # noqa: E402",
-              "from gd_eval.vertical_slice.runner import (  # noqa: E402\n    compare_oracles,\n    run_full_episode,\n    transcript_hash,\n)",
-          )
-          marker = '    m004["move"] = "ask_question"\n'
-          addition = (
-              marker
-              + '    removed_failure.episode["transcript_hash"] = transcript_hash(\n'
-              + '        removed_failure.episode["messages"]\n'
-              + '    )\n'
-          )
-          if addition not in text:
-              if marker not in text:
-                  raise SystemExit("HASH_FIX_TARGET_MISSING")
-              text = text.replace(marker, addition, 1)
-          path.write_text(text, encoding="utf-8")
-          PY
       - name: Install validation dependencies
         run: python -m pip install --disable-pip-version-check "jsonschema[format]>=4.23,<5"
       - name: Validate knowledge notes
@@ -76,19 +46,11 @@ jobs:
             fixtures/calibration/full-episodes/stakeholder-conflict/high \
             fixtures/calibration/full-episodes/stakeholder-conflict/low
           python scripts/check_exercise_b_high_low.py
-      - name: Generate Exercise B system failure fixture
-        run: python scripts/generate_exercise_b_system_failure.py
       - name: Validate Exercise B system failure separation
         run: python scripts/check_exercise_b_system_failure.py
-      - name: Commit generated Exercise B system failure fixture
-        if: github.event_name == 'pull_request'
+      - name: Validate Exercise B system failure generator reproducibility
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -- \
-            scripts/check_exercise_b_system_failure.py \
+          python scripts/generate_exercise_b_system_failure.py
+          git diff --exit-code -- \
             fixtures/calibration/full-episodes/stakeholder-conflict/system_failure
-          if ! git diff --cached --quiet; then
-            git commit -m "Add Exercise B system failure fixture"
-            git push origin HEAD:${{ github.head_ref }}
-          fi
+          python scripts/check_exercise_b_system_failure.py
