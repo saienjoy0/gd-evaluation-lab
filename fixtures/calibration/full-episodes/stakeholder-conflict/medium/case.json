@@ -1,0 +1,29 @@
+{
+  "contract_version": "0.1",
+  "case_id": "exercise-b-medium-001",
+  "exercise_id": "candidate-assessment-b-stakeholder-conflict",
+  "state": "medium",
+  "scenario_path": "fixtures/scenarios/candidate-assessment-b-stakeholder-conflict-v0.1.json",
+  "target_participant_id": "candidate_b_medium",
+  "episode_path": "episode.json",
+  "candidate_rubric_path": "rubrics/candidate-behavior/v0.1.json",
+  "ai_quality_rubric_path": "rubrics/ai-participant/v0.1.json",
+  "human_inputs": {
+    "rater_sheet_paths": ["rater-sheet-a.json", "rater-sheet-b.json"],
+    "adjudication_path": "adjudication.json"
+  },
+  "versions": {
+    "runner_version": "generic-full-episode-runner-v0.1",
+    "deterministic_evaluator_version": "exercise-b-deterministic-v0.1",
+    "opportunity_resolver_version": "opportunity-resolver-v0.1",
+    "aggregator_version": "human-adjudication-aggregator-v0.1",
+    "feedback_template_version": "evidence-feedback-v0.1"
+  },
+  "test_oracles": {
+    "deterministic_rules": "deterministic-rule-result.json",
+    "system_quality": "system-quality-result.json",
+    "opportunity_resolution": "opportunity-resolution.json",
+    "evaluation_result": "evaluation-result.json",
+    "feedback": "expected-feedback.json"
+  }
+}

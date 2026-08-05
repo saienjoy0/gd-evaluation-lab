@@ -35,3 +35,5 @@ jobs:
         run: python scripts/check_numeric_evidence_provenance.py
       - name: Validate Exercise A four-state matrix
         run: python scripts/check_exercise_a_four_state_matrix.py
+      - name: Validate Exercise B medium vertical slice
+        run: python scripts/check_exercise_b_medium.py

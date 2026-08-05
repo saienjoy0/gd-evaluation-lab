@@ -11,6 +11,14 @@ from .common import (
     summary_contains_fields,
     user_message_before_action,
 )
+from .numeric import numeric_constraint_preserved
+from .stakeholder_conflict import (
+    candidate_integrates_positions,
+    candidate_response_to_concern,
+    challenge_after_first_candidate_proposal,
+    decision_contains_fields,
+    positions_and_challenge_before_phase,
+)
 
 
 class UnsupportedRuleError(ValueError):
@@ -23,6 +31,12 @@ RULE_HANDLERS: dict[str, RuleHandler] = {
     "candidate_move_types": candidate_move_types,
     "private_concern_triggered_release": private_concern_triggered_release,
     "summary_contains_fields": summary_contains_fields,
+    "positions_and_challenge_before_phase": positions_and_challenge_before_phase,
+    "candidate_response_to_concern": candidate_response_to_concern,
+    "candidate_integrates_positions": candidate_integrates_positions,
+    "decision_contains_fields": decision_contains_fields,
+    "challenge_after_first_candidate_proposal": challenge_after_first_candidate_proposal,
+    "numeric_constraint_preserved": numeric_constraint_preserved,
 }
 
 
