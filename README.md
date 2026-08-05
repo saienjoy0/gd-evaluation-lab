@@ -52,7 +52,7 @@ Evaluation Contract v0.1では、次を正本として管理します。
 - `schemas/exercise-four-state-matrix-v0.1.schema.json`
 - `fixtures/calibration/matrices/exercise-a-four-state-v0.1.json`
 - `fixtures/calibration/matrices/exercise-b-four-state-v0.1.json`
-- `fixtures/calibration/full-episodes/time-boxed-decision/medium/episode.json.gz.b64`
+- `fixtures/calibration/full-episodes/time-boxed-decision/medium/episode.json`
 - `schemas/`
 
 ## 役割分担
@@ -84,7 +84,6 @@ python scripts/check_exercise_b_medium.py
 python scripts/check_exercise_b_high_low.py
 python scripts/check_exercise_b_system_failure.py
 python scripts/check_exercise_b_four_state_matrix.py
-python scripts/materialize_exercise_c_medium_episode.py
 python scripts/generate_exercise_c_medium.py
 python scripts/check_exercise_c_medium.py
 ```
