@@ -1,0 +1,181 @@
+{
+  "ai_quality": {
+    "dimension_scores": {
+      "consensus_quality": 4,
+      "discussion_coherence": 4,
+      "goal_progression": 4,
+      "natural_pacing": 4,
+      "novelty_and_repetition": 4,
+      "responsiveness": 4,
+      "role_believability": 4,
+      "user_agency": 2
+    },
+    "status": "fail",
+    "violations": [
+      {
+        "affected_candidate_dimensions": [
+          "issue_framing",
+          "listening_and_response",
+          "collaboration_and_relationship",
+          "decision_and_consensus"
+        ],
+        "message_ids": [
+          "m004"
+        ],
+        "rule_id": "B-PROH-01",
+        "severity": "critical"
+      }
+    ]
+  },
+  "candidate_dimensions": [
+    {
+      "confidence": 0,
+      "dimension": "issue_framing",
+      "evidence_message_ids": [],
+      "improvement": "",
+      "missing_behavior": "",
+      "not_evaluable_reason": {
+        "code": "AI_QUALITY_FAILURE",
+        "detail": "B-PROH-01により主要機会が無効化され、候補者能力として採点できない。"
+      },
+      "positive_behavior": "",
+      "question_results": [],
+      "score": "NE"
+    },
+    {
+      "confidence": 0.9,
+      "dimension": "logical_reasoning",
+      "evidence_message_ids": [
+        "m017",
+        "m027"
+      ],
+      "improvement": "次回は、仮説の弱点、反対証拠、不確実性も扱い、議論の精度を高める。",
+      "missing_behavior": "次の水準で求められる行動は「仮説の弱点、反対証拠、不確実性も扱い、議論の精度を高める。」である。",
+      "not_evaluable_reason": null,
+      "positive_behavior": "基準の優先順位と未採用施策への緩和策を理由付きで示した。",
+      "question_results": [],
+      "score": 3
+    },
+    {
+      "confidence": 0.9,
+      "dimension": "listening_and_response",
+      "evidence_message_ids": [
+        "m008",
+        "m011",
+        "m021"
+      ],
+      "improvement": "次回は、複数人の発言を統合し、誤解や対立点を解消して議論を発展させる。",
+      "missing_behavior": "次の水準で求められる行動は「複数人の発言を統合し、誤解や対立点を解消して議論を発展させる。」である。",
+      "not_evaluable_reason": null,
+      "positive_behavior": "子育て、交通、観光の各懸念へ直接応答し、案を修正した。",
+      "question_results": [],
+      "score": 3
+    },
+    {
+      "confidence": 0.9,
+      "dimension": "valuable_contribution",
+      "evidence_message_ids": [
+        "m013",
+        "m019"
+      ],
+      "improvement": "次回は、複数案を改善・統合し、重要な見落としやリスクまで補う。",
+      "missing_behavior": "次の水準で求められる行動は「複数案を改善・統合し、重要な見落としやリスクまで補う。」である。",
+      "not_evaluable_reason": null,
+      "positive_behavior": "三つの立場を重点配分と既存資源活用へ統合し、議論を前進させた。",
+      "question_results": [],
+      "score": 3
+    },
+    {
+      "confidence": 0.9,
+      "dimension": "collaboration_and_relationship",
+      "evidence_message_ids": [
+        "m008",
+        "m021",
+        "m029"
+      ],
+      "improvement": "次回は、心理的安全性を保ちながら率直な対立を扱い、チーム全体の力を引き出す。",
+      "missing_behavior": "次の水準で求められる行動は「心理的安全性を保ちながら率直な対立を扱い、チーム全体の力を引き出す。」である。",
+      "not_evaluable_reason": null,
+      "positive_behavior": "対立を論点として扱い、少数意見を残したまま最終確認の場を作った。",
+      "question_results": [],
+      "score": 3
+    },
+    {
+      "confidence": 0,
+      "dimension": "decision_and_consensus",
+      "evidence_message_ids": [],
+      "improvement": "",
+      "missing_behavior": "",
+      "not_evaluable_reason": {
+        "code": "AI_QUALITY_FAILURE",
+        "detail": "B-PROH-01により主要機会が無効化され、候補者能力として採点できない。"
+      },
+      "positive_behavior": "",
+      "question_results": [],
+      "score": "NE"
+    },
+    {
+      "confidence": 0.9,
+      "dimension": "process_and_time_management",
+      "evidence_message_ids": [
+        "m033"
+      ],
+      "improvement": "次回は、残り時間に応じて、論点、役割、次の行動を調整する。",
+      "missing_behavior": "次の水準で求められる行動は「残り時間に応じて、論点、役割、次の行動を調整する。」である。",
+      "not_evaluable_reason": null,
+      "positive_behavior": "終了前に残り時間と未解決点を整理したが、中盤の進捗調整は限定的だった。",
+      "question_results": [],
+      "score": 2
+    }
+  ],
+  "contract_version": "0.1",
+  "display_groups": {
+    "collaboration": {
+      "aggregation_status": "not_calibrated",
+      "bottleneck_dimension": "listening_and_response",
+      "coverage": {
+        "evaluated": 2,
+        "total": 2
+      },
+      "score": null,
+      "summary": "次の水準で求められる行動は「複数人の発言を統合し、誤解や対立点を解消して議論を発展させる。」である。"
+    },
+    "progress": {
+      "aggregation_status": "not_calibrated",
+      "bottleneck_dimension": "process_and_time_management",
+      "coverage": {
+        "evaluated": 1,
+        "total": 2
+      },
+      "score": null,
+      "summary": "条件付きの合意は作れたが、途中の進捗管理が不足した。"
+    },
+    "thinking": {
+      "aggregation_status": "not_calibrated",
+      "bottleneck_dimension": "logical_reasoning",
+      "coverage": {
+        "evaluated": 2,
+        "total": 3
+      },
+      "score": null,
+      "summary": "枠組みは作れたが、比較を支える根拠の明示が弱かった。"
+    }
+  },
+  "evaluation_disagreement": null,
+  "legacy_evaluation": null,
+  "review_status": "completed",
+  "session_id": "exercise-b-system-failure-001",
+  "status": "partial",
+  "target_participant_id": "candidate_b_system_failure",
+  "version_info": {
+    "ai_quality_rubric_version": "ai-participant-v0.1",
+    "deterministic_evaluator_version": "exercise-b-deterministic-v0.1",
+    "judge_model": "human-adjudication",
+    "judge_version": "not-applied-v0.1",
+    "orchestrator_version": "synthetic-orchestrator-v0.1",
+    "prompt_version": "exercise-b-system-failure-script-v0.1",
+    "rubric_version": "candidate-behavior-v0.1",
+    "scenario_version": "candidate-assessment-b-v0.1",
+    "transcript_hash": "7849c3109144f01d3fff2bb5f08b672c7795b2cd974880a8fd67ce50e66af3f1"
+  }
+}

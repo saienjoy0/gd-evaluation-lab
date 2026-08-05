@@ -1,0 +1,126 @@
+{
+  "contract_version": "0.1",
+  "adjudication_id": "adj-exercise-b-system-failure-001",
+  "episode_id": "exercise-b-system-failure-001",
+  "scenario_id": "candidate-assessment-b-stakeholder-conflict",
+  "rater_sheet_ids": [
+    "rater-a-exercise-b-system-failure-001",
+    "rater-b-exercise-b-system-failure-001"
+  ],
+  "adjudicator_id": "adjudicator_anon",
+  "rubric_version": "candidate-behavior-v0.1",
+  "created_at": "2026-08-05T12:50:00Z",
+  "trigger_reasons": [
+    "RANDOM_CALIBRATION_SAMPLE"
+  ],
+  "dimension_resolutions": [
+    {
+      "dimension": "issue_framing",
+      "rater_scores": [
+        "NE",
+        "NE"
+      ],
+      "agreement_class": "exact",
+      "final_score": "NE",
+      "final_evidence_message_ids": [],
+      "resolution_reason": "B-PROH-01により主要機会が無効化され、候補者能力として採点できない。",
+      "not_evaluable_reason": "AI_QUALITY_FAILURE",
+      "rubric_issue_code": "PROCESS_DEVIATION"
+    },
+    {
+      "dimension": "logical_reasoning",
+      "rater_scores": [
+        3,
+        3
+      ],
+      "agreement_class": "exact",
+      "final_score": 3,
+      "final_evidence_message_ids": [
+        "m017",
+        "m027"
+      ],
+      "resolution_reason": "基準の優先順位と未採用施策への緩和策を理由付きで示した。",
+      "not_evaluable_reason": null,
+      "rubric_issue_code": null
+    },
+    {
+      "dimension": "listening_and_response",
+      "rater_scores": [
+        3,
+        3
+      ],
+      "agreement_class": "exact",
+      "final_score": 3,
+      "final_evidence_message_ids": [
+        "m008",
+        "m011",
+        "m021"
+      ],
+      "resolution_reason": "子育て、交通、観光の各懸念へ直接応答し、案を修正した。",
+      "not_evaluable_reason": null,
+      "rubric_issue_code": null
+    },
+    {
+      "dimension": "valuable_contribution",
+      "rater_scores": [
+        3,
+        3
+      ],
+      "agreement_class": "exact",
+      "final_score": 3,
+      "final_evidence_message_ids": [
+        "m013",
+        "m019"
+      ],
+      "resolution_reason": "三つの立場を重点配分と既存資源活用へ統合し、議論を前進させた。",
+      "not_evaluable_reason": null,
+      "rubric_issue_code": null
+    },
+    {
+      "dimension": "collaboration_and_relationship",
+      "rater_scores": [
+        3,
+        3
+      ],
+      "agreement_class": "exact",
+      "final_score": 3,
+      "final_evidence_message_ids": [
+        "m008",
+        "m021",
+        "m029"
+      ],
+      "resolution_reason": "対立を論点として扱い、少数意見を残したまま最終確認の場を作った。",
+      "not_evaluable_reason": null,
+      "rubric_issue_code": null
+    },
+    {
+      "dimension": "decision_and_consensus",
+      "rater_scores": [
+        "NE",
+        "NE"
+      ],
+      "agreement_class": "exact",
+      "final_score": "NE",
+      "final_evidence_message_ids": [],
+      "resolution_reason": "B-PROH-01により主要機会が無効化され、候補者能力として採点できない。",
+      "not_evaluable_reason": "AI_QUALITY_FAILURE",
+      "rubric_issue_code": "PROCESS_DEVIATION"
+    },
+    {
+      "dimension": "process_and_time_management",
+      "rater_scores": [
+        2,
+        2
+      ],
+      "agreement_class": "exact",
+      "final_score": 2,
+      "final_evidence_message_ids": [
+        "m033"
+      ],
+      "resolution_reason": "終了前に残り時間と未解決点を整理したが、中盤の進捗調整は限定的だった。",
+      "not_evaluable_reason": null,
+      "rubric_issue_code": null
+    }
+  ],
+  "overall_resolution_notes": "AI先回りと因果関係のある2軸だけをNEとし、影響外5軸はmediumを維持した。"
+}
