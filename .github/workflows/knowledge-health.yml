@@ -19,17 +19,21 @@ jobs:
           python-version: "3.12"
       - name: Install validation dependencies
         run: python -m pip install --disable-pip-version-check "jsonschema[format]>=4.23,<5"
-      - name: Patch checkpoint negative control
+      - name: Patch negative controls
         run: |
           python - <<'PY'
           from pathlib import Path
           path = Path('scripts/apply_exercise_c_review_fixes.py')
           source = path.read_text(encoding='utf-8')
-          old = '    expect_rule_failure(loaded.runtime, "C-R01", lambda item: message(item, "m018").update(start_ms=400000, end_ms=410000))'
-          new = '    expect_rule_failure(loaded.runtime, "C-R01", lambda item: [candidate.update(participant_id="not_target") for candidate in item["messages"] if candidate.get("speaker_type") == "user" and 290000 <= candidate.get("start_ms", 0) <= 380000])'
-          if old not in source:
-              raise SystemExit('checkpoint negative control line not found')
-          path.write_text(source.replace(old, new), encoding='utf-8')
+          replacements = {
+              '    expect_rule_failure(loaded.runtime, "C-R01", lambda item: message(item, "m018").update(start_ms=400000, end_ms=410000))': '    expect_rule_failure(loaded.runtime, "C-R01", lambda item: [candidate.update(participant_id="not_target") for candidate in item["messages"] if candidate.get("speaker_type") == "user" and 290000 <= candidate.get("start_ms", 0) <= 380000])',
+              '    expect_rule_failure(loaded.runtime, "C-R03", lambda item: event(item, "ev_priority_40").update(timestamp_ms=400000))': '    expect_rule_failure(loaded.runtime, "C-R03", lambda item: [event(item, event_id).update(timestamp_ms=400000) for event_id in ("ev_priority_40", "ev_priority_75")])',
+          }
+          for old, new in replacements.items():
+              if old not in source:
+                  raise SystemExit(f'negative control line not found: {old}')
+              source = source.replace(old, new)
+          path.write_text(source, encoding='utf-8')
           PY
       - name: Apply reviewed fixes
         run: python scripts/apply_exercise_c_review_fixes.py
