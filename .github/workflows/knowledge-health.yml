@@ -1,42 +1,68 @@
-name: Apply Exercise C Review Fixes
+name: Evaluation Health
 
 on:
   pull_request:
-
-permissions:
-  contents: write
+  push:
+    branches: [main]
 
 jobs:
-  fix:
+  validate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: feat/exercise-c-medium-v0.1
-          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - name: Install validation dependencies
         run: python -m pip install --disable-pip-version-check "jsonschema[format]>=4.23,<5"
-      - name: Patch fixer for repository permissions
+      - name: Validate knowledge notes
+        run: python scripts/check_knowledge.py
+      - name: Validate evaluation contract
+        run: python scripts/check_evaluation_contract.py
+      - name: Validate human annotation foundation
+        run: python scripts/check_annotation_foundation.py
+      - name: Validate candidate assessment scenario pack
+        run: python scripts/check_candidate_scenario_pack.py
+      - name: Validate contract and scenario hardening
+        run: python scripts/check_contract_hardening.py
+      - name: Validate generic full-Episode runner
+        run: python scripts/check_full_episode_runner.py
+      - name: Validate Exercise A high/low calibration
+        run: python scripts/check_exercise_a_high_low.py
+      - name: Validate Exercise A system failure separation
+        run: python scripts/check_exercise_a_system_failure.py
+      - name: Validate numeric evidence provenance
+        run: python scripts/check_numeric_evidence_provenance.py
+      - name: Validate Exercise A four-state matrix
+        run: python scripts/check_exercise_a_four_state_matrix.py
+      - name: Validate Exercise B medium vertical slice
+        run: python scripts/check_exercise_b_medium.py
+      - name: Validate Exercise B high/low calibration
+        run: python scripts/check_exercise_b_high_low.py
+      - name: Validate Exercise B fixture generator reproducibility
         run: |
-          python - <<'PY'
-          from pathlib import Path
-          path = Path('scripts/apply_exercise_c_review_fixes.py')
-          source = path.read_text(encoding='utf-8')
-          replacements = {
-              '    expect_rule_failure(loaded.runtime, "C-R01", lambda item: message(item, "m018").update(start_ms=400000, end_ms=410000))': '    expect_rule_failure(loaded.runtime, "C-R01", lambda item: [candidate.update(participant_id="not_target") for candidate in item["messages"] if candidate.get("speaker_type") == "user" and 290000 <= candidate.get("start_ms", 0) <= 380000])',
-              '    expect_rule_failure(loaded.runtime, "C-R03", lambda item: event(item, "ev_priority_40").update(timestamp_ms=400000))': '    expect_rule_failure(loaded.runtime, "C-R03", lambda item: [event(item, event_id).update(timestamp_ms=400000) for event_id in ("ev_priority_40", "ev_priority_75")])',
-              '    restore_workflow()\n': '',
-              'run("git", "add", "--", ".github/workflows/knowledge-health.yml", ': 'run("git", "add", "--", ',
-              '[".github/workflows/finalize-exercise-c-review.yml", "docs/.exercise-c-review-trigger", ': '["docs/.exercise-c-review-trigger", ',
-          }
-          for old, new in replacements.items():
-              if old not in source:
-                  raise SystemExit(f'fixer patch target not found: {old}')
-              source = source.replace(old, new)
-          path.write_text(source, encoding='utf-8')
-          PY
-      - name: Apply reviewed fixes
-        run: python scripts/apply_exercise_c_review_fixes.py
+          python scripts/generate_exercise_b_high_low.py
+          git diff --exit-code -- \
+            fixtures/calibration/full-episodes/stakeholder-conflict/high \
+            fixtures/calibration/full-episodes/stakeholder-conflict/low
+          python scripts/check_exercise_b_high_low.py
+      - name: Validate Exercise B system failure separation
+        run: python scripts/check_exercise_b_system_failure.py
+      - name: Validate Exercise B system failure generator reproducibility
+        run: |
+          python scripts/generate_exercise_b_system_failure.py
+          git diff --exit-code -- \
+            fixtures/calibration/full-episodes/stakeholder-conflict/system_failure
+          python scripts/check_exercise_b_system_failure.py
+      - name: Validate Exercise B four-state matrix
+        run: python scripts/check_exercise_b_four_state_matrix.py
+      - name: Validate Exercise C medium vertical slice
+        run: |
+          python scripts/generate_exercise_c_medium.py
+          git diff --exit-code -- \
+            fixtures/calibration/full-episodes/time-boxed-decision/medium/deterministic-rule-result.json \
+            fixtures/calibration/full-episodes/time-boxed-decision/medium/system-quality-result.json \
+            fixtures/calibration/full-episodes/time-boxed-decision/medium/opportunity-resolution.json \
+            fixtures/calibration/full-episodes/time-boxed-decision/medium/evaluation-result.json \
+            fixtures/calibration/full-episodes/time-boxed-decision/medium/expected-feedback.json
+          python scripts/check_exercise_c_medium.py
