@@ -10,7 +10,7 @@ updated: 2026-08-05
 
 ## Observations
 
-- [phase] Exercise B system_failure分離の準備
+- [phase] Exercise B 4状態マトリクスの準備
 - [completed] 評価研究を`gd-app`から別リポジトリへ分離した
 - [completed] 利用者7軸、表示3領域、1〜4＋NE、AI品質分離の方針を決めた
 - [completed] Scenario、Episode、Annotation、Evaluation Result契約v0.1を作成した
@@ -26,7 +26,8 @@ updated: 2026-08-05
 - [completed] 演習B mediumをScenarioからFeedbackまで通し、15機会すべてobserved、7軸を`3/3/3/3/3/3/2`で数値評価した
 - [completed] 演習B high / medium / lowを同じAI品質・同じ15機会で校正し、全7軸の`high > medium > low`を固定した
 - [completed] 正常3状態のgolden再生、AI品質、機会供給、score 4複数phase証拠、lowのNE逃げを共通checkerで検証した
-- [next] 演習B system_failureで対立前のAI確定を作り、影響軸だけをNEへ分離する
+- [completed] 演習B system_failureで候補者前のAI配分確定を発生させ、4機会をinvalid、影響2軸だけをNEへ分離した
+- [completed] system_failureの影響外5軸をmediumと同じ数値に保ち、lowの7軸数値評価との違いを固定した
 - [next] 演習Bの4状態マトリクスを作成する
 - [next] 演習Cへ共通runnerを展開し、残りの完全Episodeを作成する
 - [next] 35マイクロアンカーを仕様に従って作成する
@@ -35,5 +36,5 @@ updated: 2026-08-05
 ## Relations
 
 - part_of [[GD Evaluation Lab Project Overview]]
-- follows [[Exercise B High Low Calibration v0.1 Decision]]
-- informed_by [[Exercise B Medium Vertical Slice v0.1 Decision]]
+- follows [[Exercise B System Failure v0.1 Decision]]
+- informed_by [[Exercise B High Low Calibration v0.1 Decision]]
