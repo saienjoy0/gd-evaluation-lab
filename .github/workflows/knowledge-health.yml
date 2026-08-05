@@ -132,10 +132,6 @@ jobs:
                           f"LOW_FALSE_GROUP_SUMMARY: {group_id}: {group['summary']}"
                       )
           '''
-          helpers = "\n".join(
-              line[10:] if line.startswith("          ") else line
-              for line in helpers.splitlines()
-          )
           if "def assert_prompt_control" not in checker:
               checker = checker.replace(
                   "\ndef main() -> None:\n", helpers + "\n\ndef main() -> None:\n", 1
