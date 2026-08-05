@@ -1,0 +1,227 @@
+{
+  "contract_version": "0.1",
+  "items": [
+    {
+      "candidate_response_message_ids": [
+        "m005"
+      ],
+      "detail": "構造化イベントと利用者応答を確認した。",
+      "dimension": "issue_framing",
+      "invalidated_by": [],
+      "opportunity_id": "B-OP-IS-01",
+      "response_status": "observed",
+      "status": "offered",
+      "trigger_event_ids": [
+        "ev_opp_b_is_01"
+      ]
+    },
+    {
+      "candidate_response_message_ids": [
+        "m017"
+      ],
+      "detail": "構造化イベントと利用者応答を確認した。",
+      "dimension": "logical_reasoning",
+      "invalidated_by": [],
+      "opportunity_id": "B-OP-LO-01",
+      "response_status": "observed",
+      "status": "offered",
+      "trigger_event_ids": [
+        "ev_opp_b_lo_01"
+      ]
+    },
+    {
+      "candidate_response_message_ids": [
+        "m027"
+      ],
+      "detail": "構造化イベントと利用者応答を確認した。",
+      "dimension": "logical_reasoning",
+      "invalidated_by": [],
+      "opportunity_id": "B-OP-LO-02",
+      "response_status": "observed",
+      "status": "offered",
+      "trigger_event_ids": [
+        "ev_opp_b_lo_02"
+      ]
+    },
+    {
+      "candidate_response_message_ids": [
+        "m008"
+      ],
+      "detail": "構造化イベントと利用者応答を確認した。",
+      "dimension": "listening_and_response",
+      "invalidated_by": [],
+      "opportunity_id": "B-OP-LI-01",
+      "response_status": "observed",
+      "status": "offered",
+      "trigger_event_ids": [
+        "ev_opp_b_li_01"
+      ]
+    },
+    {
+      "candidate_response_message_ids": [
+        "m011"
+      ],
+      "detail": "構造化イベントと利用者応答を確認した。",
+      "dimension": "listening_and_response",
+      "invalidated_by": [],
+      "opportunity_id": "B-OP-LI-02",
+      "response_status": "observed",
+      "status": "offered",
+      "trigger_event_ids": [
+        "ev_opp_b_li_02"
+      ]
+    },
+    {
+      "candidate_response_message_ids": [
+        "m021"
+      ],
+      "detail": "構造化イベントと利用者応答を確認した。",
+      "dimension": "listening_and_response",
+      "invalidated_by": [],
+      "opportunity_id": "B-OP-LI-03",
+      "response_status": "observed",
+      "status": "offered",
+      "trigger_event_ids": [
+        "ev_opp_b_li_03"
+      ]
+    },
+    {
+      "candidate_response_message_ids": [
+        "m013"
+      ],
+      "detail": "構造化イベントと利用者応答を確認した。",
+      "dimension": "valuable_contribution",
+      "invalidated_by": [],
+      "opportunity_id": "B-OP-VA-01",
+      "response_status": "observed",
+      "status": "offered",
+      "trigger_event_ids": [
+        "ev_opp_b_va_01"
+      ]
+    },
+    {
+      "candidate_response_message_ids": [
+        "m019"
+      ],
+      "detail": "構造化イベントと利用者応答を確認した。",
+      "dimension": "valuable_contribution",
+      "invalidated_by": [],
+      "opportunity_id": "B-OP-VA-02",
+      "response_status": "observed",
+      "status": "offered",
+      "trigger_event_ids": [
+        "ev_opp_b_va_02"
+      ]
+    },
+    {
+      "candidate_response_message_ids": [
+        "m008"
+      ],
+      "detail": "構造化イベントと利用者応答を確認した。",
+      "dimension": "collaboration_and_relationship",
+      "invalidated_by": [],
+      "opportunity_id": "B-OP-CO-01",
+      "response_status": "observed",
+      "status": "offered",
+      "trigger_event_ids": [
+        "ev_opp_b_co_01"
+      ]
+    },
+    {
+      "candidate_response_message_ids": [
+        "m021"
+      ],
+      "detail": "構造化イベントと利用者応答を確認した。",
+      "dimension": "collaboration_and_relationship",
+      "invalidated_by": [],
+      "opportunity_id": "B-OP-CO-02",
+      "response_status": "observed",
+      "status": "offered",
+      "trigger_event_ids": [
+        "ev_opp_b_co_02"
+      ]
+    },
+    {
+      "candidate_response_message_ids": [
+        "m029"
+      ],
+      "detail": "構造化イベントと利用者応答を確認した。",
+      "dimension": "collaboration_and_relationship",
+      "invalidated_by": [],
+      "opportunity_id": "B-OP-CO-03",
+      "response_status": "observed",
+      "status": "offered",
+      "trigger_event_ids": [
+        "ev_opp_b_co_03"
+      ]
+    },
+    {
+      "candidate_response_message_ids": [
+        "m023"
+      ],
+      "detail": "構造化イベントと利用者応答を確認した。",
+      "dimension": "decision_and_consensus",
+      "invalidated_by": [],
+      "opportunity_id": "B-OP-DE-01",
+      "response_status": "observed",
+      "status": "offered",
+      "trigger_event_ids": [
+        "ev_opp_b_de_01"
+      ]
+    },
+    {
+      "candidate_response_message_ids": [
+        "m025"
+      ],
+      "detail": "構造化イベントと利用者応答を確認した。",
+      "dimension": "decision_and_consensus",
+      "invalidated_by": [],
+      "opportunity_id": "B-OP-DE-02",
+      "response_status": "observed",
+      "status": "offered",
+      "trigger_event_ids": [
+        "ev_opp_b_de_02"
+      ]
+    },
+    {
+      "candidate_response_message_ids": [
+        "m027"
+      ],
+      "detail": "構造化イベントと利用者応答を確認した。",
+      "dimension": "decision_and_consensus",
+      "invalidated_by": [],
+      "opportunity_id": "B-OP-DE-03",
+      "response_status": "observed",
+      "status": "offered",
+      "trigger_event_ids": [
+        "ev_opp_b_de_03"
+      ]
+    },
+    {
+      "candidate_response_message_ids": [
+        "m033"
+      ],
+      "detail": "構造化イベントと利用者応答を確認した。",
+      "dimension": "process_and_time_management",
+      "invalidated_by": [],
+      "opportunity_id": "B-OP-PR-01",
+      "response_status": "observed",
+      "status": "offered",
+      "trigger_event_ids": [
+        "ev_opp_b_pr_01"
+      ]
+    }
+  ],
+  "resolution_id": "or-exercise-b-low-001",
+  "resolver_version": "opportunity-resolver-v0.1",
+  "scenario_id": "candidate-assessment-b-stakeholder-conflict",
+  "scenario_version": "candidate-assessment-b-v0.1",
+  "session_id": "exercise-b-low-001",
+  "summary": {
+    "invalid": 0,
+    "not_offered": 0,
+    "offered": 15,
+    "with_candidate_response": 15
+  },
+  "target_participant_id": "candidate_b_low"
+}

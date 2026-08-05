@@ -1,0 +1,144 @@
+{
+  "contract_version": "0.1",
+  "sheet_id": "rater-a-exercise-b-high-001",
+  "episode_id": "exercise-b-high-001",
+  "scenario_id": "candidate-assessment-b-stakeholder-conflict",
+  "annotator_id": "rater_a_anon",
+  "rubric_version": "candidate-behavior-v0.1",
+  "calibration_set_version": "exercise-b-high-v0.1",
+  "started_at": "2026-08-05T08:20:00Z",
+  "completed_at": "2026-08-05T08:35:00Z",
+  "evaluation_stage": "independent",
+  "workflow_attestations": {
+    "ai_scores_hidden": true,
+    "evidence_selected_before_score": true,
+    "rubric_consulted": true,
+    "identity_blinded": true
+  },
+  "dimensions": [
+    {
+      "dimension": "issue_framing",
+      "opportunity_status": "sufficient",
+      "opportunity_evidence_event_ids": [
+        "ev_opp_b_is_01",
+        "ev_opp_b_va_02"
+      ],
+      "selected_evidence_message_ids": [
+        "m005",
+        "m019"
+      ],
+      "score": 4,
+      "confidence": 0.9,
+      "comment": "初期条件を構造化し、後半の反論を受けて見直し条件まで判断枠組みに組み込んだ。",
+      "not_evaluable_reason": null,
+      "flags": []
+    },
+    {
+      "dimension": "logical_reasoning",
+      "opportunity_status": "sufficient",
+      "opportunity_evidence_event_ids": [
+        "ev_opp_b_lo_01",
+        "ev_opp_b_lo_02"
+      ],
+      "selected_evidence_message_ids": [
+        "m017",
+        "m027"
+      ],
+      "score": 4,
+      "confidence": 0.9,
+      "comment": "優先基準、各案の弱点、不確実性、再配分条件を複数局面で接続した。",
+      "not_evaluable_reason": null,
+      "flags": []
+    },
+    {
+      "dimension": "listening_and_response",
+      "opportunity_status": "sufficient",
+      "opportunity_evidence_event_ids": [
+        "ev_opp_b_li_01",
+        "ev_opp_b_li_02",
+        "ev_opp_b_li_03"
+      ],
+      "selected_evidence_message_ids": [
+        "m008",
+        "m011",
+        "m021"
+      ],
+      "score": 4,
+      "confidence": 0.9,
+      "comment": "三者の懸念を言い換え、案を修正し、残る反対条件まで確認した。",
+      "not_evaluable_reason": null,
+      "flags": []
+    },
+    {
+      "dimension": "valuable_contribution",
+      "opportunity_status": "sufficient",
+      "opportunity_evidence_event_ids": [
+        "ev_opp_b_va_01",
+        "ev_opp_b_va_02"
+      ],
+      "selected_evidence_message_ids": [
+        "m013",
+        "m019"
+      ],
+      "score": 4,
+      "confidence": 0.9,
+      "comment": "重点予算、既存資源、再配分を時間軸で統合する段階的ポートフォリオを作った。",
+      "not_evaluable_reason": null,
+      "flags": []
+    },
+    {
+      "dimension": "collaboration_and_relationship",
+      "opportunity_status": "sufficient",
+      "opportunity_evidence_event_ids": [
+        "ev_opp_b_co_01",
+        "ev_opp_b_co_02",
+        "ev_opp_b_co_03"
+      ],
+      "selected_evidence_message_ids": [
+        "m008",
+        "m021",
+        "m029"
+      ],
+      "score": 4,
+      "confidence": 0.9,
+      "comment": "少数意見を切り捨てず、三者が再度反対できる最終確認の場を作った。",
+      "not_evaluable_reason": null,
+      "flags": []
+    },
+    {
+      "dimension": "decision_and_consensus",
+      "opportunity_status": "sufficient",
+      "opportunity_evidence_event_ids": [
+        "ev_opp_b_de_01",
+        "ev_opp_b_de_02",
+        "ev_opp_b_de_03"
+      ],
+      "selected_evidence_message_ids": [
+        "m023",
+        "m025",
+        "m027"
+      ],
+      "score": 4,
+      "confidence": 0.9,
+      "comment": "基準、配分、リスク、緩和策、実施条件、再検討条件を含む合意を形成した。",
+      "not_evaluable_reason": null,
+      "flags": []
+    },
+    {
+      "dimension": "process_and_time_management",
+      "opportunity_status": "sufficient",
+      "opportunity_evidence_event_ids": [
+        "ev_opp_b_pr_01"
+      ],
+      "selected_evidence_message_ids": [
+        "m033"
+      ],
+      "score": 3,
+      "confidence": 0.9,
+      "comment": "終盤で残時間を要約と確認へ配分し、未解決点の処理順を具体化した。",
+      "not_evaluable_reason": null,
+      "flags": []
+    }
+  ],
+  "overall_notes": "Exercise B highの校正ケースとして、証拠を先に選択して独立採点した。"
+}

@@ -1,0 +1,76 @@
+{
+  "contract_version": "0.1",
+  "dimension_narratives": {
+    "collaboration_and_relationship": {
+      "improvement": "次回は、礼儀は保つが、他者参加の促進や対立調整は行わない。",
+      "missing": "次の水準で求められる行動は「礼儀は保つが、他者参加の促進や対立調整は行わない。」である。",
+      "positive": "礼儀は保ったが、少数意見の保護や対立調整を行わず合意を急いだ。"
+    },
+    "decision_and_consensus": {
+      "improvement": "次回は、案を選ぶが、判断基準や反対意見の処理が不十分である。",
+      "missing": "次の水準で求められる行動は「案を選ぶが、判断基準や反対意見の処理が不十分である。」である。",
+      "positive": "配分額は示したが、判断基準、反対意見の処理、緩和策を欠いた。"
+    },
+    "issue_framing": {
+      "improvement": "次回は、問題の一部を捉えるが、重要な前提・対象・制約が曖昧である。",
+      "missing": "次の水準で求められる行動は「問題の一部を捉えるが、重要な前提・対象・制約が曖昧である。」である。",
+      "positive": "予算と重点数には触れたが、比較基準を定義せず議論構造を作らなかった。"
+    },
+    "listening_and_response": {
+      "improvement": "次回は、他者の発言を正確に捉え、関連する質問や接続を行う。",
+      "missing": "次の水準で求められる行動は「他者の発言を正確に捉え、関連する質問や接続を行う。」である。",
+      "positive": "各懸念の後に応答したが、内容を受け止めた案修正には至らなかった。"
+    },
+    "logical_reasoning": {
+      "improvement": "次回は、理由はあるが、主張との接続が弱い、または根拠が曖昧である。",
+      "missing": "次の水準で求められる行動は「理由はあるが、主張との接続が弱い、または根拠が曖昧である。」である。",
+      "positive": "必要性を述べるだけで、比較、反証、条件、緩和策を根拠へ接続しなかった。"
+    },
+    "process_and_time_management": {
+      "improvement": "次回は、時間に言及するが、具体的な調整につながらない。",
+      "missing": "次の水準で求められる行動は「時間に言及するが、具体的な調整につながらない。」である。",
+      "positive": "時間不足を理由に収束を急ぎ、論点や手順の調整を行わなかった。"
+    },
+    "valuable_contribution": {
+      "improvement": "次回は、関連する意見を出すが、既出内容の反復または具体性不足である。",
+      "missing": "次の水準で求められる行動は「関連する意見を出すが、既出内容の反復または具体性不足である。」である。",
+      "positive": "既出の二施策を選ぶだけで、統合案や新しい分析を提示しなかった。"
+    }
+  },
+  "display_groups": {
+    "collaboration": {
+      "aggregation_status": "not_calibrated",
+      "bottleneck_dimension": "collaboration_and_relationship",
+      "coverage": {
+        "evaluated": 2,
+        "total": 2
+      },
+      "score": null,
+      "summary": "次の水準で求められる行動は「礼儀は保つが、他者参加の促進や対立調整は行わない。」である。"
+    },
+    "progress": {
+      "aggregation_status": "not_calibrated",
+      "bottleneck_dimension": "process_and_time_management",
+      "coverage": {
+        "evaluated": 2,
+        "total": 2
+      },
+      "score": null,
+      "summary": "次の水準で求められる行動は「時間に言及するが、具体的な調整につながらない。」である。"
+    },
+    "thinking": {
+      "aggregation_status": "not_calibrated",
+      "bottleneck_dimension": "issue_framing",
+      "coverage": {
+        "evaluated": 3,
+        "total": 3
+      },
+      "score": null,
+      "summary": "次の水準で求められる行動は「問題の一部を捉えるが、重要な前提・対象・制約が曖昧である。」である。"
+    }
+  },
+  "limitations": "合成Episodeに基づく校正用フィードバックであり、採用判断には使用しない。",
+  "next_action": "中盤で残り時間と未解決論点を確認し、根拠付きで優先順位を付ける。",
+  "slice_id": "exercise-b-low-v0.1",
+  "strengths": []
+}

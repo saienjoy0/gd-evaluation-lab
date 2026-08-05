@@ -37,3 +37,12 @@ jobs:
         run: python scripts/check_exercise_a_four_state_matrix.py
       - name: Validate Exercise B medium vertical slice
         run: python scripts/check_exercise_b_medium.py
+      - name: Validate Exercise B high/low calibration
+        run: python scripts/check_exercise_b_high_low.py
+      - name: Validate Exercise B fixture generator reproducibility
+        run: |
+          python scripts/generate_exercise_b_high_low.py
+          git diff --exit-code -- \
+            fixtures/calibration/full-episodes/stakeholder-conflict/high \
+            fixtures/calibration/full-episodes/stakeholder-conflict/low
+          python scripts/check_exercise_b_high_low.py

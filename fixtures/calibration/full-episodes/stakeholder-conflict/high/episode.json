@@ -1,0 +1,1029 @@
+{
+  "contract_version": "0.1",
+  "session_id": "exercise-b-high-001",
+  "scenario_id": "candidate-assessment-b-stakeholder-conflict",
+  "scenario_version": "candidate-assessment-b-v0.1",
+  "started_at": "2026-08-05T08:00:00Z",
+  "ended_at": "2026-08-05T08:15:00Z",
+  "participants": [
+    {
+      "participant_id": "candidate_b_high",
+      "speaker_type": "user",
+      "agent_role": null
+    },
+    {
+      "participant_id": "ai_b_childcare",
+      "speaker_type": "ai",
+      "agent_role": "子育て世帯の立場を代表する参加者"
+    },
+    {
+      "participant_id": "ai_b_transport",
+      "speaker_type": "ai",
+      "agent_role": "高齢者と交通弱者の立場を代表する参加者"
+    },
+    {
+      "participant_id": "ai_b_tourism",
+      "speaker_type": "ai",
+      "agent_role": "地域事業者の立場を代表する参加者"
+    }
+  ],
+  "messages": [
+    {
+      "message_id": "m001",
+      "participant_id": "ai_b_childcare",
+      "speaker_type": "ai",
+      "text": "保育待機が中心部に集中しているので、保育と一時預かりへ重点配分したいです。",
+      "phase": "problem_definition",
+      "move": "propose_idea",
+      "start_ms": 10000,
+      "end_ms": 18000,
+      "generation_id": "g001"
+    },
+    {
+      "message_id": "m002",
+      "participant_id": "ai_b_transport",
+      "speaker_type": "ai",
+      "text": "移動困難な二地区への予約型交通を優先すべきです。",
+      "phase": "problem_definition",
+      "move": "propose_idea",
+      "start_ms": 20000,
+      "end_ms": 28000,
+      "generation_id": "g002"
+    },
+    {
+      "message_id": "m003",
+      "participant_id": "ai_b_tourism",
+      "speaker_type": "ai",
+      "text": "地域事業者への波及を考え、通年型観光コンテンツへ配分したいです。",
+      "phase": "problem_definition",
+      "move": "propose_idea",
+      "start_ms": 30000,
+      "end_ms": 38000,
+      "generation_id": "g003"
+    },
+    {
+      "message_id": "m004",
+      "participant_id": "ai_b_childcare",
+      "speaker_type": "ai",
+      "text": "三案を何の基準で比較するか、先に決めませんか。",
+      "phase": "problem_definition",
+      "move": "ask_question",
+      "start_ms": 40000,
+      "end_ms": 47000,
+      "generation_id": "g004"
+    },
+    {
+      "message_id": "m005",
+      "participant_id": "candidate_b_high",
+      "speaker_type": "user",
+      "text": "追加予算3000万円、重点は二つ以下です。緊急性、公平性、2年以内の実行可能性、継続運営リスク、既存資源との重複、半年後の見直し可能性で比較し、未採用施策にも緩和策を置きましょう。",
+      "phase": "problem_definition",
+      "move": "define_criteria",
+      "start_ms": 49000,
+      "end_ms": 60000,
+      "generation_id": null
+    },
+    {
+      "message_id": "m006",
+      "participant_id": "ai_b_childcare",
+      "speaker_type": "ai",
+      "text": "子育て支援を全市一律に広げると、需要の薄い地域へも費用が出る点が気になります。",
+      "phase": "idea_generation",
+      "move": "challenge",
+      "start_ms": 65000,
+      "end_ms": 73000,
+      "generation_id": "g005"
+    },
+    {
+      "message_id": "m007",
+      "participant_id": "ai_b_childcare",
+      "speaker_type": "ai",
+      "text": "実は一地区では既存施設の稼働率が低く、施設増設だけでは無駄が出る可能性があります。",
+      "phase": "idea_generation",
+      "move": "challenge",
+      "start_ms": 75000,
+      "end_ms": 84000,
+      "generation_id": "g006"
+    },
+    {
+      "message_id": "m008",
+      "participant_id": "candidate_b_high",
+      "speaker_type": "user",
+      "text": "既存施設の低稼働があるという懸念ですね。全市一律の増設は避け、待機が集中する中心部の一時預かり枠へ限定し、既存施設の稼働率が一定未満なら新設せず運用改善を優先します。この修正なら懸念は軽減しますか。",
+      "phase": "idea_generation",
+      "move": "respond_to_question",
+      "start_ms": 86000,
+      "end_ms": 98000,
+      "generation_id": null
+    },
+    {
+      "message_id": "m009",
+      "participant_id": "ai_b_transport",
+      "speaker_type": "ai",
+      "text": "交通も全域展開にすると運行を維持できないおそれがあります。",
+      "phase": "idea_generation",
+      "move": "challenge",
+      "start_ms": 100000,
+      "end_ms": 108000,
+      "generation_id": "g007"
+    },
+    {
+      "message_id": "m010",
+      "participant_id": "ai_b_transport",
+      "speaker_type": "ai",
+      "text": "運転手不足のため、予約型交通を市全域へ広げるのは難しいです。",
+      "phase": "idea_generation",
+      "move": "challenge",
+      "start_ms": 110000,
+      "end_ms": 119000,
+      "generation_id": "g008"
+    },
+    {
+      "message_id": "m011",
+      "participant_id": "candidate_b_high",
+      "speaker_type": "user",
+      "text": "全域展開では運転手不足が悪化するという点ですね。移動困難な二地区に限定し、既存事業者との共同配車、運行日数の上限、利用件数による半年後の拡大判断を条件にします。残る運用上の懸念も確認したいです。",
+      "phase": "idea_generation",
+      "move": "respond_to_question",
+      "start_ms": 121000,
+      "end_ms": 134000,
+      "generation_id": null
+    },
+    {
+      "message_id": "m012",
+      "participant_id": "ai_b_tourism",
+      "speaker_type": "ai",
+      "text": "観光は季節をまたぐ小規模企画にすれば、地域事業者の売上を支えられます。",
+      "phase": "idea_generation",
+      "move": "propose_idea",
+      "start_ms": 136000,
+      "end_ms": 144000,
+      "generation_id": "g009"
+    },
+    {
+      "message_id": "m013",
+      "participant_id": "candidate_b_high",
+      "speaker_type": "user",
+      "text": "子育ては中心部限定、交通は二地区限定、観光は既存広報と事業者網を使う小規模実証に分ければ、三つの立場を競合予算と非予算施策の組合せとして比較できます。",
+      "phase": "idea_generation",
+      "move": "propose_idea",
+      "start_ms": 150000,
+      "end_ms": 163000,
+      "generation_id": null
+    },
+    {
+      "message_id": "m014",
+      "participant_id": "ai_b_transport",
+      "speaker_type": "ai",
+      "text": "三つを薄く配分すると、交通実証の運行日数が不足しませんか。",
+      "phase": "idea_generation",
+      "move": "challenge",
+      "start_ms": 165000,
+      "end_ms": 174000,
+      "generation_id": "g010"
+    },
+    {
+      "message_id": "m015",
+      "participant_id": "candidate_b_high",
+      "speaker_type": "user",
+      "text": "重点予算は緊急性の高い子育てと交通へ置き、観光は既存資源で通年企画を試します。半年後に子育て・交通の実績が基準未達なら、観光を含めて再配分する段階的な案にします。",
+      "phase": "idea_generation",
+      "move": "integrate",
+      "start_ms": 176000,
+      "end_ms": 188000,
+      "generation_id": null
+    },
+    {
+      "message_id": "m016",
+      "participant_id": "ai_b_childcare",
+      "speaker_type": "ai",
+      "text": "比較基準のうち、緊急性と実行可能性をどう重く見るか確認したいです。",
+      "phase": "option_comparison",
+      "move": "ask_question",
+      "start_ms": 195000,
+      "end_ms": 203000,
+      "generation_id": "g011"
+    },
+    {
+      "message_id": "m017",
+      "participant_id": "candidate_b_high",
+      "speaker_type": "user",
+      "text": "重みは緊急性を最優先、次に2年以内の実行可能性とし、公平性、継続リスク、既存資源との重複を確認します。ただし季節変動を抑えられる観光案が示されれば再評価します。",
+      "phase": "option_comparison",
+      "move": "define_criteria",
+      "start_ms": 205000,
+      "end_ms": 218000,
+      "generation_id": null
+    },
+    {
+      "message_id": "m018",
+      "participant_id": "ai_b_transport",
+      "speaker_type": "ai",
+      "text": "対立点は、即時の生活支援を優先するか、地域経済への波及を優先するかだと思います。",
+      "phase": "option_comparison",
+      "move": "summarize",
+      "start_ms": 220000,
+      "end_ms": 230000,
+      "generation_id": "g012"
+    },
+    {
+      "message_id": "m019",
+      "participant_id": "candidate_b_high",
+      "speaker_type": "user",
+      "text": "即時の生活支援を重点予算で行い、地域経済への波及は既存資源の通年企画で残します。半年後の指標で重点配分を再検討するため、三つの利害を時間軸の異なる一つの配分原則へ統合できます。",
+      "phase": "option_comparison",
+      "move": "integrate",
+      "start_ms": 232000,
+      "end_ms": 245000,
+      "generation_id": null
+    },
+    {
+      "message_id": "m020",
+      "participant_id": "ai_b_tourism",
+      "speaker_type": "ai",
+      "text": "観光を重点から外すと、季節変動への対応が後回しになり、事業者の立場が弱くなります。",
+      "phase": "option_comparison",
+      "move": "challenge",
+      "start_ms": 247000,
+      "end_ms": 258000,
+      "generation_id": "g013"
+    },
+    {
+      "message_id": "m021",
+      "participant_id": "candidate_b_high",
+      "speaker_type": "user",
+      "text": "観光側の懸念は、重点から外すことで事業者支援が先送りになる点ですね。新規重点予算は付けませんが、既存広報枠、事業者ネットワーク、季節分散企画を使い、半年後に観光消費額と参加事業者数が基準を下回れば再配分対象にします。この条件でも不足する点を教えてください。",
+      "phase": "option_comparison",
+      "move": "respond_to_question",
+      "start_ms": 260000,
+      "end_ms": 273000,
+      "generation_id": null
+    },
+    {
+      "message_id": "m022",
+      "participant_id": "ai_b_childcare",
+      "speaker_type": "ai",
+      "text": "では三案を、緊急性、実行可能性、継続リスクで改めて比較してください。",
+      "phase": "option_comparison",
+      "move": "ask_question",
+      "start_ms": 275000,
+      "end_ms": 284000,
+      "generation_id": "g014"
+    },
+    {
+      "message_id": "m023",
+      "participant_id": "candidate_b_high",
+      "speaker_type": "user",
+      "text": "子育ては緊急性が最も高く既存施設を活用できますが、低稼働地域へ広げるリスクがあります。交通は二地区限定なら実行可能ですが、運転手確保が未達なら縮小が必要です。観光は波及効果がある一方で季節変動が大きいため既存資源で検証し、指標次第で再配分します。",
+      "phase": "option_comparison",
+      "move": "compare_options",
+      "start_ms": 286000,
+      "end_ms": 299000,
+      "generation_id": null
+    },
+    {
+      "message_id": "m024",
+      "participant_id": "ai_b_transport",
+      "speaker_type": "ai",
+      "text": "仮に子育て1600万円、交通1400万円とし、観光は既存事業で対応する配分はどうでしょう。",
+      "phase": "decision",
+      "move": "propose_decision",
+      "start_ms": 305000,
+      "end_ms": 315000,
+      "generation_id": "g015"
+    },
+    {
+      "message_id": "m025",
+      "participant_id": "candidate_b_high",
+      "speaker_type": "user",
+      "text": "子育て1700万円、二地区の交通実証1300万円とします。合計3000万円、重点二施策です。子育ては待機対応数、交通は利用件数と運行充足率を半年後に確認し、未達なら配分を見直します。",
+      "phase": "decision",
+      "move": "propose_decision",
+      "start_ms": 317000,
+      "end_ms": 330000,
+      "generation_id": null
+    },
+    {
+      "message_id": "m026",
+      "participant_id": "ai_b_tourism",
+      "speaker_type": "ai",
+      "text": "観光を選ばない場合の具体的な緩和策と、見直す時期を明確にしてください。",
+      "phase": "decision",
+      "move": "ask_question",
+      "start_ms": 332000,
+      "end_ms": 340000,
+      "generation_id": "g016"
+    },
+    {
+      "message_id": "m027",
+      "participant_id": "candidate_b_high",
+      "speaker_type": "user",
+      "text": "観光は既存広報枠と地域事業者ネットワークで季節分散型の小規模企画を行います。半年後に観光消費額、参加事業者数、閑散期比率を確認し、子育て・交通の実績と合わせて再配分します。担当部署と確認日も要約へ残します。",
+      "phase": "decision",
+      "move": "integrate",
+      "start_ms": 342000,
+      "end_ms": 358000,
+      "generation_id": null
+    },
+    {
+      "message_id": "m028",
+      "participant_id": "ai_b_tourism",
+      "speaker_type": "ai",
+      "text": "半年後の再検討が確実に行われるなら、重点予算なしでも受け入れられます。",
+      "phase": "decision",
+      "move": "challenge",
+      "start_ms": 360000,
+      "end_ms": 369000,
+      "generation_id": "g017"
+    },
+    {
+      "message_id": "m029",
+      "participant_id": "candidate_b_high",
+      "speaker_type": "user",
+      "text": "最終合意の前に三者を個別に確認します。子育ては対象地域、交通は運転手確保、観光は半年後の再配分条件について、まだ反対できる点や不足条件があれば挙げてください。",
+      "phase": "decision",
+      "move": "invite_participant",
+      "start_ms": 371000,
+      "end_ms": 381000,
+      "generation_id": null
+    },
+    {
+      "message_id": "m030",
+      "participant_id": "ai_b_childcare",
+      "speaker_type": "ai",
+      "text": "対象地域を限定する条件なら賛成です。",
+      "phase": "decision",
+      "move": "support",
+      "start_ms": 383000,
+      "end_ms": 388000,
+      "generation_id": "g018"
+    },
+    {
+      "message_id": "m031",
+      "participant_id": "ai_b_transport",
+      "speaker_type": "ai",
+      "text": "二地区での実証として始めるなら賛成です。",
+      "phase": "decision",
+      "move": "support",
+      "start_ms": 390000,
+      "end_ms": 395000,
+      "generation_id": "g019"
+    },
+    {
+      "message_id": "m032",
+      "participant_id": "ai_b_tourism",
+      "speaker_type": "ai",
+      "text": "半年後の再検討を記録する条件で賛成します。",
+      "phase": "decision",
+      "move": "support",
+      "start_ms": 397000,
+      "end_ms": 402000,
+      "generation_id": "g020"
+    },
+    {
+      "message_id": "m033",
+      "participant_id": "candidate_b_high",
+      "speaker_type": "user",
+      "text": "残り時間を要約と確認に分けます。未解決点は観光の再配分条件と各施策の半年後指標なので、まず担当と閾値を固定し、その後に最終合意を確認します。",
+      "phase": "decision",
+      "move": "time_check",
+      "start_ms": 404000,
+      "end_ms": 414000,
+      "generation_id": null
+    },
+    {
+      "message_id": "m034",
+      "participant_id": "candidate_b_high",
+      "speaker_type": "user",
+      "text": "子育て1700万円、交通1300万円、観光は既存枠で試行し、半年後の指標で再配分を検討する条件です。三者の懸念と実施条件を含め、この内容で合意としてよいですね。",
+      "phase": "decision",
+      "move": "confirm_consensus",
+      "start_ms": 416000,
+      "end_ms": 426000,
+      "generation_id": null
+    },
+    {
+      "message_id": "m035",
+      "participant_id": "candidate_b_high",
+      "speaker_type": "user",
+      "text": "結論は子育て1700万円、二地区の交通実証1300万円です。観光は既存広報と事業者連携で季節分散企画を行います。6か月時点で待機児童対応数、交通利用件数・運行充足率、観光消費額・参加事業者数を確認し、基準未達時は再配分します。担当部署、確認日、2年後の継続判断まで記録します。",
+      "phase": "summary",
+      "move": "summarize",
+      "start_ms": 432000,
+      "end_ms": 448000,
+      "generation_id": null
+    }
+  ],
+  "events": [
+    {
+      "event_id": "ev_msg_001",
+      "event": "AI_UTTERANCE_COMMITTED",
+      "timestamp_ms": 18000,
+      "participant_id": "ai_b_childcare",
+      "generation_id": "g001",
+      "message_id": "m001"
+    },
+    {
+      "event_id": "ev_msg_002",
+      "event": "AI_UTTERANCE_COMMITTED",
+      "timestamp_ms": 28000,
+      "participant_id": "ai_b_transport",
+      "generation_id": "g002",
+      "message_id": "m002"
+    },
+    {
+      "event_id": "ev_msg_003",
+      "event": "AI_UTTERANCE_COMMITTED",
+      "timestamp_ms": 38000,
+      "participant_id": "ai_b_tourism",
+      "generation_id": "g003",
+      "message_id": "m003"
+    },
+    {
+      "event_id": "ev_msg_004",
+      "event": "AI_UTTERANCE_COMMITTED",
+      "timestamp_ms": 47000,
+      "participant_id": "ai_b_childcare",
+      "generation_id": "g004",
+      "message_id": "m004"
+    },
+    {
+      "event_id": "ev_msg_005",
+      "event": "USER_UTTERANCE_FINALIZED",
+      "timestamp_ms": 60000,
+      "participant_id": "candidate_b_high",
+      "generation_id": null,
+      "message_id": "m005"
+    },
+    {
+      "event_id": "ev_msg_006",
+      "event": "AI_UTTERANCE_COMMITTED",
+      "timestamp_ms": 73000,
+      "participant_id": "ai_b_childcare",
+      "generation_id": "g005",
+      "message_id": "m006"
+    },
+    {
+      "event_id": "ev_msg_007",
+      "event": "AI_UTTERANCE_COMMITTED",
+      "timestamp_ms": 84000,
+      "participant_id": "ai_b_childcare",
+      "generation_id": "g006",
+      "message_id": "m007"
+    },
+    {
+      "event_id": "ev_msg_008",
+      "event": "USER_UTTERANCE_FINALIZED",
+      "timestamp_ms": 98000,
+      "participant_id": "candidate_b_high",
+      "generation_id": null,
+      "message_id": "m008"
+    },
+    {
+      "event_id": "ev_msg_009",
+      "event": "AI_UTTERANCE_COMMITTED",
+      "timestamp_ms": 108000,
+      "participant_id": "ai_b_transport",
+      "generation_id": "g007",
+      "message_id": "m009"
+    },
+    {
+      "event_id": "ev_msg_010",
+      "event": "AI_UTTERANCE_COMMITTED",
+      "timestamp_ms": 119000,
+      "participant_id": "ai_b_transport",
+      "generation_id": "g008",
+      "message_id": "m010"
+    },
+    {
+      "event_id": "ev_msg_011",
+      "event": "USER_UTTERANCE_FINALIZED",
+      "timestamp_ms": 134000,
+      "participant_id": "candidate_b_high",
+      "generation_id": null,
+      "message_id": "m011"
+    },
+    {
+      "event_id": "ev_msg_012",
+      "event": "AI_UTTERANCE_COMMITTED",
+      "timestamp_ms": 144000,
+      "participant_id": "ai_b_tourism",
+      "generation_id": "g009",
+      "message_id": "m012"
+    },
+    {
+      "event_id": "ev_msg_013",
+      "event": "USER_UTTERANCE_FINALIZED",
+      "timestamp_ms": 163000,
+      "participant_id": "candidate_b_high",
+      "generation_id": null,
+      "message_id": "m013"
+    },
+    {
+      "event_id": "ev_msg_014",
+      "event": "AI_UTTERANCE_COMMITTED",
+      "timestamp_ms": 174000,
+      "participant_id": "ai_b_transport",
+      "generation_id": "g010",
+      "message_id": "m014"
+    },
+    {
+      "event_id": "ev_msg_015",
+      "event": "USER_UTTERANCE_FINALIZED",
+      "timestamp_ms": 188000,
+      "participant_id": "candidate_b_high",
+      "generation_id": null,
+      "message_id": "m015"
+    },
+    {
+      "event_id": "ev_msg_016",
+      "event": "AI_UTTERANCE_COMMITTED",
+      "timestamp_ms": 203000,
+      "participant_id": "ai_b_childcare",
+      "generation_id": "g011",
+      "message_id": "m016"
+    },
+    {
+      "event_id": "ev_msg_017",
+      "event": "USER_UTTERANCE_FINALIZED",
+      "timestamp_ms": 218000,
+      "participant_id": "candidate_b_high",
+      "generation_id": null,
+      "message_id": "m017"
+    },
+    {
+      "event_id": "ev_msg_018",
+      "event": "AI_UTTERANCE_COMMITTED",
+      "timestamp_ms": 230000,
+      "participant_id": "ai_b_transport",
+      "generation_id": "g012",
+      "message_id": "m018"
+    },
+    {
+      "event_id": "ev_msg_019",
+      "event": "USER_UTTERANCE_FINALIZED",
+      "timestamp_ms": 245000,
+      "participant_id": "candidate_b_high",
+      "generation_id": null,
+      "message_id": "m019"
+    },
+    {
+      "event_id": "ev_msg_020",
+      "event": "AI_UTTERANCE_COMMITTED",
+      "timestamp_ms": 258000,
+      "participant_id": "ai_b_tourism",
+      "generation_id": "g013",
+      "message_id": "m020"
+    },
+    {
+      "event_id": "ev_msg_021",
+      "event": "USER_UTTERANCE_FINALIZED",
+      "timestamp_ms": 273000,
+      "participant_id": "candidate_b_high",
+      "generation_id": null,
+      "message_id": "m021"
+    },
+    {
+      "event_id": "ev_msg_022",
+      "event": "AI_UTTERANCE_COMMITTED",
+      "timestamp_ms": 284000,
+      "participant_id": "ai_b_childcare",
+      "generation_id": "g014",
+      "message_id": "m022"
+    },
+    {
+      "event_id": "ev_msg_023",
+      "event": "USER_UTTERANCE_FINALIZED",
+      "timestamp_ms": 299000,
+      "participant_id": "candidate_b_high",
+      "generation_id": null,
+      "message_id": "m023"
+    },
+    {
+      "event_id": "ev_msg_024",
+      "event": "AI_UTTERANCE_COMMITTED",
+      "timestamp_ms": 315000,
+      "participant_id": "ai_b_transport",
+      "generation_id": "g015",
+      "message_id": "m024"
+    },
+    {
+      "event_id": "ev_msg_025",
+      "event": "USER_UTTERANCE_FINALIZED",
+      "timestamp_ms": 330000,
+      "participant_id": "candidate_b_high",
+      "generation_id": null,
+      "message_id": "m025"
+    },
+    {
+      "event_id": "ev_msg_026",
+      "event": "AI_UTTERANCE_COMMITTED",
+      "timestamp_ms": 340000,
+      "participant_id": "ai_b_tourism",
+      "generation_id": "g016",
+      "message_id": "m026"
+    },
+    {
+      "event_id": "ev_msg_027",
+      "event": "USER_UTTERANCE_FINALIZED",
+      "timestamp_ms": 358000,
+      "participant_id": "candidate_b_high",
+      "generation_id": null,
+      "message_id": "m027"
+    },
+    {
+      "event_id": "ev_msg_028",
+      "event": "AI_UTTERANCE_COMMITTED",
+      "timestamp_ms": 369000,
+      "participant_id": "ai_b_tourism",
+      "generation_id": "g017",
+      "message_id": "m028"
+    },
+    {
+      "event_id": "ev_msg_029",
+      "event": "USER_UTTERANCE_FINALIZED",
+      "timestamp_ms": 381000,
+      "participant_id": "candidate_b_high",
+      "generation_id": null,
+      "message_id": "m029"
+    },
+    {
+      "event_id": "ev_msg_030",
+      "event": "AI_UTTERANCE_COMMITTED",
+      "timestamp_ms": 388000,
+      "participant_id": "ai_b_childcare",
+      "generation_id": "g018",
+      "message_id": "m030"
+    },
+    {
+      "event_id": "ev_msg_031",
+      "event": "AI_UTTERANCE_COMMITTED",
+      "timestamp_ms": 395000,
+      "participant_id": "ai_b_transport",
+      "generation_id": "g019",
+      "message_id": "m031"
+    },
+    {
+      "event_id": "ev_msg_032",
+      "event": "AI_UTTERANCE_COMMITTED",
+      "timestamp_ms": 402000,
+      "participant_id": "ai_b_tourism",
+      "generation_id": "g020",
+      "message_id": "m032"
+    },
+    {
+      "event_id": "ev_msg_033",
+      "event": "USER_UTTERANCE_FINALIZED",
+      "timestamp_ms": 414000,
+      "participant_id": "candidate_b_high",
+      "generation_id": null,
+      "message_id": "m033"
+    },
+    {
+      "event_id": "ev_msg_034",
+      "event": "USER_UTTERANCE_FINALIZED",
+      "timestamp_ms": 426000,
+      "participant_id": "candidate_b_high",
+      "generation_id": null,
+      "message_id": "m034"
+    },
+    {
+      "event_id": "ev_msg_035",
+      "event": "USER_UTTERANCE_FINALIZED",
+      "timestamp_ms": 448000,
+      "participant_id": "candidate_b_high",
+      "generation_id": null,
+      "message_id": "m035"
+    },
+    {
+      "event_id": "ev_concern_childcare",
+      "event": "PRIVATE_CONCERN_REVEALED",
+      "timestamp_ms": 84000,
+      "participant_id": "ai_b_childcare",
+      "message_id": "m007",
+      "trigger_move": "challenge",
+      "concern_id": "childcare_low_utilization",
+      "candidate_response_message_ids": [
+        "m008"
+      ]
+    },
+    {
+      "event_id": "ev_concern_transport",
+      "event": "PRIVATE_CONCERN_REVEALED",
+      "timestamp_ms": 119000,
+      "participant_id": "ai_b_transport",
+      "message_id": "m010",
+      "trigger_move": "challenge",
+      "concern_id": "transport_driver_shortage",
+      "candidate_response_message_ids": [
+        "m011"
+      ]
+    },
+    {
+      "event_id": "ev_conflict_summary",
+      "event": "CONFLICT_SUMMARY_RECORDED",
+      "timestamp_ms": 230000,
+      "message_id": "m018",
+      "positions": [
+        "childcare",
+        "transport",
+        "tourism"
+      ]
+    },
+    {
+      "event_id": "ev_positions_integrated",
+      "event": "POSITIONS_INTEGRATED",
+      "timestamp_ms": 245000,
+      "message_id": "m019",
+      "position_ids": [
+        "childcare",
+        "transport",
+        "tourism"
+      ]
+    },
+    {
+      "event_id": "ev_concern_tourism",
+      "event": "PRIVATE_CONCERN_REVEALED",
+      "timestamp_ms": 258000,
+      "participant_id": "ai_b_tourism",
+      "message_id": "m020",
+      "trigger_move": "challenge",
+      "concern_id": "tourism_seasonality",
+      "candidate_response_message_ids": [
+        "m021"
+      ]
+    },
+    {
+      "event_id": "ev_minority_view",
+      "event": "MINORITY_VIEW_PRESENT",
+      "timestamp_ms": 258000,
+      "message_id": "m020",
+      "position_id": "tourism"
+    },
+    {
+      "event_id": "ev_ctx_criteria",
+      "event": "CONTEXT_RESOLVED",
+      "timestamp_ms": 218000,
+      "key": "comparison_criteria",
+      "message_id": "m017"
+    },
+    {
+      "event_id": "ev_budget_split_proposed",
+      "event": "BUDGET_SPLIT_PROPOSED",
+      "timestamp_ms": 315000,
+      "message_id": "m024",
+      "allocations": {
+        "childcare": 16000000,
+        "transport": 14000000,
+        "tourism": 0
+      },
+      "selected_priorities": [
+        "childcare",
+        "transport"
+      ],
+      "unselected_priorities": [
+        "tourism"
+      ],
+      "allocation_total_yen": 30000000,
+      "priority_count": 2
+    },
+    {
+      "event_id": "ev_budget_split_recorded",
+      "event": "BUDGET_SPLIT_RECORDED",
+      "timestamp_ms": 330000,
+      "message_id": "m025",
+      "allocations": {
+        "childcare": 17000000,
+        "transport": 13000000,
+        "tourism": 0
+      },
+      "selected_priorities": [
+        "childcare",
+        "transport"
+      ],
+      "unselected_priorities": [
+        "tourism"
+      ],
+      "allocation_total_yen": 30000000,
+      "priority_count": 2
+    },
+    {
+      "event_id": "ev_mitigation_required",
+      "event": "MITIGATION_REQUIRED",
+      "timestamp_ms": 340000,
+      "message_id": "m026",
+      "unselected_priorities": [
+        "tourism"
+      ]
+    },
+    {
+      "event_id": "ev_decision_allocation",
+      "event": "DECISION_ALLOCATION_RECORDED",
+      "timestamp_ms": 358000,
+      "message_id": "m027",
+      "fields": [
+        "criteria",
+        "allocation",
+        "mitigation"
+      ],
+      "allocations": {
+        "childcare": 17000000,
+        "transport": 13000000,
+        "tourism": 0
+      },
+      "selected_priorities": [
+        "childcare",
+        "transport"
+      ],
+      "unselected_priorities": [
+        "tourism"
+      ],
+      "allocation_total_yen": 30000000,
+      "priority_count": 2,
+      "mitigation": {
+        "tourism": "既存広報枠と事業者ネットワークによる通年企画を半年後に再評価"
+      }
+    },
+    {
+      "event_id": "ev_minority_status",
+      "event": "MINORITY_CONCERN_STATUS",
+      "timestamp_ms": 358000,
+      "message_id": "m027",
+      "concern_id": "tourism_seasonality",
+      "status": "addressed"
+    },
+    {
+      "event_id": "ev_summary_fields",
+      "event": "SUMMARY_FIELDS_RECORDED",
+      "timestamp_ms": 448000,
+      "message_id": "m035",
+      "fields": [
+        "criteria",
+        "allocation",
+        "mitigation",
+        "review_point"
+      ]
+    },
+    {
+      "event_id": "ev_opp_b_is_01",
+      "event": "OPPORTUNITY_OFFERED",
+      "timestamp_ms": 48000,
+      "opportunity_id": "B-OP-IS-01",
+      "dimension": "issue_framing",
+      "candidate_response_message_ids": [
+        "m005"
+      ]
+    },
+    {
+      "event_id": "ev_opp_b_li_01",
+      "event": "OPPORTUNITY_OFFERED",
+      "timestamp_ms": 85000,
+      "opportunity_id": "B-OP-LI-01",
+      "dimension": "listening_and_response",
+      "candidate_response_message_ids": [
+        "m008"
+      ]
+    },
+    {
+      "event_id": "ev_opp_b_co_01",
+      "event": "OPPORTUNITY_OFFERED",
+      "timestamp_ms": 85000,
+      "opportunity_id": "B-OP-CO-01",
+      "dimension": "collaboration_and_relationship",
+      "candidate_response_message_ids": [
+        "m008"
+      ]
+    },
+    {
+      "event_id": "ev_opp_b_li_02",
+      "event": "OPPORTUNITY_OFFERED",
+      "timestamp_ms": 120000,
+      "opportunity_id": "B-OP-LI-02",
+      "dimension": "listening_and_response",
+      "candidate_response_message_ids": [
+        "m011"
+      ]
+    },
+    {
+      "event_id": "ev_opp_b_va_01",
+      "event": "OPPORTUNITY_OFFERED",
+      "timestamp_ms": 149000,
+      "opportunity_id": "B-OP-VA-01",
+      "dimension": "valuable_contribution",
+      "candidate_response_message_ids": [
+        "m013"
+      ]
+    },
+    {
+      "event_id": "ev_opp_b_lo_01",
+      "event": "OPPORTUNITY_OFFERED",
+      "timestamp_ms": 204000,
+      "opportunity_id": "B-OP-LO-01",
+      "dimension": "logical_reasoning",
+      "candidate_response_message_ids": [
+        "m017"
+      ]
+    },
+    {
+      "event_id": "ev_opp_b_va_02",
+      "event": "OPPORTUNITY_OFFERED",
+      "timestamp_ms": 231000,
+      "opportunity_id": "B-OP-VA-02",
+      "dimension": "valuable_contribution",
+      "candidate_response_message_ids": [
+        "m019"
+      ]
+    },
+    {
+      "event_id": "ev_opp_b_li_03",
+      "event": "OPPORTUNITY_OFFERED",
+      "timestamp_ms": 259000,
+      "opportunity_id": "B-OP-LI-03",
+      "dimension": "listening_and_response",
+      "candidate_response_message_ids": [
+        "m021"
+      ]
+    },
+    {
+      "event_id": "ev_opp_b_co_02",
+      "event": "OPPORTUNITY_OFFERED",
+      "timestamp_ms": 259000,
+      "opportunity_id": "B-OP-CO-02",
+      "dimension": "collaboration_and_relationship",
+      "candidate_response_message_ids": [
+        "m021"
+      ]
+    },
+    {
+      "event_id": "ev_opp_b_de_01",
+      "event": "OPPORTUNITY_OFFERED",
+      "timestamp_ms": 285000,
+      "opportunity_id": "B-OP-DE-01",
+      "dimension": "decision_and_consensus",
+      "candidate_response_message_ids": [
+        "m023"
+      ]
+    },
+    {
+      "event_id": "ev_opp_b_de_02",
+      "event": "OPPORTUNITY_OFFERED",
+      "timestamp_ms": 316000,
+      "opportunity_id": "B-OP-DE-02",
+      "dimension": "decision_and_consensus",
+      "candidate_response_message_ids": [
+        "m025"
+      ]
+    },
+    {
+      "event_id": "ev_opp_b_lo_02",
+      "event": "OPPORTUNITY_OFFERED",
+      "timestamp_ms": 341000,
+      "opportunity_id": "B-OP-LO-02",
+      "dimension": "logical_reasoning",
+      "candidate_response_message_ids": [
+        "m027"
+      ]
+    },
+    {
+      "event_id": "ev_opp_b_de_03",
+      "event": "OPPORTUNITY_OFFERED",
+      "timestamp_ms": 341000,
+      "opportunity_id": "B-OP-DE-03",
+      "dimension": "decision_and_consensus",
+      "candidate_response_message_ids": [
+        "m027"
+      ]
+    },
+    {
+      "event_id": "ev_opp_b_co_03",
+      "event": "OPPORTUNITY_OFFERED",
+      "timestamp_ms": 370000,
+      "opportunity_id": "B-OP-CO-03",
+      "dimension": "collaboration_and_relationship",
+      "candidate_response_message_ids": [
+        "m029"
+      ]
+    },
+    {
+      "event_id": "ev_opp_b_pr_01",
+      "event": "OPPORTUNITY_OFFERED",
+      "timestamp_ms": 403000,
+      "opportunity_id": "B-OP-PR-01",
+      "dimension": "process_and_time_management",
+      "candidate_response_message_ids": [
+        "m033"
+      ]
+    }
+  ],
+  "versions": {
+    "orchestrator_version": "synthetic-orchestrator-v0.1",
+    "prompt_version": "exercise-b-medium-script-v0.1",
+    "model_provider": "synthetic",
+    "model_name": "deterministic-fixture",
+    "model_parameters": {
+      "temperature": 0
+    }
+  },
+  "transcript_hash": "9df7dfa032e047df2aa91e4bd95edce66d2e3f7fb86a5a9378d2399af165bfb1",
+  "legacy_evaluation": null
+}
