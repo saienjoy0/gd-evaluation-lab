@@ -18,7 +18,9 @@ def _agreement_class(left: int | str, right: int | str) -> str:
     return "adjacent" if abs(int(left) - int(right)) == 1 else "major_disagreement"
 
 
-def _target_message_ids(episode: dict[str, Any], target_participant_id: str) -> set[str]:
+def _target_message_ids(
+    episode: dict[str, Any], target_participant_id: str
+) -> set[str]:
     return {
         message["message_id"]
         for message in episode.get("messages", [])
@@ -27,9 +29,47 @@ def _target_message_ids(episode: dict[str, Any], target_participant_id: str) -> 
     }
 
 
+def _rubric_dimension(
+    candidate_rubric: dict[str, Any], dimension: str
+) -> dict[str, Any]:
+    rubric_dimension = next(
+        (
+            item
+            for item in candidate_rubric.get("dimensions", [])
+            if item.get("id") == dimension
+        ),
+        None,
+    )
+    if rubric_dimension is None:
+        raise EvaluationBuildError(f"RUBRIC_DIMENSION_MISSING: {dimension}")
+    return rubric_dimension
+
+
+def _minimum_valid_opportunities(
+    candidate_rubric: dict[str, Any], dimension: str
+) -> int:
+    rubric_dimension = _rubric_dimension(candidate_rubric, dimension)
+    explicit = rubric_dimension.get("minimum_valid_opportunities")
+    if explicit is not None:
+        return max(1, int(explicit))
+    evidence_policy = rubric_dimension.get("evidence_policy", {})
+    return max(1, int(evidence_policy.get("minimum_for_scored_result", 1)))
+
+
+def _minimum_selected_evidence(
+    candidate_rubric: dict[str, Any], dimension: str, score: int
+) -> int:
+    rubric_dimension = _rubric_dimension(candidate_rubric, dimension)
+    evidence_policy = rubric_dimension.get("evidence_policy", {})
+    if score == 4:
+        return max(2, int(evidence_policy.get("minimum_for_score_4", 2)))
+    return max(1, int(evidence_policy.get("minimum_for_scored_result", 1)))
+
+
 def _validate_human_inputs(
     episode: dict[str, Any],
     target_participant_id: str,
+    candidate_rubric: dict[str, Any],
     rater_sheets: tuple[dict[str, Any], ...],
     adjudication: dict[str, Any],
     opportunities: dict[str, Any],
@@ -43,28 +83,88 @@ def _validate_human_inputs(
         for event_id in item["trigger_event_ids"]:
             event_to_opportunity[event_id] = item
 
+    failed_rules_by_dimension: dict[str, set[str]] = {}
+    for result in system_quality["rule_results"]:
+        if result["outcome"] != "fail":
+            continue
+        for dimension in result["affected_dimensions"]:
+            failed_rules_by_dimension.setdefault(dimension, set()).add(result["rule_id"])
+
     score_maps: list[dict[str, int | str]] = []
+    rater_linked_response_ids: dict[str, set[str]] = {}
     for sheet in rater_sheets:
         dimensions = {item["dimension"]: item for item in sheet["dimensions"]}
         score_maps.append({key: item["score"] for key, item in dimensions.items()})
         for dimension, item in dimensions.items():
-            if any(mid not in target_messages for mid in item["selected_evidence_message_ids"]):
-                raise EvaluationBuildError(f"EVIDENCE_OWNER_MISMATCH: {sheet['sheet_id']}:{dimension}")
+            selected_evidence = set(item["selected_evidence_message_ids"])
+            if any(message_id not in target_messages for message_id in selected_evidence):
+                raise EvaluationBuildError(
+                    f"EVIDENCE_OWNER_MISMATCH: {sheet['sheet_id']}:{dimension}"
+                )
+
+            referenced_opportunities: list[dict[str, Any]] = []
             for event_id in item["opportunity_evidence_event_ids"]:
                 opportunity = event_to_opportunity.get(event_id)
                 if opportunity is None:
-                    raise EvaluationBuildError(f"UNKNOWN_OPPORTUNITY_EVENT: {event_id}")
-                if opportunity["dimension"] != dimension or opportunity["status"] != "offered":
                     raise EvaluationBuildError(
-                        f"INVALIDATED_OPPORTUNITY_NUMERIC_SCORE: {dimension}"
+                        f"UNKNOWN_OPPORTUNITY_EVENT: {event_id}"
                     )
+                referenced_opportunities.append(opportunity)
 
-    failed_dimensions = {
-        dimension
-        for result in system_quality["rule_results"]
-        if result["outcome"] == "fail"
-        for dimension in result["affected_dimensions"]
-    }
+            if item["score"] == "NE":
+                if selected_evidence:
+                    raise EvaluationBuildError(
+                        f"NE_EVIDENCE_NOT_EMPTY: {sheet['sheet_id']}:{dimension}"
+                    )
+                continue
+
+            if not referenced_opportunities:
+                raise EvaluationBuildError(
+                    f"NUMERIC_OPPORTUNITY_EVIDENCE_MISSING: {sheet['sheet_id']}:{dimension}"
+                )
+            if any(
+                opportunity["status"] != "offered"
+                or opportunity["response_status"] != "observed"
+                for opportunity in referenced_opportunities
+            ):
+                raise EvaluationBuildError(
+                    f"INVALIDATED_OPPORTUNITY_NUMERIC_SCORE: {dimension}"
+                )
+
+            minimum_primary = _minimum_valid_opportunities(
+                candidate_rubric, dimension
+            )
+            primary_opportunities = [
+                opportunity
+                for opportunity in referenced_opportunities
+                if opportunity["dimension"] == dimension
+            ]
+            if len(primary_opportunities) < minimum_primary:
+                raise EvaluationBuildError(
+                    f"PRIMARY_OPPORTUNITY_EVIDENCE_INSUFFICIENT: "
+                    f"{sheet['sheet_id']}:{dimension}"
+                )
+
+            eligible_response_ids = {
+                message_id
+                for opportunity in referenced_opportunities
+                for message_id in opportunity["candidate_response_message_ids"]
+            }
+            required_evidence = _minimum_selected_evidence(
+                candidate_rubric, dimension, int(item["score"])
+            )
+            if len(selected_evidence) < required_evidence:
+                raise EvaluationBuildError(
+                    f"INSUFFICIENT_SELECTED_EVIDENCE: {sheet['sheet_id']}:{dimension}"
+                )
+            if not selected_evidence.issubset(eligible_response_ids):
+                raise EvaluationBuildError(
+                    f"EVIDENCE_NOT_LINKED_TO_OPPORTUNITY: {sheet['sheet_id']}:{dimension}"
+                )
+            rater_linked_response_ids.setdefault(dimension, set()).update(
+                eligible_response_ids
+            )
+
     for resolution in adjudication["dimension_resolutions"]:
         dimension = resolution["dimension"]
         expected_scores = [score_maps[0][dimension], score_maps[1][dimension]]
@@ -72,31 +172,90 @@ def _validate_human_inputs(
             raise EvaluationBuildError(f"RATER_SCORE_MISMATCH: {dimension}")
         if resolution["agreement_class"] != _agreement_class(*expected_scores):
             raise EvaluationBuildError(f"AGREEMENT_CLASS_MISMATCH: {dimension}")
-        if any(mid not in target_messages for mid in resolution["final_evidence_message_ids"]):
-            raise EvaluationBuildError(f"EVIDENCE_OWNER_MISMATCH: adjudication:{dimension}")
+
+        final_evidence = set(resolution["final_evidence_message_ids"])
+        if any(message_id not in target_messages for message_id in final_evidence):
+            raise EvaluationBuildError(
+                f"EVIDENCE_OWNER_MISMATCH: adjudication:{dimension}"
+            )
 
         score = resolution["final_score"]
-        offered = [
+        valid = [
             item
             for item in by_dimension.get(dimension, [])
-            if item["status"] == "offered" and item["response_status"] == "observed"
+            if item["status"] == "offered"
+            and item["response_status"] == "observed"
         ]
-        if score != "NE" and (dimension in failed_dimensions or not offered):
-            raise EvaluationBuildError(
-                f"INVALIDATED_OPPORTUNITY_NUMERIC_SCORE: {dimension}"
+        failed_rule_ids = failed_rules_by_dimension.get(dimension, set())
+        causal_invalid = [
+            item
+            for item in by_dimension.get(dimension, [])
+            if item["status"] == "invalid"
+            and failed_rule_ids.intersection(item.get("invalidated_by", []))
+        ]
+        minimum_valid = _minimum_valid_opportunities(candidate_rubric, dimension)
+        has_sufficient_valid = len(valid) >= minimum_valid
+
+        if score != "NE":
+            if not has_sufficient_valid:
+                raise EvaluationBuildError(
+                    f"INSUFFICIENT_VALID_OPPORTUNITY_NUMERIC_SCORE: {dimension}"
+                )
+            required_evidence = _minimum_selected_evidence(
+                candidate_rubric, dimension, int(score)
             )
-        if score == "NE" and not resolution.get("not_evaluable_reason"):
-            raise EvaluationBuildError(f"NE_REASON_MISSING: {dimension}")
+            if len(final_evidence) < required_evidence:
+                raise EvaluationBuildError(
+                    f"INSUFFICIENT_ADJUDICATION_EVIDENCE: {dimension}"
+                )
+            eligible_response_ids = rater_linked_response_ids.get(dimension, set())
+            if not final_evidence.issubset(eligible_response_ids):
+                raise EvaluationBuildError(
+                    f"ADJUDICATION_EVIDENCE_NOT_LINKED_TO_OPPORTUNITY: {dimension}"
+                )
+        else:
+            if final_evidence:
+                raise EvaluationBuildError(
+                    f"NE_EVIDENCE_NOT_EMPTY: adjudication:{dimension}"
+                )
+            reason = resolution.get("not_evaluable_reason")
+            if not reason:
+                raise EvaluationBuildError(f"NE_REASON_MISSING: {dimension}")
+            allowed_reasons = set(
+                _rubric_dimension(candidate_rubric, dimension).get("ne_conditions", [])
+            )
+            if reason not in allowed_reasons:
+                raise EvaluationBuildError(
+                    f"NE_REASON_NOT_ALLOWED_BY_RUBRIC: {dimension}:{reason}"
+                )
+            if reason == "AI_QUALITY_FAILURE":
+                if not failed_rule_ids or not causal_invalid or has_sufficient_valid:
+                    raise EvaluationBuildError(
+                        f"AI_QUALITY_NE_WITHOUT_CAUSAL_INSUFFICIENCY: {dimension}"
+                    )
+            elif reason == "INSUFFICIENT_OPPORTUNITY":
+                if has_sufficient_valid:
+                    raise EvaluationBuildError(
+                        f"INSUFFICIENT_OPPORTUNITY_WITH_SUFFICIENT_VALID: {dimension}"
+                    )
+            else:
+                raise EvaluationBuildError(
+                    f"UNSUPPORTED_NE_REASON: {dimension}:{reason}"
+                )
+
         if score == 4:
             message_by_id = {
-                message["message_id"]: message for message in episode.get("messages", [])
+                message["message_id"]: message
+                for message in episode.get("messages", [])
             }
             phases = {
-                message_by_id[mid]["phase"]
-                for mid in resolution["final_evidence_message_ids"]
+                message_by_id[message_id]["phase"]
+                for message_id in resolution["final_evidence_message_ids"]
             }
             if len(phases) < 2:
-                raise EvaluationBuildError(f"SCORE4_PHASE_DIVERSITY: {dimension}")
+                raise EvaluationBuildError(
+                    f"SCORE4_PHASE_DIVERSITY: {dimension}"
+                )
 
 
 def _display_groups(
@@ -106,7 +265,9 @@ def _display_groups(
     dimension_map = {item["dimension"]: item for item in candidate_dimensions}
     groups: dict[str, Any] = {}
     for group_id, definition in candidate_rubric["display_groups"].items():
-        group_dimensions = [dimension_map[dimension] for dimension in definition["dimensions"]]
+        group_dimensions = [
+            dimension_map[dimension] for dimension in definition["dimensions"]
+        ]
         numeric = [item for item in group_dimensions if item["score"] != "NE"]
         if numeric:
             bottleneck = min(
@@ -124,7 +285,10 @@ def _display_groups(
         groups[group_id] = {
             "aggregation_status": "not_calibrated",
             "score": None,
-            "coverage": {"evaluated": len(numeric), "total": len(group_dimensions)},
+            "coverage": {
+                "evaluated": len(numeric),
+                "total": len(group_dimensions),
+            },
             "bottleneck_dimension": bottleneck,
             "summary": group_summary(bottleneck or "", fallback),
         }
@@ -146,6 +310,7 @@ def build_evaluation_result(
     _validate_human_inputs(
         episode,
         target_participant_id,
+        candidate_rubric,
         rater_sheets,
         adjudication,
         opportunities,
