@@ -72,11 +72,14 @@ System Quality全体がfailであっても、無関係な軸へ一括して`NE`�
 数値評価では、軸全体に有効機会が存在するだけでは不十分とする。各Rater Sheetは次を満たす。
 
 1. `opportunity_evidence_event_ids`を1件以上持つ
-2. 参照した機会が`offered + observed`である
-3. 選択証拠が、その機会の`candidate_response_message_ids`に含まれる
-4. rubricが要求する最低証拠数を満たす
+2. 対象軸と同じdimensionの**主要機会**を必要数以上参照する
+3. 参照した全機会が`offered + observed`である
+4. 選択証拠が、参照した機会の`candidate_response_message_ids`に含まれる
+5. rubricが要求する最低証拠数を満たす
 
-Adjudicationの最終証拠も、独立評価者が参照した有効機会の応答IDへ結び付いていなければならない。これにより、無関係な利用者発言を使った数値採点を防ぐ。
+一つの発言が複数軸を支える場合は、他dimensionの機会を**補助機会**として明示的に参照できる。ただし、補助機会だけでは数値評価できず、対象軸の主要機会が必ず必要である。
+
+Adjudicationの最終証拠も、独立評価者が明示的に参照した主要・補助機会の応答IDへ結び付いていなければならない。これにより、無関係な利用者発言を使った数値採点を防ぎつつ、複数軸にまたがる実際の行動証拠を保持する。
 
 ## 8. Feedbackへの伝播
 
@@ -110,6 +113,8 @@ EvaluationResultだけでなく最終Feedbackにも、評価不能になった�
 - 機会応答と無関係なAdjudication証拠を拒否する
 - FeedbackにNE理由が残る
 
+さらに`scripts/check_numeric_evidence_provenance.py`で、他軸の補助機会だけを使った数値採点を拒否する。
+
 ## 10. 完了条件
 
 - lowとsystem_failureの差を機械検査で説明できる
@@ -117,6 +122,7 @@ EvaluationResultだけでなく最終Feedbackにも、評価不能になった�
 - system failureをcandidate low scoreへ転嫁しない
 - 一部invalidでも有効機会が残る場合は数値評価を維持する
 - 数値評価の証拠が有効機会の応答へ追跡可能である
+- 補助機会だけでは数値採点できない
 - 影響範囲外の数値評価を保持する
 - Feedback上でもNE理由を説明できる
 - runnerは`state`ラベルを評価生成に使用しない
