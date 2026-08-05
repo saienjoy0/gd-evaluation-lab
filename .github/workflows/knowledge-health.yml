@@ -5,155 +5,16 @@ on:
   push:
     branches: [main]
 
-permissions:
-  contents: write
-
 jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
-          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Apply Exercise B review fixes
-        if: github.event_name == 'pull_request'
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-
-          def replace_once(path: str, old: str, new: str) -> None:
-              target = Path(path)
-              text = target.read_text(encoding="utf-8")
-              if new in text:
-                  return
-              if old not in text:
-                  raise SystemExit(f"PATCH_TARGET_MISSING: {path}")
-              target.write_text(text.replace(old, new, 1), encoding="utf-8")
-
-          generator_path = Path("scripts/generate_exercise_b_high_low.py")
-          generator = generator_path.read_text(encoding="utf-8")
-          generator = generator.replace("import copy\n", "")
-          generator = generator.replace(
-              '    episode.setdefault("versions", {})["prompt_version"] = f"exercise-b-{state}-script-v0.1"\n',
-              "",
-          )
-          low_start = generator.index('    if state == "low":\n')
-          low_end = generator.index('    episode["transcript_hash"]', low_start)
-          new_low = (
-              '    if state == "low":\n'
-              '        episode["events"] = [\n'
-              '            event\n'
-              '            for event in episode["events"]\n'
-              '            if event.get("event")\n'
-              '            not in {"POSITIONS_INTEGRATED", "MINORITY_CONCERN_STATUS"}\n'
-              '        ]\n'
-              '        for event in episode["events"]:\n'
-              '            event_type = event.get("event")\n'
-              '            if event_type == "PRIVATE_CONCERN_REVEALED":\n'
-              '                event["candidate_response_message_ids"] = []\n'
-              '            elif event_type == "DECISION_ALLOCATION_RECORDED":\n'
-              '                event["fields"] = [\n'
-              '                    field\n'
-              '                    for field in event.get("fields", [])\n'
-              '                    if field != "mitigation"\n'
-              '                ]\n'
-              '                event.pop("mitigation", None)\n'
-              '            elif event_type == "SUMMARY_FIELDS_RECORDED":\n'
-              '                event["fields"] = ["allocation"]\n'
-          )
-          generator = generator[:low_start] + new_low + generator[low_end:]
-          generator_path.write_text(generator, encoding="utf-8")
-
-          replace_once(
-              "gd_eval/results/evaluation_result.py",
-              "def _display_groups(\n    candidate_dimensions: list[dict[str, Any]],\n    candidate_rubric: dict[str, Any],\n) -> dict[str, Any]:",
-              "def _display_groups(\n    exercise_id: str,\n    candidate_dimensions: list[dict[str, Any]],\n    candidate_rubric: dict[str, Any],\n) -> dict[str, Any]:",
-          )
-          replace_once(
-              "gd_eval/results/evaluation_result.py",
-              '        groups[group_id] = {\n            "aggregation_status": "not_calibrated",\n            "score": None,\n            "coverage": {\n                "evaluated": len(numeric),\n                "total": len(group_dimensions),\n            },\n            "bottleneck_dimension": bottleneck,\n            "summary": group_summary(bottleneck or "", fallback),\n        }',
-              '        use_observed_fallback = (\n            exercise_id == "candidate-assessment-b-stakeholder-conflict"\n            and bottleneck is not None\n            and int(dimension_map[bottleneck]["score"]) <= 1\n        )\n        groups[group_id] = {\n            "aggregation_status": "not_calibrated",\n            "score": None,\n            "coverage": {\n                "evaluated": len(numeric),\n                "total": len(group_dimensions),\n            },\n            "bottleneck_dimension": bottleneck,\n            "summary": (\n                fallback\n                if use_observed_fallback\n                else group_summary(bottleneck or "", fallback)\n            ),\n        }',
-          )
-          replace_once(
-              "gd_eval/results/evaluation_result.py",
-              '        "display_groups": _display_groups(candidate_dimensions, candidate_rubric),',
-              '        "display_groups": _display_groups(\n            exercise_id, candidate_dimensions, candidate_rubric\n        ),',
-          )
-
-          checker_path = Path("scripts/check_exercise_b_high_low.py")
-          checker = checker_path.read_text(encoding="utf-8")
-          helpers = '''
-
-          def assert_prompt_control(loaded_by_state) -> None:
-              prompt_versions = {
-                  loaded.runtime.episode["versions"]["prompt_version"]
-                  for loaded in loaded_by_state.values()
-              }
-              if len(prompt_versions) != 1:
-                  raise AssertionError(f"PROMPT_VERSION_DIFFER: {sorted(prompt_versions)}")
-
-
-          def assert_low_semantic_consistency(loaded, generated) -> None:
-              events = loaded.runtime.episode["events"]
-              decision = next(
-                  event
-                  for event in events
-                  if event.get("event") == "DECISION_ALLOCATION_RECORDED"
-              )
-              if "mitigation" in decision or "mitigation" in decision.get("fields", []):
-                  raise AssertionError("LOW_FALSE_MITIGATION_EVENT")
-              if any(
-                  event.get("event") == "MINORITY_CONCERN_STATUS" for event in events
-              ):
-                  raise AssertionError("LOW_FALSE_MINORITY_ADDRESS_EVENT")
-              summary = next(
-                  event
-                  for event in events
-                  if event.get("event") == "SUMMARY_FIELDS_RECORDED"
-              )
-              if summary.get("fields") != ["allocation"]:
-                  raise AssertionError(
-                      f"LOW_FALSE_SUMMARY_FIELDS: {summary.get('fields')}"
-                  )
-
-              dimensions = {
-                  item["dimension"]: item
-                  for item in generated.evaluation_result["candidate_dimensions"]
-              }
-              for group_id, group in generated.feedback["display_groups"].items():
-                  bottleneck = group["bottleneck_dimension"]
-                  expected = dimensions[bottleneck]["missing_behavior"]
-                  if group["summary"] != expected:
-                      raise AssertionError(
-                          f"LOW_FALSE_GROUP_SUMMARY: {group_id}: {group['summary']}"
-                      )
-          '''
-          if "def assert_prompt_control" not in checker:
-              checker = checker.replace(
-                  "\ndef main() -> None:\n", helpers + "\n\ndef main() -> None:\n", 1
-              )
-          old_call = "    assert_unique_case_identity(loaded_by_state)\n"
-          new_call = (
-              "    assert_unique_case_identity(loaded_by_state)\n"
-              "    assert_prompt_control(loaded_by_state)\n"
-              "    assert_low_semantic_consistency(\n"
-              "        loaded_by_state[\"low\"], generated_by_state[\"low\"]\n"
-              "    )\n"
-          )
-          if new_call not in checker:
-              if old_call not in checker:
-                  raise SystemExit("CHECKER_CALL_TARGET_MISSING")
-              checker = checker.replace(old_call, new_call, 1)
-          checker_path.write_text(checker, encoding="utf-8")
-          PY
       - name: Install validation dependencies
         run: python -m pip install --disable-pip-version-check "jsonschema[format]>=4.23,<5"
-      - name: Regenerate Exercise B high/low fixtures
-        run: python scripts/generate_exercise_b_high_low.py
       - name: Validate knowledge notes
         run: python scripts/check_knowledge.py
       - name: Validate evaluation contract
@@ -178,18 +39,10 @@ jobs:
         run: python scripts/check_exercise_b_medium.py
       - name: Validate Exercise B high/low calibration
         run: python scripts/check_exercise_b_high_low.py
-      - name: Commit review fixes and regenerated fixtures
-        if: github.event_name == 'pull_request'
+      - name: Validate Exercise B fixture generator reproducibility
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -- \
-            gd_eval/results/evaluation_result.py \
-            scripts/generate_exercise_b_high_low.py \
-            scripts/check_exercise_b_high_low.py \
+          python scripts/generate_exercise_b_high_low.py
+          git diff --exit-code -- \
             fixtures/calibration/full-episodes/stakeholder-conflict/high \
             fixtures/calibration/full-episodes/stakeholder-conflict/low
-          if ! git diff --cached --quiet; then
-            git commit -m "Fix Exercise B low semantic consistency"
-            git push origin HEAD:${{ github.head_ref }}
-          fi
+          python scripts/check_exercise_b_high_low.py
