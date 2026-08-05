@@ -48,7 +48,6 @@ TRIGGER_HANDLERS={
  "before_consensus_confirmation":_before_future("confirm_consensus"),
  "at_40_percent_time_checkpoint":_checkpoint(40),
  "at_75_percent_time_checkpoint":_checkpoint(75),
- "after_initial_positions":_after_initial_positions,
 }
 CONTEXT_HANDLERS={
  "decision_criteria_incomplete":_decision_criteria_incomplete,"three_options_available":_three_options_available,"risk_requires_reassessment":_risk_requires_reassessment,
