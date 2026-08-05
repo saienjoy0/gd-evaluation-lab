@@ -1,0 +1,195 @@
+name: Apply Exercise C review fixes
+
+on:
+  push:
+    branches: [feat/exercise-c-medium-v0.1]
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/exercise-c-medium-v0.1
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install validation dependencies
+        run: python -m pip install --disable-pip-version-check "jsonschema[format]>=4.23,<5"
+      - name: Apply review fixes
+        env:
+          CHECKER_GZIP_B64: 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
+        run: |
+          python - <<'PY'
+          import base64
+          import gzip
+          import json
+          import os
+          from pathlib import Path
+
+          checker = gzip.decompress(
+              base64.b64decode(os.environ['CHECKER_GZIP_B64'], validate=True)
+          )
+          Path('scripts/check_exercise_c_medium.py').write_bytes(checker)
+
+          scenario_path = Path(
+              'fixtures/scenarios/candidate-assessment-c-time-boxed-decision-v0.1.json'
+          )
+          scenario = json.loads(scenario_path.read_text(encoding='utf-8'))
+          opportunities = {
+              item['opportunity_id']: item
+              for item in scenario['evaluation_opportunities']
+          }
+          opportunities['C-OP-VA-01']['trigger'] = (
+              'after_training_initial_positions'
+          )
+          rubrics = {
+              item['rubric_id']: item
+              for item in scenario['instance_rubrics']
+          }
+          rubrics['C-R02']['rule']['params']['allowed_trigger_moves'] = [
+              'ask_question'
+          ]
+          rubrics['C-R05']['rule']['deterministic_rule_id'] = (
+              'candidate_summary_contains_fields'
+          )
+          scenario_path.write_text(
+              json.dumps(
+                  scenario,
+                  ensure_ascii=False,
+                  sort_keys=True,
+                  separators=(',', ':'),
+              ) + '\n',
+              encoding='utf-8',
+          )
+
+          episode_path = Path(
+              'fixtures/calibration/full-episodes/time-boxed-decision/medium/episode.json'
+          )
+          episode = json.loads(episode_path.read_text(encoding='utf-8'))
+          events = {item['event_id']: item for item in episode['events']}
+          bindings = {
+              'ev_options_presented': ('m003', 44000),
+              'ev_success_requirements': ('m004', 56000),
+              'ev_collision': ('m021', 370000),
+              'ev_revision': ('m028', 500000),
+              'ev_unresolved': ('m030', 535000),
+          }
+          for event_id, (message_id, timestamp_ms) in bindings.items():
+              events[event_id]['message_id'] = message_id
+              events[event_id]['timestamp_ms'] = timestamp_ms
+          episode_path.write_text(
+              json.dumps(
+                  episode,
+                  ensure_ascii=False,
+                  sort_keys=True,
+                  separators=(',', ':'),
+              ) + '\n',
+              encoding='utf-8',
+          )
+
+          rule_path = Path('gd_eval/rules/time_boxed_decision.py')
+          source = rule_path.read_text(encoding='utf-8')
+          old = '''            triggered = any(
+                prior.get("speaker_type") == "user"
+                and prior.get("participant_id") == target
+                and prior.get("move") == trigger_move
+                and prior.get("end_ms", 0) <= message.get("start_ms", 0)
+                for prior in messages
+            )'''
+          new = '''            triggered = any(
+                prior.get("move") == trigger_move
+                and prior.get("end_ms", 0) <= message.get("start_ms", 0)
+                and prior.get("message_id") != message.get("message_id")
+                for prior in messages
+            )'''
+          if old not in source:
+              raise SystemExit('C-R02 trigger block not found')
+          rule_path.write_text(source.replace(old, new), encoding='utf-8')
+
+          workflow_path = Path('.github/workflows/knowledge-health.yml')
+          workflow = workflow_path.read_text(encoding='utf-8')
+          workflow = workflow.replace(
+              '          python scripts/materialize_exercise_c_medium_episode.py\n',
+              '',
+          )
+          workflow_path.write_text(workflow, encoding='utf-8')
+
+          readme_path = Path('README.md')
+          readme = readme_path.read_text(encoding='utf-8')
+          readme = readme.replace(
+              'fixtures/calibration/full-episodes/time-boxed-decision/medium/episode.json.gz.b64',
+              'fixtures/calibration/full-episodes/time-boxed-decision/medium/episode.json',
+          )
+          readme = readme.replace(
+              'python scripts/materialize_exercise_c_medium_episode.py\n',
+              '',
+          )
+          readme_path.write_text(readme, encoding='utf-8')
+
+          doc_path = Path('docs/EXERCISE_C_MEDIUM_VERTICAL_SLICE.md')
+          doc = doc_path.read_text(encoding='utf-8')
+          start = doc.index('## 9. Episode正本')
+          end = doc.index('## 10. 検査')
+          replacement = '''## 9. Episode正本
+
+Episodeは次のJSONファイルを直接の正本とする。
+
+```text
+fixtures/calibration/full-episodes/time-boxed-decision/medium/episode.json
+```
+
+`case.json`から共通loaderで直接読み込めるため、Exercise A・Bと同じFull-Episode契約で扱える。
+
+`transcript_hash`は次で固定する。
+
+```text
+84ddd149a37e39fff933357d1a60e75ca1dde9afaa73724a8ebdf55c1b9ca1f6
+```
+
+構造化イベントは、対応する発言IDと発言時間帯へ結び付けて検査する。イベント名や任意時刻だけでは証拠として扱わない。
+
+'''
+          doc = doc[:start] + replacement + doc[end:]
+          doc = doc.replace(
+              'python scripts/materialize_exercise_c_medium_episode.py\n',
+              '',
+          )
+          doc = doc.replace(
+              'checkerは正常系に加え、時間通知欠落、時刻逸脱、リスクの決定後開示、誤ったconcern、優先順位更新欠落、三案比較不足、revision欠落、要約field欠落、AI先回り決定、summary欠落、証拠所有者不整合をfail-closedで検査する。',
+              'checkerは正常系に加え、trigger名前空間衝突、イベント時刻偽装、時間通知欠落、遅延リスクの誤開示、優先順位更新欠落、三案比較不足、revision不整合、要約の所有者・値、AI先回り決定、summary欠落、未実装trigger/context、phase・dimension・証拠所有者不整合を31件の負例でfail-closedに検査する。',
+          )
+          doc_path.write_text(doc, encoding='utf-8')
+          PY
+      - name: Regenerate and validate
+        run: |
+          python scripts/generate_exercise_c_medium.py
+          python scripts/check_exercise_c_medium.py
+      - name: Commit review fixes
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -- \
+            .github/workflows/knowledge-health.yml \
+            README.md \
+            docs/EXERCISE_C_MEDIUM_VERTICAL_SLICE.md \
+            fixtures/calibration/full-episodes/time-boxed-decision/medium/episode.json \
+            fixtures/calibration/full-episodes/time-boxed-decision/medium/deterministic-rule-result.json \
+            fixtures/calibration/full-episodes/time-boxed-decision/medium/system-quality-result.json \
+            fixtures/calibration/full-episodes/time-boxed-decision/medium/opportunity-resolution.json \
+            fixtures/calibration/full-episodes/time-boxed-decision/medium/evaluation-result.json \
+            fixtures/calibration/full-episodes/time-boxed-decision/medium/expected-feedback.json \
+            fixtures/scenarios/candidate-assessment-c-time-boxed-decision-v0.1.json \
+            gd_eval/rules/time_boxed_decision.py \
+            scripts/check_exercise_c_medium.py
+          git rm -- \
+            .github/workflows/apply-exercise-c-review-fixes.yml \
+            fixtures/calibration/full-episodes/time-boxed-decision/medium/episode.json.gz.b64 \
+            scripts/materialize_exercise_c_medium_episode.py
+          git commit -m "fix: harden Exercise C evidence provenance"
+          git push origin HEAD:feat/exercise-c-medium-v0.1
