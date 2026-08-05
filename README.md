@@ -32,6 +32,8 @@ Evaluation Contract v0.1では、次を正本として管理します。
 - `docs/CANDIDATE_ASSESSMENT_SCENARIO_PACK.md`
 - `docs/SCENARIO_OPPORTUNITY_MATRIX.md`
 - `docs/EXERCISE_A_MEDIUM_VERTICAL_SLICE.md`
+- `docs/GENERIC_FULL_EPISODE_RUNNER_V0.1.md`
+- `docs/EXERCISE_A_HIGH_LOW_V0.1.md`
 
 機械可読な正本:
 
@@ -62,7 +64,8 @@ python scripts/check_evaluation_contract.py
 python scripts/check_annotation_foundation.py
 python scripts/check_candidate_scenario_pack.py
 python scripts/check_contract_hardening.py
-python scripts/check_exercise_a_medium_vertical_slice.py
+python scripts/check_full_episode_runner.py
+python scripts/check_exercise_a_high_low.py
 ```
 
 ## 評価者の基本手順
