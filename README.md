@@ -39,6 +39,7 @@ Evaluation Contract v0.1では、次を正本として管理します。
 - `docs/EXERCISE_B_MEDIUM_VERTICAL_SLICE.md`
 - `docs/EXERCISE_B_HIGH_LOW_CALIBRATION.md`
 - `docs/EXERCISE_B_SYSTEM_FAILURE_V0.1.md`
+- `docs/EXERCISE_B_FOUR_STATE_MATRIX_V0.1.md`
 
 機械可読な正本:
 
@@ -49,6 +50,7 @@ Evaluation Contract v0.1では、次を正本として管理します。
 - `schemas/common/ne-reason-codes-v0.1.json`
 - `schemas/exercise-four-state-matrix-v0.1.schema.json`
 - `fixtures/calibration/matrices/exercise-a-four-state-v0.1.json`
+- `fixtures/calibration/matrices/exercise-b-four-state-v0.1.json`
 - `schemas/`
 
 ## 役割分担
@@ -79,6 +81,7 @@ python scripts/check_exercise_a_four_state_matrix.py
 python scripts/check_exercise_b_medium.py
 python scripts/check_exercise_b_high_low.py
 python scripts/check_exercise_b_system_failure.py
+python scripts/check_exercise_b_four_state_matrix.py
 ```
 
 ## 評価者の基本手順
