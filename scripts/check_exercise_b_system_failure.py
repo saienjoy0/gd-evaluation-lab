@@ -16,7 +16,11 @@ CASE_ROOT = ROOT / "fixtures/calibration/full-episodes/stakeholder-conflict"
 from gd_eval.results.evaluation_result import EvaluationBuildError  # noqa: E402
 from gd_eval.vertical_slice.loader import load_case  # noqa: E402
 from gd_eval.vertical_slice.manifest import build_manifest, validate_manifest  # noqa: E402
-from gd_eval.vertical_slice.runner import compare_oracles, run_full_episode  # noqa: E402
+from gd_eval.vertical_slice.runner import (  # noqa: E402
+    compare_oracles,
+    run_full_episode,
+    transcript_hash,
+)
 
 EXPECTED_INVALID = {
     "B-OP-IS-01",
@@ -254,6 +258,9 @@ def main() -> None:
     m004 = next(item for item in removed_failure.episode["messages"] if item["message_id"] == "m004")
     m004["text"] = "三案を何の基準で比較するか、先に決めませんか。"
     m004["move"] = "ask_question"
+    removed_failure.episode["transcript_hash"] = transcript_hash(
+        removed_failure.episode["messages"]
+    )
     expect_evaluation_failure(removed_failure, "AI_QUALITY_NE_WITHOUT_CAUSAL_INSUFFICIENCY")
 
     invalid_numeric = copy.deepcopy(system_loaded.runtime)

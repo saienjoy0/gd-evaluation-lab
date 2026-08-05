@@ -1,0 +1,140 @@
+{
+  "contract_version": "0.1",
+  "sheet_id": "rater-a-exercise-b-system-failure-001",
+  "episode_id": "exercise-b-system-failure-001",
+  "scenario_id": "candidate-assessment-b-stakeholder-conflict",
+  "annotator_id": "rater_a_anon",
+  "rubric_version": "candidate-behavior-v0.1",
+  "calibration_set_version": "exercise-b-system-failure-v0.1",
+  "started_at": "2026-08-05T12:20:00Z",
+  "completed_at": "2026-08-05T12:35:00Z",
+  "evaluation_stage": "independent",
+  "workflow_attestations": {
+    "ai_scores_hidden": true,
+    "evidence_selected_before_score": true,
+    "rubric_consulted": true,
+    "identity_blinded": true
+  },
+  "dimensions": [
+    {
+      "dimension": "issue_framing",
+      "opportunity_status": "insufficient",
+      "opportunity_evidence_event_ids": [
+        "ev_opp_b_is_01"
+      ],
+      "selected_evidence_message_ids": [],
+      "score": "NE",
+      "confidence": 0.95,
+      "comment": "AIが候補者より先に配分を確定し、主要評価機会が因果的に無効化された。",
+      "not_evaluable_reason": "AI_QUALITY_FAILURE",
+      "flags": [
+        "OPPORTUNITY_ISSUE"
+      ]
+    },
+    {
+      "dimension": "logical_reasoning",
+      "opportunity_status": "sufficient",
+      "opportunity_evidence_event_ids": [
+        "ev_opp_b_lo_01",
+        "ev_opp_b_lo_02"
+      ],
+      "selected_evidence_message_ids": [
+        "m017",
+        "m027"
+      ],
+      "score": 3,
+      "confidence": 0.84,
+      "comment": "基準の優先順位と未採用施策への緩和策を理由付きで示した。",
+      "not_evaluable_reason": null,
+      "flags": []
+    },
+    {
+      "dimension": "listening_and_response",
+      "opportunity_status": "sufficient",
+      "opportunity_evidence_event_ids": [
+        "ev_opp_b_li_01",
+        "ev_opp_b_li_02",
+        "ev_opp_b_li_03"
+      ],
+      "selected_evidence_message_ids": [
+        "m008",
+        "m011",
+        "m021"
+      ],
+      "score": 3,
+      "confidence": 0.84,
+      "comment": "子育て、交通、観光の各懸念へ直接応答し、案を修正した。",
+      "not_evaluable_reason": null,
+      "flags": []
+    },
+    {
+      "dimension": "valuable_contribution",
+      "opportunity_status": "sufficient",
+      "opportunity_evidence_event_ids": [
+        "ev_opp_b_va_01",
+        "ev_opp_b_va_02"
+      ],
+      "selected_evidence_message_ids": [
+        "m013",
+        "m019"
+      ],
+      "score": 3,
+      "confidence": 0.84,
+      "comment": "三つの立場を重点配分と既存資源活用へ統合し、議論を前進させた。",
+      "not_evaluable_reason": null,
+      "flags": []
+    },
+    {
+      "dimension": "collaboration_and_relationship",
+      "opportunity_status": "sufficient",
+      "opportunity_evidence_event_ids": [
+        "ev_opp_b_co_01",
+        "ev_opp_b_co_02",
+        "ev_opp_b_co_03"
+      ],
+      "selected_evidence_message_ids": [
+        "m008",
+        "m021",
+        "m029"
+      ],
+      "score": 3,
+      "confidence": 0.84,
+      "comment": "対立を論点として扱い、少数意見を残したまま最終確認の場を作った。",
+      "not_evaluable_reason": null,
+      "flags": []
+    },
+    {
+      "dimension": "decision_and_consensus",
+      "opportunity_status": "insufficient",
+      "opportunity_evidence_event_ids": [
+        "ev_opp_b_de_01",
+        "ev_opp_b_de_02",
+        "ev_opp_b_de_03"
+      ],
+      "selected_evidence_message_ids": [],
+      "score": "NE",
+      "confidence": 0.95,
+      "comment": "AIが候補者より先に配分を確定し、主要評価機会が因果的に無効化された。",
+      "not_evaluable_reason": "AI_QUALITY_FAILURE",
+      "flags": [
+        "OPPORTUNITY_ISSUE"
+      ]
+    },
+    {
+      "dimension": "process_and_time_management",
+      "opportunity_status": "sufficient",
+      "opportunity_evidence_event_ids": [
+        "ev_opp_b_pr_01"
+      ],
+      "selected_evidence_message_ids": [
+        "m033"
+      ],
+      "score": 2,
+      "confidence": 0.82,
+      "comment": "終了前に残り時間と未解決点を整理したが、中盤の進捗調整は限定的だった。",
+      "not_evaluable_reason": null,
+      "flags": []
+    }
+  ],
+  "overall_notes": "Exercise B system_failureとして、影響2軸だけをNEへ分離した。"
+}
