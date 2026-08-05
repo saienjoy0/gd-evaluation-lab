@@ -54,6 +54,41 @@ def expect_evaluation_failure(runtime, expected: str) -> None:
     raise AssertionError(f"EXPECTED_FAILURE_NOT_RAISED: {expected}")
 
 
+def _make_one_valuable_opportunity_valid(runtime) -> None:
+    opportunity = next(
+        item
+        for item in runtime.scenario["evaluation_opportunities"]
+        if item["opportunity_id"] == "A-OP-VA-02"
+    )
+    opportunity["invalidated_by"] = []
+
+
+def _score_valuable_contribution_numerically(runtime, score: int = 2) -> None:
+    for sheet in runtime.rater_sheets:
+        entry = next(
+            item
+            for item in sheet["dimensions"]
+            if item["dimension"] == "valuable_contribution"
+        )
+        entry["score"] = score
+        entry["opportunity_status"] = "sufficient"
+        entry["opportunity_evidence_event_ids"] = ["ev_opp_09"]
+        entry["selected_evidence_message_ids"] = ["m016"]
+        entry["not_evaluable_reason"] = None
+        entry["flags"] = []
+    resolution = next(
+        item
+        for item in runtime.adjudication["dimension_resolutions"]
+        if item["dimension"] == "valuable_contribution"
+    )
+    resolution["rater_scores"] = [score, score]
+    resolution["agreement_class"] = "exact"
+    resolution["final_score"] = score
+    resolution["final_evidence_message_ids"] = ["m016"]
+    resolution["not_evaluable_reason"] = None
+    resolution["rubric_issue_code"] = None
+
+
 def main() -> None:
     system_loaded = load_case(CASE_ROOT / "system_failure", ROOT)
     system_generated = run_full_episode(system_loaded.runtime)
@@ -153,6 +188,20 @@ def main() -> None:
                 f"NUMERIC_DIMENSION_HAS_NE_REASON: {item['dimension']}"
             )
 
+    feedback_ne = system_generated.feedback.get("not_evaluable_dimensions", {})
+    if set(feedback_ne) != ne_dimensions:
+        raise AssertionError(
+            f"FEEDBACK_NE_SCOPE_INVALID: {sorted(feedback_ne)}"
+        )
+    for dimension in ne_dimensions:
+        entry = feedback_ne[dimension]
+        if (
+            entry.get("evaluation_status") != "not_evaluable"
+            or entry.get("reason_code") != "AI_QUALITY_FAILURE"
+            or not entry.get("reason")
+        ):
+            raise AssertionError(f"FEEDBACK_NE_REASON_MISSING: {dimension}")
+
     medium_generated = run_full_episode(
         load_case(CASE_ROOT / "medium", ROOT).runtime
     )
@@ -179,13 +228,17 @@ def main() -> None:
         raise AssertionError("LOW_CASE_SYSTEM_QUALITY_NOT_PASS")
     if any(score == "NE" for score in low_scores.values()):
         raise AssertionError("LOW_CASE_WRONGLY_CONVERTED_TO_NE")
-    if not all(isinstance(score, int) and score <= 2 for score in low_scores.values()):
+    if not all(
+        isinstance(score, int) and score <= 2
+        for score in low_scores.values()
+    ):
         raise AssertionError("LOW_CASE_NUMERIC_PROFILE_INVALID")
 
     invalid_numeric = copy.deepcopy(system_loaded.runtime)
     for sheet in invalid_numeric.rater_sheets:
         entry = next(
-            item for item in sheet["dimensions"]
+            item
+            for item in sheet["dimensions"]
             if item["dimension"] == "issue_framing"
         )
         entry["score"] = 2
@@ -194,7 +247,8 @@ def main() -> None:
         entry["not_evaluable_reason"] = None
         entry["flags"] = []
     resolution = next(
-        item for item in invalid_numeric.adjudication["dimension_resolutions"]
+        item
+        for item in invalid_numeric.adjudication["dimension_resolutions"]
         if item["dimension"] == "issue_framing"
     )
     resolution["rater_scores"] = [2, 2]
@@ -209,7 +263,8 @@ def main() -> None:
     false_ne = copy.deepcopy(system_loaded.runtime)
     for sheet in false_ne.rater_sheets:
         entry = next(
-            item for item in sheet["dimensions"]
+            item
+            for item in sheet["dimensions"]
             if item["dimension"] == "logical_reasoning"
         )
         entry["score"] = "NE"
@@ -218,7 +273,8 @@ def main() -> None:
         entry["not_evaluable_reason"] = "AI_QUALITY_FAILURE"
         entry["flags"] = ["OPPORTUNITY_ISSUE"]
     resolution = next(
-        item for item in false_ne.adjudication["dimension_resolutions"]
+        item
+        for item in false_ne.adjudication["dimension_resolutions"]
         if item["dimension"] == "logical_reasoning"
     )
     resolution["rater_scores"] = ["NE", "NE"]
@@ -227,14 +283,39 @@ def main() -> None:
     resolution["not_evaluable_reason"] = "AI_QUALITY_FAILURE"
     resolution["rubric_issue_code"] = "PROCESS_DEVIATION"
     expect_evaluation_failure(
-        false_ne, "AI_QUALITY_NE_WITHOUT_INVALIDATION"
+        false_ne, "AI_QUALITY_NE_WITHOUT_CAUSAL_INSUFFICIENCY"
     )
+
+    partial_invalid_ne = copy.deepcopy(system_loaded.runtime)
+    _make_one_valuable_opportunity_valid(partial_invalid_ne)
+    expect_evaluation_failure(
+        partial_invalid_ne, "AI_QUALITY_NE_WITHOUT_CAUSAL_INSUFFICIENCY"
+    )
+
+    partial_invalid_numeric = copy.deepcopy(system_loaded.runtime)
+    _make_one_valuable_opportunity_valid(partial_invalid_numeric)
+    _score_valuable_contribution_numerically(partial_invalid_numeric)
+    partial_generated = run_full_episode(partial_invalid_numeric)
+    if score_map(partial_generated.evaluation_result)["valuable_contribution"] != 2:
+        raise AssertionError("PARTIAL_INVALID_NUMERIC_SCORE_NOT_PRESERVED")
+    partial_opportunities = [
+        item
+        for item in partial_generated.opportunity_resolution["items"]
+        if item["dimension"] == "valuable_contribution"
+    ]
+    if {item["status"] for item in partial_opportunities} != {
+        "invalid",
+        "offered",
+    }:
+        raise AssertionError("PARTIAL_INVALID_OPPORTUNITY_PROFILE_INVALID")
 
     print("Exercise A system failure separation v0.1 OK")
     print("System failure: 5 invalid opportunities, 2 NE dimensions")
     print("Unaffected dimensions: 5 numeric scores preserved")
     print("Low case: 7 numeric scores, no NE")
-    print("Negative separation tests: 2 passed")
+    print("Feedback NE reasons: preserved")
+    print("Partial invalidation: NE rejected, numeric score preserved")
+    print("Negative separation tests: 3 passed")
 
 
 if __name__ == "__main__":
