@@ -11,12 +11,12 @@ from .common import (
     summary_contains_fields,
     user_message_before_action,
 )
+from .numeric import numeric_constraint_preserved
 from .stakeholder_conflict import (
     candidate_integrates_positions,
     candidate_response_to_concern,
     challenge_after_first_candidate_proposal,
     decision_contains_fields,
-    numeric_constraint_preserved,
     positions_and_challenge_before_phase,
 )
 
