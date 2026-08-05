@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 CASE_ROOT = ROOT / "fixtures/calibration/full-episodes/stakeholder-conflict"
 
-from gd_eval.calibration.controlled_states import (  # noqa: E402
+from calibration_controlled_states import (  # noqa: E402
     assert_controlled_environment,
     assert_low_numeric_and_no_strengths,
     assert_score_four_spans_phases,
