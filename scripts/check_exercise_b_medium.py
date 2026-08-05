@@ -223,11 +223,11 @@ def main() -> None:
     if not decision.get("mitigation", {}).get("tourism"):
         raise AssertionError("EXERCISE_B_MITIGATION_MISSING")
 
-    expect_rule_failure(
-        loaded.runtime,
-        "B-R01",
-        lambda episode: message(episode, "m003").update(move="support"),
-    )
+    def remove_third_position(episode: dict) -> None:
+        message(episode, "m003")["move"] = "support"
+        message(episode, "m012")["move"] = "support"
+
+    expect_rule_failure(loaded.runtime, "B-R01", remove_third_position)
 
     def remove_post_proposal_challenges(episode: dict) -> None:
         message(episode, "m014")["move"] = "support"
