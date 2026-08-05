@@ -43,27 +43,28 @@ jobs:
           )
           low_start = generator.index('    if state == "low":\n')
           low_end = generator.index('    episode["transcript_hash"]', low_start)
-          new_low = '''    if state == "low":
-              episode["events"] = [
-                  event
-                  for event in episode["events"]
-                  if event.get("event")
-                  not in {"POSITIONS_INTEGRATED", "MINORITY_CONCERN_STATUS"}
-              ]
-              for event in episode["events"]:
-                  event_type = event.get("event")
-                  if event_type == "PRIVATE_CONCERN_REVEALED":
-                      event["candidate_response_message_ids"] = []
-                  elif event_type == "DECISION_ALLOCATION_RECORDED":
-                      event["fields"] = [
-                          field
-                          for field in event.get("fields", [])
-                          if field != "mitigation"
-                      ]
-                      event.pop("mitigation", None)
-                  elif event_type == "SUMMARY_FIELDS_RECORDED":
-                      event["fields"] = ["allocation"]
-          '''
+          new_low = (
+              '    if state == "low":\n'
+              '        episode["events"] = [\n'
+              '            event\n'
+              '            for event in episode["events"]\n'
+              '            if event.get("event")\n'
+              '            not in {"POSITIONS_INTEGRATED", "MINORITY_CONCERN_STATUS"}\n'
+              '        ]\n'
+              '        for event in episode["events"]:\n'
+              '            event_type = event.get("event")\n'
+              '            if event_type == "PRIVATE_CONCERN_REVEALED":\n'
+              '                event["candidate_response_message_ids"] = []\n'
+              '            elif event_type == "DECISION_ALLOCATION_RECORDED":\n'
+              '                event["fields"] = [\n'
+              '                    field\n'
+              '                    for field in event.get("fields", [])\n'
+              '                    if field != "mitigation"\n'
+              '                ]\n'
+              '                event.pop("mitigation", None)\n'
+              '            elif event_type == "SUMMARY_FIELDS_RECORDED":\n'
+              '                event["fields"] = ["allocation"]\n'
+          )
           generator = generator[:low_start] + new_low + generator[low_end:]
           generator_path.write_text(generator, encoding="utf-8")
 
