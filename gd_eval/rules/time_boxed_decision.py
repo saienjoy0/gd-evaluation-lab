@@ -218,10 +218,9 @@ def private_concern_revealed_before_phase(
             if trigger_move not in allowed_trigger_moves:
                 continue
             triggered = any(
-                prior.get("speaker_type") == "user"
-                and prior.get("participant_id") == target
-                and prior.get("move") == trigger_move
+                prior.get("move") == trigger_move
                 and prior.get("end_ms", 0) <= message.get("start_ms", 0)
+                and prior.get("message_id") != message.get("message_id")
                 for prior in messages
             )
             if not triggered:

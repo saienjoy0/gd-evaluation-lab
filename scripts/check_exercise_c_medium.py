@@ -5,6 +5,7 @@ from __future__ import annotations
 import copy
 import json
 import sys
+from dataclasses import replace
 from pathlib import Path
 from typing import Callable
 
@@ -18,12 +19,19 @@ from gd_eval.opportunities.resolver import (  # noqa: E402
     OpportunityResolutionError,
     resolve_opportunities,
 )
+from gd_eval.opportunities.stakeholder_conflict import (  # noqa: E402
+    CONTEXT_HANDLERS as STAKEHOLDER_CONTEXT_HANDLERS,
+    TRIGGER_HANDLERS as STAKEHOLDER_TRIGGER_HANDLERS,
+)
+from gd_eval.opportunities.time_boxed_decision import (  # noqa: E402
+    CONTEXT_HANDLERS as TIME_CONTEXT_HANDLERS,
+    TRIGGER_HANDLERS as TIME_TRIGGER_HANDLERS,
+)
 from gd_eval.quality.system_quality import build_system_quality  # noqa: E402
 from gd_eval.rules.registry import evaluate_deterministic_rules  # noqa: E402
 from gd_eval.vertical_slice.loader import load_case  # noqa: E402
 from gd_eval.vertical_slice.manifest import build_manifest, validate_manifest  # noqa: E402
 from gd_eval.vertical_slice.runner import compare_oracles, run_full_episode  # noqa: E402
-from materialize_exercise_c_medium_episode import main as materialize_episode  # noqa: E402
 
 EXPECTED_SCORES = {
     "issue_framing": 2,
@@ -134,6 +142,19 @@ def expect_opportunity_failure(
     raise AssertionError(f"EXPECTED_OPPORTUNITY_FAILURE_NOT_RAISED: {expected}")
 
 
+
+def expect_scenario_opportunity_failure(runtime, system_quality: dict, mutator: Callable[[dict], None], expected: str) -> None:
+    scenario = json.loads(json.dumps(runtime.scenario))
+    mutator(scenario)
+    mutated = replace(runtime, scenario=scenario)
+    try:
+        resolve_opportunities(mutated.scenario, mutated.episode, system_quality, mutated.target_participant_id, mutated.versions["opportunity_resolver_version"])
+    except OpportunityResolutionError as exc:
+        if expected not in str(exc):
+            raise AssertionError(f"WRONG_OPPORTUNITY_FAILURE: expected {expected}, got {exc}") from exc
+        return
+    raise AssertionError(f"EXPECTED_OPPORTUNITY_FAILURE_NOT_RAISED: {expected}")
+
 def quality_for(runtime) -> dict:
     deterministic = evaluate_deterministic_rules(
         runtime.scenario,
@@ -161,7 +182,6 @@ def remove_priority_moves(episode: dict) -> None:
 
 
 def main() -> None:
-    materialize_episode()
     loaded = load_case(CASE_DIR, ROOT)
     generated = run_full_episode(loaded.runtime)
     compare_oracles(generated, loaded.oracle_paths)
@@ -200,6 +220,21 @@ def main() -> None:
         != "candidate-assessment-c-time-boxed-decision"
     ):
         raise AssertionError("EXERCISE_C_ID_INVALID")
+
+    generic_triggers = {"after_initial_positions", "after_goal_question", "before_idea_generation", "after_two_options_present", "after_constraint_reveal", "after_ai_question", "after_private_concern_reveal", "after_initial_ideas", "after_tradeoff_identified", "after_position_conflict", "before_final_selection", "before_session_close"}
+    generic_contexts = {"priority_target_undefined", "success_metric_undefined", "scope_boundaries_undefined", "two_options_available", "constraint_requires_tradeoff", "ai_question_open", "concern_requires_response", "idea_space_open", "improvement_possible", "multiple_positions_active", "criteria_and_options_available", "remaining_time_visible"}
+    if set(TIME_TRIGGER_HANDLERS) & (set(STAKEHOLDER_TRIGGER_HANDLERS) | generic_triggers):
+        raise AssertionError("EXERCISE_C_TRIGGER_NAMESPACE_COLLISION")
+    if set(TIME_CONTEXT_HANDLERS) & (set(STAKEHOLDER_CONTEXT_HANDLERS) | generic_contexts):
+        raise AssertionError("EXERCISE_C_CONTEXT_NAMESPACE_COLLISION")
+    scenario_opportunities = {item["opportunity_id"]: item for item in loaded.runtime.scenario["evaluation_opportunities"]}
+    if scenario_opportunities["C-OP-VA-01"]["trigger"] != "after_training_initial_positions":
+        raise AssertionError("EXERCISE_C_INITIAL_POSITION_TRIGGER_NOT_NAMESPACED")
+    scenario_rubrics = {item["rubric_id"]: item for item in loaded.runtime.scenario["instance_rubrics"]}
+    if scenario_rubrics["C-R02"]["rule"]["params"].get("allowed_trigger_moves") != ["ask_question"]:
+        raise AssertionError("EXERCISE_C_RISK_TRIGGER_CONTRACT_INVALID")
+    if scenario_rubrics["C-R05"]["rule"]["deterministic_rule_id"] != "candidate_summary_contains_fields":
+        raise AssertionError("EXERCISE_C_SUMMARY_RULE_NOT_EVIDENCE_BOUND")
 
     deterministic = rule_outcomes(generated.deterministic_rules)
     if deterministic != {
@@ -263,6 +298,14 @@ def main() -> None:
         episode, "ev_late_risk_security"
     )["timestamp_ms"]:
         raise AssertionError("REVISION_BEFORE_RISK")
+    for event_id, message_id in {"ev_options_presented": "m003", "ev_success_requirements": "m004", "ev_collision": "m021", "ev_revision": "m028", "ev_unresolved": "m030", "ev_summary": "m039", "ev_summary_fields": "m039"}.items():
+        linked_event = event(episode, event_id)
+        linked_message = message(episode, message_id)
+        if linked_event.get("message_id") != message_id:
+            raise AssertionError(f"EVENT_MESSAGE_BINDING_INVALID:{event_id}")
+        if not linked_message["start_ms"] <= linked_event["timestamp_ms"] <= linked_message["end_ms"]:
+            raise AssertionError(f"EVENT_TIMESTAMP_PROVENANCE_INVALID:{event_id}")
+
     summary = event(episode, "ev_summary")
     if any(not summary.get(field) for field in ("mode", "exception", "next_check")):
         raise AssertionError("SUMMARY_VALUE_MISSING")
@@ -351,13 +394,33 @@ def main() -> None:
         "EVIDENCE_OWNER_MISMATCH",
     )
 
+    expect_rule_failure(loaded.runtime, "C-R01", lambda item: event(item, "ev_checkpoint_40").update(message_id="m016"))
+    expect_rule_failure(loaded.runtime, "C-R01", lambda item: [candidate.update(participant_id="not_target") for candidate in item["messages"] if candidate.get("speaker_type") == "user" and 290000 <= candidate.get("start_ms", 0) <= 380000])
+    expect_rule_failure(loaded.runtime, "C-R02", lambda item: event(item, "ev_late_risk_security").update(message_id="m025"))
+    expect_rule_failure(loaded.runtime, "C-R02", lambda item: event(item, "ev_late_risk_security").update(trigger_move="unknown_move"))
+    expect_rule_failure(loaded.runtime, "C-R03", lambda item: [event(item, event_id).update(timestamp_ms=400000) for event_id in ("ev_priority_40", "ev_priority_75")])
+    expect_rule_failure(loaded.runtime, "C-R04", lambda item: event(item, "ev_options_compared").update(message_id="m019"))
+    expect_rule_failure(loaded.runtime, "C-R04", lambda item: event(item, "ev_revision").update(before_message_id="m026"))
+    expect_rule_failure(loaded.runtime, "C-R05", lambda item: event(item, "ev_summary_fields").update(message_id="m027"))
+    expect_rule_failure(loaded.runtime, "C-R05", lambda item: event(item, "ev_summary").update(next_check=""))
+    mutated = json.loads(json.dumps(loaded.runtime.episode))
+    event(mutated, "ev_session_closed").update(timestamp_ms=650000)
+    quality_runtime = replace(loaded.runtime, episode=mutated)
+    if rule_outcomes(quality_for(quality_runtime)).get("C-PROH-02") != "fail":
+        raise AssertionError("C_PROH_02_EARLY_CLOSE_NOT_CAUGHT")
+    expect_scenario_opportunity_failure(loaded.runtime, generated.system_quality, lambda scenario: next(item for item in scenario["evaluation_opportunities"] if item["opportunity_id"] == "C-OP-IS-01").update(trigger="unknown_trigger"), "UNIMPLEMENTED_OPPORTUNITY_TRIGGER")
+    expect_scenario_opportunity_failure(loaded.runtime, generated.system_quality, lambda scenario: next(item for item in scenario["evaluation_opportunities"] if item["opportunity_id"] == "C-OP-IS-01")["required_context"].append("unknown_context"), "UNIMPLEMENTED_OPPORTUNITY_CONTEXT")
+    expect_opportunity_failure(loaded.runtime, generated.system_quality, lambda item: message(item, "m008").update(phase="option_comparison"), "OPPORTUNITY_PHASE_MISMATCH")
+    expect_opportunity_failure(loaded.runtime, generated.system_quality, lambda item: event(item, "ev_opp_c_op_li_01").update(dimension="logical_reasoning"), "OPPORTUNITY_DIMENSION_MISMATCH")
+    expect_opportunity_failure(loaded.runtime, generated.system_quality, lambda item: event(item, "ev_security_open").update(timestamp_ms=100000), "OPPORTUNITY_TRIGGER_INVALID")
+
     print("Exercise C medium vertical slice v0.1 OK")
     print("Golden replay: exact and deterministic")
     print("Rules: C-R01 through C-R05 pass")
     print("System Quality: C-PROH-01 and C-PROH-02 pass")
     print("Opportunities: 15 offered, 15 observed")
     print("Scores: 2/3/3/2/2/3/3, no NE")
-    print("Negative tests: 17 passed")
+    print("Negative tests: 32 passed")
 
 
 if __name__ == "__main__":

@@ -30,7 +30,7 @@
         "logical_reasoning",
         "decision_and_consensus"
       ],
-      "detail": "決定前に1件の遅延リスクが開示された。",
+      "detail": "決定前に1件の遅延リスクが正規の候補者行動後に開示された。",
       "evidence_event_ids": [
         "ev_late_risk_security"
       ],
@@ -85,9 +85,10 @@
         "decision_and_consensus",
         "process_and_time_management"
       ],
-      "detail": "要約に必要な項目が含まれる。",
+      "detail": "要約に必要な項目と値が含まれる。",
       "evidence_event_ids": [
-        "ev_summary_fields"
+        "ev_summary_fields",
+        "ev_summary"
       ],
       "evidence_message_ids": [
         "m039"
