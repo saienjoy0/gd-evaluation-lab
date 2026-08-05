@@ -1,0 +1,142 @@
+{
+  "contract_version": "0.1",
+  "sheet_id": "rater-a-exercise-b-low-001",
+  "episode_id": "exercise-b-low-001",
+  "scenario_id": "candidate-assessment-b-stakeholder-conflict",
+  "annotator_id": "rater_a_anon",
+  "rubric_version": "candidate-behavior-v0.1",
+  "calibration_set_version": "exercise-b-low-v0.1",
+  "started_at": "2026-08-05T10:20:00Z",
+  "completed_at": "2026-08-05T10:35:00Z",
+  "evaluation_stage": "independent",
+  "workflow_attestations": {
+    "ai_scores_hidden": true,
+    "evidence_selected_before_score": true,
+    "rubric_consulted": true,
+    "identity_blinded": true
+  },
+  "dimensions": [
+    {
+      "dimension": "issue_framing",
+      "opportunity_status": "sufficient",
+      "opportunity_evidence_event_ids": [
+        "ev_opp_b_is_01"
+      ],
+      "selected_evidence_message_ids": [
+        "m005"
+      ],
+      "score": 1,
+      "confidence": 0.86,
+      "comment": "予算と重点数には触れたが、比較基準を定義せず議論構造を作らなかった。",
+      "not_evaluable_reason": null,
+      "flags": []
+    },
+    {
+      "dimension": "logical_reasoning",
+      "opportunity_status": "sufficient",
+      "opportunity_evidence_event_ids": [
+        "ev_opp_b_lo_01",
+        "ev_opp_b_lo_02"
+      ],
+      "selected_evidence_message_ids": [
+        "m017",
+        "m027"
+      ],
+      "score": 1,
+      "confidence": 0.86,
+      "comment": "必要性を述べるだけで、比較、反証、条件、緩和策を根拠へ接続しなかった。",
+      "not_evaluable_reason": null,
+      "flags": []
+    },
+    {
+      "dimension": "listening_and_response",
+      "opportunity_status": "sufficient",
+      "opportunity_evidence_event_ids": [
+        "ev_opp_b_li_01",
+        "ev_opp_b_li_02",
+        "ev_opp_b_li_03"
+      ],
+      "selected_evidence_message_ids": [
+        "m008",
+        "m011",
+        "m021"
+      ],
+      "score": 2,
+      "confidence": 0.86,
+      "comment": "各懸念の後に応答したが、内容を受け止めた案修正には至らなかった。",
+      "not_evaluable_reason": null,
+      "flags": []
+    },
+    {
+      "dimension": "valuable_contribution",
+      "opportunity_status": "sufficient",
+      "opportunity_evidence_event_ids": [
+        "ev_opp_b_va_01",
+        "ev_opp_b_va_02"
+      ],
+      "selected_evidence_message_ids": [
+        "m013",
+        "m019"
+      ],
+      "score": 1,
+      "confidence": 0.86,
+      "comment": "既出の二施策を選ぶだけで、統合案や新しい分析を提示しなかった。",
+      "not_evaluable_reason": null,
+      "flags": []
+    },
+    {
+      "dimension": "collaboration_and_relationship",
+      "opportunity_status": "sufficient",
+      "opportunity_evidence_event_ids": [
+        "ev_opp_b_co_01",
+        "ev_opp_b_co_02",
+        "ev_opp_b_co_03"
+      ],
+      "selected_evidence_message_ids": [
+        "m008",
+        "m021",
+        "m029"
+      ],
+      "score": 1,
+      "confidence": 0.86,
+      "comment": "礼儀は保ったが、少数意見の保護や対立調整を行わず合意を急いだ。",
+      "not_evaluable_reason": null,
+      "flags": []
+    },
+    {
+      "dimension": "decision_and_consensus",
+      "opportunity_status": "sufficient",
+      "opportunity_evidence_event_ids": [
+        "ev_opp_b_de_01",
+        "ev_opp_b_de_02",
+        "ev_opp_b_de_03"
+      ],
+      "selected_evidence_message_ids": [
+        "m023",
+        "m025",
+        "m027"
+      ],
+      "score": 1,
+      "confidence": 0.86,
+      "comment": "配分額は示したが、判断基準、反対意見の処理、緩和策を欠いた。",
+      "not_evaluable_reason": null,
+      "flags": []
+    },
+    {
+      "dimension": "process_and_time_management",
+      "opportunity_status": "sufficient",
+      "opportunity_evidence_event_ids": [
+        "ev_opp_b_pr_01"
+      ],
+      "selected_evidence_message_ids": [
+        "m033"
+      ],
+      "score": 1,
+      "confidence": 0.86,
+      "comment": "時間不足を理由に収束を急ぎ、論点や手順の調整を行わなかった。",
+      "not_evaluable_reason": null,
+      "flags": []
+    }
+  ],
+  "overall_notes": "Exercise B lowの校正ケースとして、証拠を先に選択して独立採点した。"
+}

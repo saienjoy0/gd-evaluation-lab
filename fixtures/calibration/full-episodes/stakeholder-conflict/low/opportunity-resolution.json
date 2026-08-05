@@ -212,16 +212,16 @@
       ]
     }
   ],
-  "resolution_id": "or-exercise-b-high-001",
+  "resolution_id": "or-exercise-b-low-001",
   "resolver_version": "opportunity-resolver-v0.1",
   "scenario_id": "candidate-assessment-b-stakeholder-conflict",
   "scenario_version": "candidate-assessment-b-v0.1",
-  "session_id": "exercise-b-high-001",
+  "session_id": "exercise-b-low-001",
   "summary": {
     "invalid": 0,
     "not_offered": 0,
     "offered": 15,
     "with_candidate_response": 15
   },
-  "target_participant_id": "candidate_b_high"
+  "target_participant_id": "candidate_b_low"
 }

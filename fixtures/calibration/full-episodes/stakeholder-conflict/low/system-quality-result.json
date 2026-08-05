@@ -11,7 +11,7 @@
     "user_agency": 5
   },
   "evaluator_version": "exercise-b-deterministic-v0.1",
-  "result_id": "sq-exercise-b-high-001",
+  "result_id": "sq-exercise-b-low-001",
   "rule_results": [
     {
       "affected_dimensions": [
@@ -82,6 +82,6 @@
   ],
   "scenario_id": "candidate-assessment-b-stakeholder-conflict",
   "scenario_version": "candidate-assessment-b-v0.1",
-  "session_id": "exercise-b-high-001",
+  "session_id": "exercise-b-low-001",
   "status": "pass"
 }

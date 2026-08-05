@@ -1,15 +1,15 @@
 {
   "contract_version": "0.1",
-  "adjudication_id": "adj-exercise-b-high-001",
-  "episode_id": "exercise-b-high-001",
+  "adjudication_id": "adj-exercise-b-low-001",
+  "episode_id": "exercise-b-low-001",
   "scenario_id": "candidate-assessment-b-stakeholder-conflict",
   "rater_sheet_ids": [
-    "rater-a-exercise-b-high-001",
-    "rater-b-exercise-b-high-001"
+    "rater-a-exercise-b-low-001",
+    "rater-b-exercise-b-low-001"
   ],
   "adjudicator_id": "adjudicator_anon",
   "rubric_version": "candidate-behavior-v0.1",
-  "created_at": "2026-08-05T08:50:00Z",
+  "created_at": "2026-08-05T10:50:00Z",
   "trigger_reasons": [
     "RANDOM_CALIBRATION_SAMPLE"
   ],
@@ -17,117 +17,116 @@
     {
       "dimension": "issue_framing",
       "rater_scores": [
-        4,
-        4
+        1,
+        1
       ],
       "agreement_class": "exact",
-      "final_score": 4,
+      "final_score": 1,
       "final_evidence_message_ids": [
-        "m005",
-        "m019"
+        "m005"
       ],
-      "resolution_reason": "初期条件を構造化し、後半の反論を受けて見直し条件まで判断枠組みに組み込んだ。",
+      "resolution_reason": "予算と重点数には触れたが、比較基準を定義せず議論構造を作らなかった。",
       "not_evaluable_reason": null,
       "rubric_issue_code": null
     },
     {
       "dimension": "logical_reasoning",
       "rater_scores": [
-        4,
-        4
+        1,
+        1
       ],
       "agreement_class": "exact",
-      "final_score": 4,
+      "final_score": 1,
       "final_evidence_message_ids": [
         "m017",
         "m027"
       ],
-      "resolution_reason": "優先基準、各案の弱点、不確実性、再配分条件を複数局面で接続した。",
+      "resolution_reason": "必要性を述べるだけで、比較、反証、条件、緩和策を根拠へ接続しなかった。",
       "not_evaluable_reason": null,
       "rubric_issue_code": null
     },
     {
       "dimension": "listening_and_response",
       "rater_scores": [
-        4,
-        4
+        2,
+        2
       ],
       "agreement_class": "exact",
-      "final_score": 4,
+      "final_score": 2,
       "final_evidence_message_ids": [
         "m008",
         "m011",
         "m021"
       ],
-      "resolution_reason": "三者の懸念を言い換え、案を修正し、残る反対条件まで確認した。",
+      "resolution_reason": "各懸念の後に応答したが、内容を受け止めた案修正には至らなかった。",
       "not_evaluable_reason": null,
       "rubric_issue_code": null
     },
     {
       "dimension": "valuable_contribution",
       "rater_scores": [
-        4,
-        4
+        1,
+        1
       ],
       "agreement_class": "exact",
-      "final_score": 4,
+      "final_score": 1,
       "final_evidence_message_ids": [
         "m013",
         "m019"
       ],
-      "resolution_reason": "重点予算、既存資源、再配分を時間軸で統合する段階的ポートフォリオを作った。",
+      "resolution_reason": "既出の二施策を選ぶだけで、統合案や新しい分析を提示しなかった。",
       "not_evaluable_reason": null,
       "rubric_issue_code": null
     },
     {
       "dimension": "collaboration_and_relationship",
       "rater_scores": [
-        4,
-        4
+        1,
+        1
       ],
       "agreement_class": "exact",
-      "final_score": 4,
+      "final_score": 1,
       "final_evidence_message_ids": [
         "m008",
         "m021",
         "m029"
       ],
-      "resolution_reason": "少数意見を切り捨てず、三者が再度反対できる最終確認の場を作った。",
+      "resolution_reason": "礼儀は保ったが、少数意見の保護や対立調整を行わず合意を急いだ。",
       "not_evaluable_reason": null,
       "rubric_issue_code": null
     },
     {
       "dimension": "decision_and_consensus",
       "rater_scores": [
-        4,
-        4
+        1,
+        1
       ],
       "agreement_class": "exact",
-      "final_score": 4,
+      "final_score": 1,
       "final_evidence_message_ids": [
         "m023",
         "m025",
         "m027"
       ],
-      "resolution_reason": "基準、配分、リスク、緩和策、実施条件、再検討条件を含む合意を形成した。",
+      "resolution_reason": "配分額は示したが、判断基準、反対意見の処理、緩和策を欠いた。",
       "not_evaluable_reason": null,
       "rubric_issue_code": null
     },
     {
       "dimension": "process_and_time_management",
       "rater_scores": [
-        3,
-        3
+        1,
+        1
       ],
       "agreement_class": "exact",
-      "final_score": 3,
+      "final_score": 1,
       "final_evidence_message_ids": [
         "m033"
       ],
-      "resolution_reason": "終盤で残時間を要約と確認へ配分し、未解決点の処理順を具体化した。",
+      "resolution_reason": "時間不足を理由に収束を急ぎ、論点や手順の調整を行わなかった。",
       "not_evaluable_reason": null,
       "rubric_issue_code": null
     }
   ],
-  "overall_resolution_notes": "全7軸で独立評価が一致し、Exercise B highの15評価機会との証拠連結を確認した。"
+  "overall_resolution_notes": "全7軸で独立評価が一致し、Exercise B lowの15評価機会との証拠連結を確認した。"
 }

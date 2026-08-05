@@ -1,0 +1,168 @@
+{
+  "ai_quality": {
+    "dimension_scores": {
+      "consensus_quality": 4,
+      "discussion_coherence": 4,
+      "goal_progression": 4,
+      "natural_pacing": 4,
+      "novelty_and_repetition": 4,
+      "responsiveness": 4,
+      "role_believability": 4,
+      "user_agency": 5
+    },
+    "status": "pass",
+    "violations": []
+  },
+  "candidate_dimensions": [
+    {
+      "confidence": 0.9,
+      "dimension": "issue_framing",
+      "evidence_message_ids": [
+        "m005",
+        "m019"
+      ],
+      "improvement": "次回は、曖昧さや論点漏れを特定し、優先順位を付けて議論構造を改善する。",
+      "missing_behavior": "次の水準で求められる行動は「曖昧さや論点漏れを特定し、優先順位を付けて議論構造を改善する。」である。",
+      "not_evaluable_reason": null,
+      "positive_behavior": "初期条件を構造化し、後半の反論を受けて見直し条件まで判断枠組みに組み込んだ。",
+      "question_results": [],
+      "score": 4
+    },
+    {
+      "confidence": 0.9,
+      "dimension": "logical_reasoning",
+      "evidence_message_ids": [
+        "m017",
+        "m027"
+      ],
+      "improvement": "次回は、仮説の弱点、反対証拠、不確実性も扱い、議論の精度を高める。",
+      "missing_behavior": "次の水準で求められる行動は「仮説の弱点、反対証拠、不確実性も扱い、議論の精度を高める。」である。",
+      "not_evaluable_reason": null,
+      "positive_behavior": "優先基準、各案の弱点、不確実性、再配分条件を複数局面で接続した。",
+      "question_results": [],
+      "score": 4
+    },
+    {
+      "confidence": 0.9,
+      "dimension": "listening_and_response",
+      "evidence_message_ids": [
+        "m008",
+        "m011",
+        "m021"
+      ],
+      "improvement": "次回は、複数人の発言を統合し、誤解や対立点を解消して議論を発展させる。",
+      "missing_behavior": "次の水準で求められる行動は「複数人の発言を統合し、誤解や対立点を解消して議論を発展させる。」である。",
+      "not_evaluable_reason": null,
+      "positive_behavior": "三者の懸念を言い換え、案を修正し、残る反対条件まで確認した。",
+      "question_results": [],
+      "score": 4
+    },
+    {
+      "confidence": 0.9,
+      "dimension": "valuable_contribution",
+      "evidence_message_ids": [
+        "m013",
+        "m019"
+      ],
+      "improvement": "次回は、複数案を改善・統合し、重要な見落としやリスクまで補う。",
+      "missing_behavior": "次の水準で求められる行動は「複数案を改善・統合し、重要な見落としやリスクまで補う。」である。",
+      "not_evaluable_reason": null,
+      "positive_behavior": "重点予算、既存資源、再配分を時間軸で統合する段階的ポートフォリオを作った。",
+      "question_results": [],
+      "score": 4
+    },
+    {
+      "confidence": 0.9,
+      "dimension": "collaboration_and_relationship",
+      "evidence_message_ids": [
+        "m008",
+        "m021",
+        "m029"
+      ],
+      "improvement": "次回は、心理的安全性を保ちながら率直な対立を扱い、チーム全体の力を引き出す。",
+      "missing_behavior": "次の水準で求められる行動は「心理的安全性を保ちながら率直な対立を扱い、チーム全体の力を引き出す。」である。",
+      "not_evaluable_reason": null,
+      "positive_behavior": "少数意見を切り捨てず、三者が再度反対できる最終確認の場を作った。",
+      "question_results": [],
+      "score": 4
+    },
+    {
+      "confidence": 0.9,
+      "dimension": "decision_and_consensus",
+      "evidence_message_ids": [
+        "m023",
+        "m025",
+        "m027"
+      ],
+      "improvement": "次回は、少数意見、リスク、実行条件を含めて合意を形成し、結論の弱点も明示する。",
+      "missing_behavior": "次の水準で求められる行動は「少数意見、リスク、実行条件を含めて合意を形成し、結論の弱点も明示する。」である。",
+      "not_evaluable_reason": null,
+      "positive_behavior": "基準、配分、リスク、緩和策、実施条件、再検討条件を含む合意を形成した。",
+      "question_results": [],
+      "score": 4
+    },
+    {
+      "confidence": 0.9,
+      "dimension": "process_and_time_management",
+      "evidence_message_ids": [
+        "m033"
+      ],
+      "improvement": "次回は、停滞や脱線を早期に検知し、全員の理解を保ちながらプロセスを再設計する。",
+      "missing_behavior": "次の水準で求められる行動は「停滞や脱線を早期に検知し、全員の理解を保ちながらプロセスを再設計する。」である。",
+      "not_evaluable_reason": null,
+      "positive_behavior": "終盤で残時間を要約と確認へ配分し、未解決点の処理順を具体化した。",
+      "question_results": [],
+      "score": 3
+    }
+  ],
+  "contract_version": "0.1",
+  "display_groups": {
+    "collaboration": {
+      "aggregation_status": "not_calibrated",
+      "bottleneck_dimension": "listening_and_response",
+      "coverage": {
+        "evaluated": 2,
+        "total": 2
+      },
+      "score": null,
+      "summary": "次の水準で求められる行動は「複数人の発言を統合し、誤解や対立点を解消して議論を発展させる。」である。"
+    },
+    "progress": {
+      "aggregation_status": "not_calibrated",
+      "bottleneck_dimension": "process_and_time_management",
+      "coverage": {
+        "evaluated": 2,
+        "total": 2
+      },
+      "score": null,
+      "summary": "条件付きの合意は作れたが、途中の進捗管理が不足した。"
+    },
+    "thinking": {
+      "aggregation_status": "not_calibrated",
+      "bottleneck_dimension": "issue_framing",
+      "coverage": {
+        "evaluated": 3,
+        "total": 3
+      },
+      "score": null,
+      "summary": "次の水準で求められる行動は「曖昧さや論点漏れを特定し、優先順位を付けて議論構造を改善する。」である。"
+    }
+  },
+  "evaluation_disagreement": null,
+  "legacy_evaluation": null,
+  "review_status": "completed",
+  "session_id": "exercise-b-high-001",
+  "status": "completed",
+  "target_participant_id": "candidate_b_high",
+  "version_info": {
+    "ai_quality_rubric_version": "ai-participant-v0.1",
+    "deterministic_evaluator_version": "exercise-b-deterministic-v0.1",
+    "judge_model": "human-adjudication",
+    "judge_version": "not-applied-v0.1",
+    "orchestrator_version": "synthetic-orchestrator-v0.1",
+    "prompt_version": "exercise-b-high-script-v0.1",
+    "rubric_version": "candidate-behavior-v0.1",
+    "scenario_version": "candidate-assessment-b-v0.1",
+    "transcript_hash": "9df7dfa032e047df2aa91e4bd95edce66d2e3f7fb86a5a9378d2399af165bfb1"
+  }
+}
