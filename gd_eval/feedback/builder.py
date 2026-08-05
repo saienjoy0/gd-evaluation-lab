@@ -28,6 +28,15 @@ def build_feedback(
         }
         for item in dimensions
     }
+    not_evaluable_dimensions = {
+        item["dimension"]: {
+            "evaluation_status": "not_evaluable",
+            "reason_code": item["not_evaluable_reason"]["code"],
+            "reason": item["not_evaluable_reason"]["detail"],
+        }
+        for item in dimensions
+        if item["score"] == "NE" and item["not_evaluable_reason"] is not None
+    }
 
     numeric = [item for item in dimensions if item["score"] != "NE"]
     strength_candidates = [item for item in numeric if int(item["score"]) >= 3]
@@ -57,7 +66,7 @@ def build_feedback(
     improvements = {
         item["dimension"]: item["improvement"] for item in numeric
     }
-    return {
+    feedback = {
         "contract_version": "0.1",
         "slice_id": _slice_id(case_id),
         "dimension_narratives": narratives,
@@ -66,3 +75,6 @@ def build_feedback(
         "next_action": compose_next_action(low_dimensions, improvements),
         "limitations": "合成Episodeに基づく校正用フィードバックであり、採用判断には使用しない。",
     }
+    if not_evaluable_dimensions:
+        feedback["not_evaluable_dimensions"] = not_evaluable_dimensions
+    return feedback
