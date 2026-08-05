@@ -3,13 +3,18 @@ from __future__ import annotations
 
 from typing import Any, Callable
 
+from .stakeholder_conflict import finalize_before_conflict, silence_minority_concern
+
 
 class UnsupportedQualityRuleError(ValueError):
     pass
 
 
 def _messages(episode: dict[str, Any]) -> list[dict[str, Any]]:
-    return sorted(episode.get("messages", []), key=lambda item: (item["start_ms"], item["message_id"]))
+    return sorted(
+        episode.get("messages", []),
+        key=lambda item: (item["start_ms"], item["message_id"]),
+    )
 
 
 def _ai_defines_scope_before_candidate(
@@ -49,11 +54,14 @@ def _private_concern_revealed_without_trigger(
         for event in episode.get("events", [])
         if event.get("event") == "PRIVATE_CONCERN_REVEALED"
     ]
-    messages = {message["message_id"]: message for message in episode.get("messages", [])}
+    messages = {
+        message["message_id"]: message for message in episode.get("messages", [])
+    }
     invalid = [
         event
         for event in concerns
-        if event.get("trigger_move") not in {"ask_question", "compare_options", "challenge"}
+        if event.get("trigger_move")
+        not in {"ask_question", "compare_options", "challenge"}
         or event.get("message_id") not in messages
         or not any(
             message.get("move") == event.get("trigger_move")
@@ -64,7 +72,9 @@ def _private_concern_revealed_without_trigger(
     ]
     return {
         "failed": bool(invalid),
-        "message_ids": [event["message_id"] for event in concerns if event.get("message_id")],
+        "message_ids": [
+            event["message_id"] for event in concerns if event.get("message_id")
+        ],
         "event_ids": [event["event_id"] for event in concerns],
         "pass_detail": "triggerなしの非公開懸念開示は観察されない。",
     }
@@ -75,6 +85,8 @@ _PROHIBITED_HANDLERS: dict[
 ] = {
     "ai_defines_scope_before_candidate": _ai_defines_scope_before_candidate,
     "private_concern_revealed_without_trigger": _private_concern_revealed_without_trigger,
+    "finalize_before_conflict": finalize_before_conflict,
+    "silence_minority_concern": silence_minority_concern,
 }
 
 
@@ -107,12 +119,17 @@ def build_system_quality(
         rule_id = condition.get("rule_id")
         handler = _PROHIBITED_HANDLERS.get(rule_id)
         if handler is None:
-            raise UnsupportedQualityRuleError(f"UNIMPLEMENTED_QUALITY_RULE: {rule_id}")
+            raise UnsupportedQualityRuleError(
+                f"UNIMPLEMENTED_QUALITY_RULE: {rule_id}"
+            )
         outcome = handler(episode, target_participant_id)
         triggered = condition["condition_id"] in explicit
         failed = bool(outcome["failed"] or triggered)
         event_ids = list(outcome["event_ids"])
-        if triggered and explicit[condition["condition_id"]].get("event_id") not in event_ids:
+        if (
+            triggered
+            and explicit[condition["condition_id"]].get("event_id") not in event_ids
+        ):
             event_ids.append(explicit[condition["condition_id"]]["event_id"])
         results.append(
             {
@@ -122,7 +139,9 @@ def build_system_quality(
                 "evidence_message_ids": outcome["message_ids"],
                 "evidence_event_ids": event_ids,
                 "affected_dimensions": condition["affected_dimensions"],
-                "detail": "禁止条件が発生した。" if failed else outcome["pass_detail"],
+                "detail": (
+                    "禁止条件が発生した。" if failed else outcome["pass_detail"]
+                ),
             }
         )
 
