@@ -30,8 +30,9 @@ def build_feedback(
     }
 
     numeric = [item for item in dimensions if item["score"] != "NE"]
+    strength_candidates = [item for item in numeric if int(item["score"]) >= 3]
     ranked = sorted(
-        enumerate(numeric),
+        enumerate(strength_candidates),
         key=lambda pair: (-int(pair[1]["score"]), pair[0]),
     )
     strengths: list[str] = []
