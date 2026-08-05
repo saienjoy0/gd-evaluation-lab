@@ -1,106 +1,493 @@
 """Deterministic rules for time-boxed decision scenarios."""
 from __future__ import annotations
+
 from typing import Any
 
 
 def _messages(episode: dict[str, Any]) -> list[dict[str, Any]]:
-    return sorted(episode.get("messages", []), key=lambda x: (x["start_ms"], x["message_id"]))
+    return sorted(
+        episode.get("messages", []),
+        key=lambda item: (item["start_ms"], item["message_id"]),
+    )
+
+
+def _message_map(episode: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    return {
+        message["message_id"]: message
+        for message in episode.get("messages", [])
+    }
 
 
 def _target(episode: dict[str, Any], params: dict[str, Any]) -> str:
-    if params.get("target_participant_id"):
-        return str(params["target_participant_id"])
-    users=[p["participant_id"] for p in episode.get("participants",[]) if p.get("speaker_type")=="user"]
-    if len(users)!=1:
+    explicit = params.get("target_participant_id")
+    if explicit:
+        return str(explicit)
+    users = [
+        participant["participant_id"]
+        for participant in episode.get("participants", [])
+        if participant.get("speaker_type") == "user"
+    ]
+    if len(users) != 1:
         raise ValueError("TARGET_PARTICIPANT_AMBIGUOUS")
     return users[0]
 
 
 def _events(episode: dict[str, Any], name: str) -> list[dict[str, Any]]:
-    return [e for e in episode.get("events",[]) if e.get("event")==name]
+    return [
+        event
+        for event in episode.get("events", [])
+        if event.get("event") == name
+    ]
 
 
-def time_checkpoints_followed_by_candidate_turn(scenario, episode, params):
-    duration_ms=int(scenario["duration_seconds"])*1000
-    target=_target(episode,params)
-    msgs={m["message_id"]:m for m in _messages(episode)}
-    checkpoints=[int(v) for v in params.get("checkpoints_percent",[])]
-    tolerance=duration_ms*float(params.get("tolerance_percent_of_duration",5))/100
-    max_delay=int(params.get("maximum_response_delay_ms",90000))
-    minimum=int(params.get("minimum_candidate_turns_after_each",1))
-    evs=_events(episode,"TIME_CHECKPOINT_REACHED")
-    evidence_messages=[]; evidence_events=[]; ok=True
-    for i,pct in enumerate(checkpoints):
-        candidates=[e for e in evs if int(e.get("checkpoint_percent",-1))==pct]
+def _event_bound_to_message(
+    event: dict[str, Any],
+    message: dict[str, Any] | None,
+    *,
+    speaker_type: str | None = None,
+    participant_id: str | None = None,
+    move: str | None = None,
+) -> bool:
+    if message is None:
+        return False
+    timestamp = event.get("timestamp_ms")
+    if not isinstance(timestamp, int):
+        return False
+    if not (
+        message.get("start_ms", 0)
+        <= timestamp
+        <= message.get("end_ms", -1)
+    ):
+        return False
+    if speaker_type is not None and message.get("speaker_type") != speaker_type:
+        return False
+    if participant_id is not None and message.get("participant_id") != participant_id:
+        return False
+    if move is not None and message.get("move") != move:
+        return False
+    event_participant = event.get("participant_id")
+    if event_participant is not None and event_participant != message.get("participant_id"):
+        return False
+    return True
+
+
+def _valid_checkpoint_events(
+    episode: dict[str, Any],
+) -> list[dict[str, Any]]:
+    messages = _message_map(episode)
+    return sorted(
+        [
+            event
+            for event in _events(episode, "TIME_CHECKPOINT_REACHED")
+            if _event_bound_to_message(
+                event,
+                messages.get(event.get("message_id")),
+                speaker_type="ai",
+                move="time_check",
+            )
+        ],
+        key=lambda item: (item["timestamp_ms"], item["event_id"]),
+    )
+
+
+def time_checkpoints_followed_by_candidate_turn(
+    scenario: dict[str, Any],
+    episode: dict[str, Any],
+    params: dict[str, Any],
+) -> dict[str, Any]:
+    duration_ms = int(scenario["duration_seconds"]) * 1000
+    target = _target(episode, params)
+    messages = _messages(episode)
+    message_by_id = _message_map(episode)
+    checkpoints = [int(value) for value in params.get("checkpoints_percent", [])]
+    tolerance = (
+        duration_ms
+        * float(params.get("tolerance_percent_of_duration", 5))
+        / 100
+    )
+    maximum_delay = int(params.get("maximum_response_delay_ms", 90000))
+    minimum = int(params.get("minimum_candidate_turns_after_each", 1))
+    checkpoint_events = _valid_checkpoint_events(episode)
+
+    evidence_messages: list[str] = []
+    evidence_events: list[str] = []
+    ok = True
+
+    for index, percentage in enumerate(checkpoints):
+        candidates = [
+            event
+            for event in checkpoint_events
+            if int(event.get("checkpoint_percent", -1)) == percentage
+        ]
         if not candidates:
-            ok=False; continue
-        event=min(candidates,key=lambda e:e["timestamp_ms"])
-        expected=duration_ms*pct/100
-        linked=msgs.get(event.get("message_id"))
-        if abs(event["timestamp_ms"]-expected)>tolerance or not linked or linked.get("speaker_type")!="ai" or linked.get("move")!="time_check":
-            ok=False; continue
-        next_ts=duration_ms
-        if i+1<len(checkpoints):
-            next_ts=duration_ms*checkpoints[i+1]/100+tolerance
-        responses=[m for m in _messages(episode) if m.get("speaker_type")=="user" and m.get("participant_id")==target and m.get("start_ms",0)>=event["timestamp_ms"] and m.get("start_ms",0)<=event["timestamp_ms"]+max_delay and m.get("start_ms",0)<next_ts]
-        if len(responses)<minimum:
-            ok=False
-        else:
-            evidence_messages.extend([linked["message_id"],*[m["message_id"] for m in responses[:minimum]]]); evidence_events.append(event["event_id"])
-    return {"ok":ok,"evidence_message_ids":list(dict.fromkeys(evidence_messages)),"evidence_event_ids":evidence_events,"detail":f"{len(evidence_events)}件の時間通知後に候補者ターンが確保された。"}
-
-
-def private_concern_revealed_before_phase(scenario, episode, params):
-    before_phase=params.get("before_phase","decision")
-    starts=[m["start_ms"] for m in _messages(episode) if m.get("phase")==before_phase]
-    cutoff=min(starts) if starts else float("inf")
-    ai={p["agent_id"]:p for p in scenario.get("ai_participants",[])}
-    msgs={m["message_id"]:m for m in _messages(episode)}
-    valid=[]
-    for e in _events(episode,"PRIVATE_CONCERN_REVEALED"):
-        if params.get("require_late_risk",False) and not e.get("late_risk"):
+            ok = False
             continue
-        m=msgs.get(e.get("message_id")); p=ai.get(e.get("participant_id"))
-        if not m or not p or m.get("speaker_type")!="ai" or m.get("participant_id")!=e.get("participant_id"):
+
+        event = min(candidates, key=lambda item: item["timestamp_ms"])
+        linked = message_by_id[event["message_id"]]
+        expected = duration_ms * percentage / 100
+        if abs(event["timestamp_ms"] - expected) > tolerance:
+            ok = False
             continue
-        if e.get("concern")!=p.get("private_concern") or e.get("timestamp_ms",0)>=cutoff:
+
+        response_window_start = max(event["timestamp_ms"], linked["end_ms"])
+        response_window_end = response_window_start + maximum_delay
+        if index + 1 < len(checkpoints):
+            next_checkpoint = duration_ms * checkpoints[index + 1] / 100
+            response_window_end = min(
+                response_window_end,
+                next_checkpoint + tolerance,
+            )
+
+        responses = [
+            message
+            for message in messages
+            if message.get("speaker_type") == "user"
+            and message.get("participant_id") == target
+            and response_window_start <= message.get("start_ms", 0)
+            and message.get("start_ms", 0) <= response_window_end
+        ]
+        if len(responses) < minimum:
+            ok = False
             continue
-        valid.append(e)
-    minimum=int(params.get("minimum_concerns",1))
-    unique={e.get("concern") for e in valid}
-    return {"ok":len(unique)>=minimum,"evidence_message_ids":[e["message_id"] for e in valid],"evidence_event_ids":[e["event_id"] for e in valid],"detail":f"決定前に{len(unique)}件の遅延リスクが開示された。"}
+
+        evidence_messages.extend(
+            [
+                linked["message_id"],
+                *[
+                    message["message_id"]
+                    for message in responses[:minimum]
+                ],
+            ]
+        )
+        evidence_events.append(event["event_id"])
+
+    return {
+        "ok": ok,
+        "evidence_message_ids": list(dict.fromkeys(evidence_messages)),
+        "evidence_event_ids": evidence_events,
+        "detail": (
+            f"{len(evidence_events)}件の時間通知後に"
+            "候補者ターンが確保された。"
+        ),
+    }
 
 
-def candidate_prioritizes_after_time_check(scenario, episode, params):
+def private_concern_revealed_before_phase(
+    scenario: dict[str, Any],
+    episode: dict[str, Any],
+    params: dict[str, Any],
+) -> dict[str, Any]:
+    before_phase = params.get("before_phase", "decision")
+    phase_starts = [
+        message["start_ms"]
+        for message in _messages(episode)
+        if message.get("phase") == before_phase
+    ]
+    cutoff = min(phase_starts) if phase_starts else float("inf")
+    target = _target(episode, params)
+    participants = {
+        participant["agent_id"]: participant
+        for participant in scenario.get("ai_participants", [])
+    }
+    messages = _messages(episode)
+    message_by_id = _message_map(episode)
+    allowed_trigger_moves = set(params.get("allowed_trigger_moves", []))
+
+    valid: list[dict[str, Any]] = []
+    for event in _events(episode, "PRIVATE_CONCERN_REVEALED"):
+        if params.get("require_late_risk", False) and not event.get("late_risk"):
+            continue
+
+        message = message_by_id.get(event.get("message_id"))
+        participant = participants.get(event.get("participant_id"))
+        if participant is None or not _event_bound_to_message(
+            event,
+            message,
+            speaker_type="ai",
+            participant_id=event.get("participant_id"),
+        ):
+            continue
+        if event.get("concern") != participant.get("private_concern"):
+            continue
+        if message["end_ms"] > cutoff:
+            continue
+
+        trigger_move = event.get("trigger_move")
+        if allowed_trigger_moves:
+            if trigger_move not in allowed_trigger_moves:
+                continue
+            triggered = any(
+                prior.get("speaker_type") == "user"
+                and prior.get("participant_id") == target
+                and prior.get("move") == trigger_move
+                and prior.get("end_ms", 0) <= message.get("start_ms", 0)
+                for prior in messages
+            )
+            if not triggered:
+                continue
+
+        valid.append(event)
+
+    minimum = int(params.get("minimum_concerns", 1))
+    unique_concerns = {
+        (event.get("participant_id"), event.get("concern"))
+        for event in valid
+    }
+    return {
+        "ok": len(unique_concerns) >= minimum,
+        "evidence_message_ids": [
+            event["message_id"]
+            for event in valid
+        ],
+        "evidence_event_ids": [
+            event["event_id"]
+            for event in valid
+        ],
+        "detail": (
+            f"決定前に{len(unique_concerns)}件の遅延リスクが"
+            "正規の候補者行動後に開示された。"
+        ),
+    }
+
+
+def candidate_prioritizes_after_time_check(
+    scenario: dict[str, Any],
+    episode: dict[str, Any],
+    params: dict[str, Any],
+) -> dict[str, Any]:
     del scenario
-    target=_target(episode,params); msgs={m["message_id"]:m for m in _messages(episode)}
-    checkpoints=sorted(_events(episode,"TIME_CHECKPOINT_REACHED"),key=lambda e:e["timestamp_ms"])
-    valid=[]
-    for e in _events(episode,"PRIORITY_UPDATE_RECORDED"):
-        m=msgs.get(e.get("message_id")); prior=[c for c in checkpoints if c["timestamp_ms"]<=e.get("timestamp_ms",0)]
-        if not m or not prior or m.get("speaker_type")!="user" or m.get("participant_id")!=target or m.get("move")!="prioritize":
+    target = _target(episode, params)
+    message_by_id = _message_map(episode)
+    checkpoints = _valid_checkpoint_events(episode)
+    minimum_items = int(params.get("minimum_ordered_items", 2))
+    by_checkpoint: dict[str, dict[str, Any]] = {}
+
+    for event in sorted(
+        _events(episode, "PRIORITY_UPDATE_RECORDED"),
+        key=lambda item: (item["timestamp_ms"], item["event_id"]),
+    ):
+        message = message_by_id.get(event.get("message_id"))
+        if not _event_bound_to_message(
+            event,
+            message,
+            speaker_type="user",
+            participant_id=target,
+            move="prioritize",
+        ):
             continue
-        checkpoint=max(prior,key=lambda c:c["timestamp_ms"])
-        if m.get("start_ms",0)<checkpoint["timestamp_ms"] or len(e.get("ordered_items",[]))<int(params.get("minimum_ordered_items",2)):
+
+        prior_checkpoints = [
+            checkpoint
+            for checkpoint in checkpoints
+            if checkpoint["timestamp_ms"] <= message["start_ms"]
+        ]
+        if not prior_checkpoints:
             continue
-        valid.append(e)
-    return {"ok":len(valid)>=int(params.get("minimum_occurrences",1)),"evidence_message_ids":[e["message_id"] for e in valid],"evidence_event_ids":[e["event_id"] for e in valid],"detail":f"時間通知後の優先順位更新を{len(valid)}件確認した。"}
+        checkpoint = max(
+            prior_checkpoints,
+            key=lambda item: item["timestamp_ms"],
+        )
+        following = [
+            candidate["timestamp_ms"]
+            for candidate in checkpoints
+            if candidate["timestamp_ms"] > checkpoint["timestamp_ms"]
+        ]
+        if following and message["start_ms"] >= min(following):
+            continue
+        if len(event.get("ordered_items", [])) < minimum_items:
+            continue
+        by_checkpoint.setdefault(checkpoint["event_id"], event)
+
+    valid = list(by_checkpoint.values())
+    minimum_occurrences = int(params.get("minimum_occurrences", 1))
+    return {
+        "ok": len(valid) >= minimum_occurrences,
+        "evidence_message_ids": [
+            event["message_id"]
+            for event in valid
+        ],
+        "evidence_event_ids": [
+            event["event_id"]
+            for event in valid
+        ],
+        "detail": (
+            f"時間通知後の優先順位更新を{len(valid)}件確認した。"
+        ),
+    }
 
 
-def candidate_compares_and_revises(scenario, episode, params):
-    target=_target(episode,params); msgs={m["message_id"]:m for m in _messages(episode)}
-    required_options=set(scenario.get("shared_context",{}).get("options",[]))
-    comparisons=[]
-    for e in _events(episode,"OPTIONS_COMPARED"):
-        m=msgs.get(e.get("message_id"))
-        if m and m.get("speaker_type")=="user" and m.get("participant_id")==target and m.get("move")=="compare_options" and required_options<=set(e.get("options",[])) and len(e.get("options",[]))>=int(params.get("minimum_options",3)) and len(e.get("criteria",[]))>=int(params.get("minimum_criteria",2)):
-            comparisons.append(e)
-    risks=[e for e in _events(episode,"PRIVATE_CONCERN_REVEALED") if e.get("late_risk")]
-    revisions=[]
-    for e in _events(episode,"DECISION_REVISION_RECORDED"):
-        before=msgs.get(e.get("before_message_id")); after=msgs.get(e.get("after_message_id")); linked=next((r for r in risks if r.get("event_id")==e.get("risk_event_id")),None)
-        if not before or not after or not linked or after.get("speaker_type")!="user" or after.get("participant_id")!=target or after.get("start_ms",0)<linked.get("timestamp_ms",0) or not e.get("changed_fields"):
+def candidate_compares_and_revises(
+    scenario: dict[str, Any],
+    episode: dict[str, Any],
+    params: dict[str, Any],
+) -> dict[str, Any]:
+    target = _target(episode, params)
+    message_by_id = _message_map(episode)
+    required_options = set(
+        scenario.get("shared_context", {}).get("options", [])
+    )
+
+    comparisons: list[dict[str, Any]] = []
+    for event in _events(episode, "OPTIONS_COMPARED"):
+        message = message_by_id.get(event.get("message_id"))
+        if not _event_bound_to_message(
+            event,
+            message,
+            speaker_type="user",
+            participant_id=target,
+            move="compare_options",
+        ):
             continue
-        revisions.append(e)
-    ok=bool(comparisons) and (bool(revisions) if params.get("requires_risk_response",False) else True)
-    return {"ok":ok,"evidence_message_ids":[*[e["message_id"] for e in comparisons],*[e["after_message_id"] for e in revisions]],"evidence_event_ids":[*[e["event_id"] for e in comparisons],*[e["event_id"] for e in revisions]],"detail":"三案比較と遅延リスク後の案修正を確認した。"}
+        if not required_options <= set(event.get("options", [])):
+            continue
+        if len(event.get("options", [])) < int(
+            params.get("minimum_options", 3)
+        ):
+            continue
+        if len(event.get("criteria", [])) < int(
+            params.get("minimum_criteria", 2)
+        ):
+            continue
+        comparisons.append(event)
+
+    risks = [
+        event
+        for event in _events(episode, "PRIVATE_CONCERN_REVEALED")
+        if event.get("late_risk")
+        and _event_bound_to_message(
+            event,
+            message_by_id.get(event.get("message_id")),
+            speaker_type="ai",
+            participant_id=event.get("participant_id"),
+        )
+    ]
+    risk_by_id = {
+        event["event_id"]: event
+        for event in risks
+    }
+
+    revisions: list[dict[str, Any]] = []
+    for event in _events(episode, "DECISION_REVISION_RECORDED"):
+        before = message_by_id.get(event.get("before_message_id"))
+        after = message_by_id.get(event.get("after_message_id"))
+        risk = risk_by_id.get(event.get("risk_event_id"))
+        if before is None or after is None or risk is None:
+            continue
+        if before.get("speaker_type") != "user":
+            continue
+        if before.get("participant_id") != target:
+            continue
+        if before.get("move") != "propose_decision":
+            continue
+        if before.get("end_ms", 0) > risk["timestamp_ms"]:
+            continue
+        if not _event_bound_to_message(
+            event,
+            after,
+            speaker_type="user",
+            participant_id=target,
+        ):
+            continue
+        if after.get("move") not in {
+            "integrate",
+            "propose_decision",
+        }:
+            continue
+        if after.get("start_ms", 0) < risk["timestamp_ms"]:
+            continue
+        if not event.get("changed_fields"):
+            continue
+        revisions.append(event)
+
+    ok = bool(comparisons) and (
+        bool(revisions)
+        if params.get("requires_risk_response", False)
+        else True
+    )
+    return {
+        "ok": ok,
+        "evidence_message_ids": [
+            *[
+                event["message_id"]
+                for event in comparisons
+            ],
+            *[
+                event["after_message_id"]
+                for event in revisions
+            ],
+        ],
+        "evidence_event_ids": [
+            *[
+                event["event_id"]
+                for event in comparisons
+            ],
+            *[
+                event["event_id"]
+                for event in revisions
+            ],
+        ],
+        "detail": "三案比較と遅延リスク後の案修正を確認した。",
+    }
+
+
+def candidate_summary_contains_fields(
+    scenario: dict[str, Any],
+    episode: dict[str, Any],
+    params: dict[str, Any],
+) -> dict[str, Any]:
+    del scenario
+    target = _target(episode, params)
+    message_by_id = _message_map(episode)
+    expected = set(params.get("fields", []))
+
+    field_events = [
+        event
+        for event in _events(episode, "SUMMARY_FIELDS_RECORDED")
+        if _event_bound_to_message(
+            event,
+            message_by_id.get(event.get("message_id")),
+            speaker_type="user",
+            participant_id=target,
+            move="summarize",
+        )
+        and message_by_id[event["message_id"]].get("phase") == "summary"
+        and expected <= set(event.get("fields", []))
+    ]
+    summary_events = [
+        event
+        for event in _events(episode, "SUMMARY_RECORDED")
+        if _event_bound_to_message(
+            event,
+            message_by_id.get(event.get("message_id")),
+            speaker_type="user",
+            participant_id=target,
+            move="summarize",
+        )
+        and message_by_id[event["message_id"]].get("phase") == "summary"
+        and all(event.get(field) for field in expected)
+    ]
+
+    valid_pairs = [
+        (field_event, summary_event)
+        for field_event in field_events
+        for summary_event in summary_events
+        if field_event["message_id"] == summary_event["message_id"]
+    ]
+    return {
+        "ok": bool(valid_pairs),
+        "evidence_message_ids": list(
+            dict.fromkeys(
+                field_event["message_id"]
+                for field_event, _ in valid_pairs
+            )
+        ),
+        "evidence_event_ids": list(
+            dict.fromkeys(
+                event["event_id"]
+                for pair in valid_pairs
+                for event in pair
+            )
+        ),
+        "detail": "要約に必要な項目と値が含まれる。",
+    }
