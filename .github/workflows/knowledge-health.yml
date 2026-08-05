@@ -54,3 +54,5 @@ jobs:
           git diff --exit-code -- \
             fixtures/calibration/full-episodes/stakeholder-conflict/system_failure
           python scripts/check_exercise_b_system_failure.py
+      - name: Validate Exercise B four-state matrix
+        run: python scripts/check_exercise_b_four_state_matrix.py
