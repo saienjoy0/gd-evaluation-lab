@@ -1,0 +1,65 @@
+name: Commit Exercise C medium Episode
+
+on:
+  push:
+    branches: [feat/exercise-c-medium-v0.1]
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/exercise-c-medium-v0.1
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Materialize Episode and update Scenario
+        run: |
+          python scripts/materialize_exercise_c_medium_episode.py
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path('fixtures/scenarios/candidate-assessment-c-time-boxed-decision-v0.1.json')
+          scenario = json.loads(path.read_text(encoding='utf-8'))
+          by_id = {
+              item['opportunity_id']: item
+              for item in scenario['evaluation_opportunities']
+          }
+          by_id['C-OP-VA-01']['trigger'] = 'after_training_initial_positions'
+          rubrics = {
+              item['rubric_id']: item
+              for item in scenario['instance_rubrics']
+          }
+          rubrics['C-R02']['rule']['params']['allowed_trigger_moves'] = [
+              'propose_decision'
+          ]
+          rubrics['C-R05']['rule']['deterministic_rule_id'] = (
+              'candidate_summary_contains_fields'
+          )
+          path.write_text(
+              json.dumps(
+                  scenario,
+                  ensure_ascii=False,
+                  sort_keys=True,
+                  separators=(',', ':'),
+              ) + '\n',
+              encoding='utf-8',
+          )
+          PY
+      - name: Commit authored files
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -- \
+            fixtures/calibration/full-episodes/time-boxed-decision/medium/episode.json \
+            fixtures/scenarios/candidate-assessment-c-time-boxed-decision-v0.1.json
+          git rm -- .github/workflows/commit-exercise-c-medium-episode.yml
+          git commit -m "fix: commit Exercise C Episode as direct fixture"
+          git push origin HEAD:feat/exercise-c-medium-v0.1
