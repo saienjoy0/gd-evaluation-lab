@@ -17,6 +17,17 @@
     "assertions"
   ],
   "$defs": {
+    "dimension": {
+      "enum": [
+        "issue_framing",
+        "logical_reasoning",
+        "listening_and_response",
+        "valuable_contribution",
+        "collaboration_and_relationship",
+        "decision_and_consensus",
+        "process_and_time_management"
+      ]
+    },
     "score": {
       "oneOf": [
         {"type": "integer", "minimum": 1, "maximum": 4},
@@ -45,6 +56,17 @@
         "process_and_time_management": {"$ref": "#/$defs/score"}
       }
     },
+    "opportunity_summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["offered", "not_offered", "invalid", "with_candidate_response"],
+      "properties": {
+        "offered": {"type": "integer", "minimum": 0},
+        "not_offered": {"type": "integer", "minimum": 0},
+        "invalid": {"type": "integer", "minimum": 0},
+        "with_candidate_response": {"type": "integer", "minimum": 0}
+      }
+    },
     "case": {
       "type": "object",
       "additionalProperties": false,
@@ -69,30 +91,12 @@
           "uniqueItems": true,
           "items": {"type": "string", "minLength": 1}
         },
-        "opportunities": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["offered", "not_offered", "invalid", "with_candidate_response"],
-          "properties": {
-            "offered": {"type": "integer", "minimum": 0},
-            "not_offered": {"type": "integer", "minimum": 0},
-            "invalid": {"type": "integer", "minimum": 0},
-            "with_candidate_response": {"type": "integer", "minimum": 0}
-          }
-        },
+        "opportunities": {"$ref": "#/$defs/opportunity_summary"},
         "numeric_dimensions": {"type": "integer", "minimum": 0, "maximum": 7},
         "ne_dimensions": {
           "type": "array",
           "uniqueItems": true,
-          "items": {"enum": [
-            "issue_framing",
-            "logical_reasoning",
-            "listening_and_response",
-            "valuable_contribution",
-            "collaboration_and_relationship",
-            "decision_and_consensus",
-            "process_and_time_management"
-          ]}
+          "items": {"$ref": "#/$defs/dimension"}
         },
         "scores": {"$ref": "#/$defs/scores"}
       }
@@ -100,13 +104,20 @@
   },
   "properties": {
     "contract_version": {"const": "0.1"},
-    "matrix_id": {"const": "exercise-a-four-state-v0.1"},
-    "exercise_id": {"const": "candidate-assessment-a-ambiguous-structure"},
-    "scenario_version": {"const": "candidate-assessment-a-v0.1"},
-    "runner_version": {"const": "generic-full-episode-runner-v0.1"},
-    "states": {
-      "const": ["high", "medium", "low", "system_failure"]
+    "matrix_id": {
+      "enum": ["exercise-a-four-state-v0.1", "exercise-b-four-state-v0.1"]
     },
+    "exercise_id": {
+      "enum": [
+        "candidate-assessment-a-ambiguous-structure",
+        "candidate-assessment-b-stakeholder-conflict"
+      ]
+    },
+    "scenario_version": {
+      "enum": ["candidate-assessment-a-v0.1", "candidate-assessment-b-v0.1"]
+    },
+    "runner_version": {"const": "generic-full-episode-runner-v0.1"},
+    "states": {"const": ["high", "medium", "low", "system_failure"]},
     "dimensions": {
       "const": [
         "issue_framing",
@@ -165,10 +176,56 @@
       "properties": {
         "normal_score_order": {"const": "high > medium > low"},
         "low_all_numeric": {"type": "boolean"},
-        "system_failure_ne_scope": {"const": ["issue_framing", "valuable_contribution"]},
+        "system_failure_ne_scope": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/dimension"}
+        },
         "system_failure_unaffected_matches_medium": {"type": "boolean"},
-        "system_failure_failed_rules": {"const": ["A-PROH-01", "A-R01"]}
+        "system_failure_failed_rules": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
       }
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"matrix_id": {"const": "exercise-a-four-state-v0.1"}},
+        "required": ["matrix_id"]
+      },
+      "then": {
+        "properties": {
+          "exercise_id": {"const": "candidate-assessment-a-ambiguous-structure"},
+          "scenario_version": {"const": "candidate-assessment-a-v0.1"},
+          "assertions": {
+            "properties": {
+              "system_failure_ne_scope": {"const": ["issue_framing", "valuable_contribution"]},
+              "system_failure_failed_rules": {"const": ["A-PROH-01", "A-R01"]}
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"matrix_id": {"const": "exercise-b-four-state-v0.1"}},
+        "required": ["matrix_id"]
+      },
+      "then": {
+        "properties": {
+          "exercise_id": {"const": "candidate-assessment-b-stakeholder-conflict"},
+          "scenario_version": {"const": "candidate-assessment-b-v0.1"},
+          "assertions": {
+            "properties": {
+              "system_failure_ne_scope": {"const": ["issue_framing", "decision_and_consensus"]},
+              "system_failure_failed_rules": {"const": ["B-PROH-01"]}
+            }
+          }
+        }
+      }
+    }
+  ]
 }
