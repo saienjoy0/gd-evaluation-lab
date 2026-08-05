@@ -29,3 +29,5 @@ jobs:
         run: python scripts/check_full_episode_runner.py
       - name: Validate Exercise A high/low calibration
         run: python scripts/check_exercise_a_high_low.py
+      - name: Validate Exercise A system failure separation
+        run: python scripts/check_exercise_a_system_failure.py
