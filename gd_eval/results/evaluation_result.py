@@ -29,9 +29,9 @@ def _target_message_ids(
     }
 
 
-def _minimum_valid_opportunities(
+def _rubric_dimension(
     candidate_rubric: dict[str, Any], dimension: str
-) -> int:
+) -> dict[str, Any]:
     rubric_dimension = next(
         (
             item
@@ -42,10 +42,27 @@ def _minimum_valid_opportunities(
     )
     if rubric_dimension is None:
         raise EvaluationBuildError(f"RUBRIC_DIMENSION_MISSING: {dimension}")
+    return rubric_dimension
+
+
+def _minimum_valid_opportunities(
+    candidate_rubric: dict[str, Any], dimension: str
+) -> int:
+    rubric_dimension = _rubric_dimension(candidate_rubric, dimension)
     explicit = rubric_dimension.get("minimum_valid_opportunities")
     if explicit is not None:
         return max(1, int(explicit))
     evidence_policy = rubric_dimension.get("evidence_policy", {})
+    return max(1, int(evidence_policy.get("minimum_for_scored_result", 1)))
+
+
+def _minimum_selected_evidence(
+    candidate_rubric: dict[str, Any], dimension: str, score: int
+) -> int:
+    rubric_dimension = _rubric_dimension(candidate_rubric, dimension)
+    evidence_policy = rubric_dimension.get("evidence_policy", {})
+    if score == 4:
+        return max(2, int(evidence_policy.get("minimum_for_score_4", 2)))
     return max(1, int(evidence_policy.get("minimum_for_scored_result", 1)))
 
 
@@ -74,17 +91,18 @@ def _validate_human_inputs(
             failed_rules_by_dimension.setdefault(dimension, set()).add(result["rule_id"])
 
     score_maps: list[dict[str, int | str]] = []
+    rater_linked_response_ids: dict[str, set[str]] = {}
     for sheet in rater_sheets:
         dimensions = {item["dimension"]: item for item in sheet["dimensions"]}
         score_maps.append({key: item["score"] for key, item in dimensions.items()})
         for dimension, item in dimensions.items():
-            if any(
-                message_id not in target_messages
-                for message_id in item["selected_evidence_message_ids"]
-            ):
+            selected_evidence = set(item["selected_evidence_message_ids"])
+            if any(message_id not in target_messages for message_id in selected_evidence):
                 raise EvaluationBuildError(
                     f"EVIDENCE_OWNER_MISMATCH: {sheet['sheet_id']}:{dimension}"
                 )
+
+            referenced_opportunities: list[dict[str, Any]] = []
             for event_id in item["opportunity_evidence_event_ids"]:
                 opportunity = event_to_opportunity.get(event_id)
                 if opportunity is None:
@@ -95,10 +113,47 @@ def _validate_human_inputs(
                     raise EvaluationBuildError(
                         f"OPPORTUNITY_DIMENSION_MISMATCH: {dimension}:{event_id}"
                     )
-                if item["score"] != "NE" and opportunity["status"] != "offered":
+                referenced_opportunities.append(opportunity)
+
+            if item["score"] == "NE":
+                if selected_evidence:
                     raise EvaluationBuildError(
-                        f"INVALIDATED_OPPORTUNITY_NUMERIC_SCORE: {dimension}"
+                        f"NE_EVIDENCE_NOT_EMPTY: {sheet['sheet_id']}:{dimension}"
                     )
+                continue
+
+            if not referenced_opportunities:
+                raise EvaluationBuildError(
+                    f"NUMERIC_OPPORTUNITY_EVIDENCE_MISSING: {sheet['sheet_id']}:{dimension}"
+                )
+            if any(
+                opportunity["status"] != "offered"
+                or opportunity["response_status"] != "observed"
+                for opportunity in referenced_opportunities
+            ):
+                raise EvaluationBuildError(
+                    f"INVALIDATED_OPPORTUNITY_NUMERIC_SCORE: {dimension}"
+                )
+
+            eligible_response_ids = {
+                message_id
+                for opportunity in referenced_opportunities
+                for message_id in opportunity["candidate_response_message_ids"]
+            }
+            required_evidence = _minimum_selected_evidence(
+                candidate_rubric, dimension, int(item["score"])
+            )
+            if len(selected_evidence) < required_evidence:
+                raise EvaluationBuildError(
+                    f"INSUFFICIENT_SELECTED_EVIDENCE: {sheet['sheet_id']}:{dimension}"
+                )
+            if not selected_evidence.issubset(eligible_response_ids):
+                raise EvaluationBuildError(
+                    f"EVIDENCE_NOT_LINKED_TO_OPPORTUNITY: {sheet['sheet_id']}:{dimension}"
+                )
+            rater_linked_response_ids.setdefault(dimension, set()).update(
+                eligible_response_ids
+            )
 
     for resolution in adjudication["dimension_resolutions"]:
         dimension = resolution["dimension"]
@@ -107,10 +162,9 @@ def _validate_human_inputs(
             raise EvaluationBuildError(f"RATER_SCORE_MISMATCH: {dimension}")
         if resolution["agreement_class"] != _agreement_class(*expected_scores):
             raise EvaluationBuildError(f"AGREEMENT_CLASS_MISMATCH: {dimension}")
-        if any(
-            message_id not in target_messages
-            for message_id in resolution["final_evidence_message_ids"]
-        ):
+
+        final_evidence = set(resolution["final_evidence_message_ids"])
+        if any(message_id not in target_messages for message_id in final_evidence):
             raise EvaluationBuildError(
                 f"EVIDENCE_OWNER_MISMATCH: adjudication:{dimension}"
             )
@@ -132,20 +186,53 @@ def _validate_human_inputs(
         minimum_valid = _minimum_valid_opportunities(candidate_rubric, dimension)
         has_sufficient_valid = len(valid) >= minimum_valid
 
-        if score != "NE" and not has_sufficient_valid:
-            raise EvaluationBuildError(
-                f"INSUFFICIENT_VALID_OPPORTUNITY_NUMERIC_SCORE: {dimension}"
+        if score != "NE":
+            if not has_sufficient_valid:
+                raise EvaluationBuildError(
+                    f"INSUFFICIENT_VALID_OPPORTUNITY_NUMERIC_SCORE: {dimension}"
+                )
+            required_evidence = _minimum_selected_evidence(
+                candidate_rubric, dimension, int(score)
             )
-        if score == "NE":
+            if len(final_evidence) < required_evidence:
+                raise EvaluationBuildError(
+                    f"INSUFFICIENT_ADJUDICATION_EVIDENCE: {dimension}"
+                )
+            eligible_response_ids = rater_linked_response_ids.get(dimension, set())
+            if not final_evidence.issubset(eligible_response_ids):
+                raise EvaluationBuildError(
+                    f"ADJUDICATION_EVIDENCE_NOT_LINKED_TO_OPPORTUNITY: {dimension}"
+                )
+        else:
+            if final_evidence:
+                raise EvaluationBuildError(
+                    f"NE_EVIDENCE_NOT_EMPTY: adjudication:{dimension}"
+                )
             reason = resolution.get("not_evaluable_reason")
             if not reason:
                 raise EvaluationBuildError(f"NE_REASON_MISSING: {dimension}")
-            if reason == "AI_QUALITY_FAILURE" and (
-                not failed_rule_ids or not causal_invalid or has_sufficient_valid
-            ):
+            allowed_reasons = set(
+                _rubric_dimension(candidate_rubric, dimension).get("ne_conditions", [])
+            )
+            if reason not in allowed_reasons:
                 raise EvaluationBuildError(
-                    f"AI_QUALITY_NE_WITHOUT_CAUSAL_INSUFFICIENCY: {dimension}"
+                    f"NE_REASON_NOT_ALLOWED_BY_RUBRIC: {dimension}:{reason}"
                 )
+            if reason == "AI_QUALITY_FAILURE":
+                if not failed_rule_ids or not causal_invalid or has_sufficient_valid:
+                    raise EvaluationBuildError(
+                        f"AI_QUALITY_NE_WITHOUT_CAUSAL_INSUFFICIENCY: {dimension}"
+                    )
+            elif reason == "INSUFFICIENT_OPPORTUNITY":
+                if has_sufficient_valid:
+                    raise EvaluationBuildError(
+                        f"INSUFFICIENT_OPPORTUNITY_WITH_SUFFICIENT_VALID: {dimension}"
+                    )
+            else:
+                raise EvaluationBuildError(
+                    f"UNSUPPORTED_NE_REASON: {dimension}:{reason}"
+                )
+
         if score == 4:
             message_by_id = {
                 message["message_id"]: message
