@@ -25,7 +25,7 @@ jobs:
           python - <<'PY'
           from pathlib import Path
 
-          def replace_exact(path: str, old: str, new: str) -> None:
+          def replace_once(path: str, old: str, new: str) -> None:
               target = Path(path)
               text = target.read_text(encoding="utf-8")
               if new in text:
@@ -34,28 +34,15 @@ jobs:
                   raise SystemExit(f"PATCH_TARGET_MISSING: {path}")
               target.write_text(text.replace(old, new, 1), encoding="utf-8")
 
-          generator = "scripts/generate_exercise_b_high_low.py"
-          target = Path(generator)
-          text = target.read_text(encoding="utf-8")
-          text = text.replace("import copy\n", "")
-          text = text.replace(
+          generator_path = Path("scripts/generate_exercise_b_high_low.py")
+          generator = generator_path.read_text(encoding="utf-8")
+          generator = generator.replace("import copy\n", "")
+          generator = generator.replace(
               '    episode.setdefault("versions", {})["prompt_version"] = f"exercise-b-{state}-script-v0.1"\n',
               "",
           )
-          old_low = '''    if state == "low":
-              episode["events"] = [
-                  event
-                  for event in episode["events"]
-                  if event.get("event") != "POSITIONS_INTEGRATED"
-              ]
-              for event in episode["events"]:
-                  if event.get("event") == "PRIVATE_CONCERN_REVEALED":
-                      event["candidate_response_message_ids"] = []
-                  if event.get("event") == "DECISION_ALLOCATION_RECORDED":
-                      event["fields"] = [
-                          field for field in event.get("fields", []) if field != "mitigation"
-                      ]
-          '''
+          low_start = generator.index('    if state == "low":\n')
+          low_end = generator.index('    episode["transcript_hash"]', low_start)
           new_low = '''    if state == "low":
               episode["events"] = [
                   event
@@ -77,80 +64,94 @@ jobs:
                   elif event_type == "SUMMARY_FIELDS_RECORDED":
                       event["fields"] = ["allocation"]
           '''
-          if new_low not in text:
-              if old_low not in text:
-                  raise SystemExit("GENERATOR_LOW_PATCH_TARGET_MISSING")
-              text = text.replace(old_low, new_low, 1)
-          target.write_text(text, encoding="utf-8")
+          generator = generator[:low_start] + new_low + generator[low_end:]
+          generator_path.write_text(generator, encoding="utf-8")
 
-          replace_exact(
+          replace_once(
               "gd_eval/results/evaluation_result.py",
-              '''def _display_groups(
-              candidate_dimensions: list[dict[str, Any]],
-              candidate_rubric: dict[str, Any],
-          ) -> dict[str, Any]:''',
-              '''def _display_groups(
-              exercise_id: str,
-              candidate_dimensions: list[dict[str, Any]],
-              candidate_rubric: dict[str, Any],
-          ) -> dict[str, Any]:''',
+              "def _display_groups(\n    candidate_dimensions: list[dict[str, Any]],\n    candidate_rubric: dict[str, Any],\n) -> dict[str, Any]:",
+              "def _display_groups(\n    exercise_id: str,\n    candidate_dimensions: list[dict[str, Any]],\n    candidate_rubric: dict[str, Any],\n) -> dict[str, Any]:",
           )
-          replace_exact(
+          replace_once(
               "gd_eval/results/evaluation_result.py",
-              '''        groups[group_id] = {
-                  "aggregation_status": "not_calibrated",
-                  "score": None,
-                  "coverage": {
-                      "evaluated": len(numeric),
-                      "total": len(group_dimensions),
-                  },
-                  "bottleneck_dimension": bottleneck,
-                  "summary": group_summary(bottleneck or "", fallback),
-              }''',
-              '''        use_observed_fallback = (
-                  exercise_id == "candidate-assessment-b-stakeholder-conflict"
-                  and bottleneck is not None
-                  and int(dimension_map[bottleneck]["score"]) <= 1
-              )
-              groups[group_id] = {
-                  "aggregation_status": "not_calibrated",
-                  "score": None,
-                  "coverage": {
-                      "evaluated": len(numeric),
-                      "total": len(group_dimensions),
-                  },
-                  "bottleneck_dimension": bottleneck,
-                  "summary": (
-                      fallback
-                      if use_observed_fallback
-                      else group_summary(bottleneck or "", fallback)
-                  ),
-              }''',
+              '        groups[group_id] = {\n            "aggregation_status": "not_calibrated",\n            "score": None,\n            "coverage": {\n                "evaluated": len(numeric),\n                "total": len(group_dimensions),\n            },\n            "bottleneck_dimension": bottleneck,\n            "summary": group_summary(bottleneck or "", fallback),\n        }',
+              '        use_observed_fallback = (\n            exercise_id == "candidate-assessment-b-stakeholder-conflict"\n            and bottleneck is not None\n            and int(dimension_map[bottleneck]["score"]) <= 1\n        )\n        groups[group_id] = {\n            "aggregation_status": "not_calibrated",\n            "score": None,\n            "coverage": {\n                "evaluated": len(numeric),\n                "total": len(group_dimensions),\n            },\n            "bottleneck_dimension": bottleneck,\n            "summary": (\n                fallback\n                if use_observed_fallback\n                else group_summary(bottleneck or "", fallback)\n            ),\n        }',
           )
-          replace_exact(
+          replace_once(
               "gd_eval/results/evaluation_result.py",
               '        "display_groups": _display_groups(candidate_dimensions, candidate_rubric),',
               '        "display_groups": _display_groups(\n            exercise_id, candidate_dimensions, candidate_rubric\n        ),',
           )
 
-          checker = Path("scripts/check_exercise_b_high_low.py")
-          text = checker.read_text(encoding="utf-8")
-          helpers = '''\n\ndef assert_prompt_control(loaded_by_state) -> None:\n    prompt_versions = {\n        loaded.runtime.episode["versions"]["prompt_version"]\n        for loaded in loaded_by_state.values()\n    }\n    if len(prompt_versions) != 1:\n        raise AssertionError(f"PROMPT_VERSION_DIFFER: {sorted(prompt_versions)}")\n\n\ndef assert_low_semantic_consistency(loaded, generated) -> None:\n    events = loaded.runtime.episode["events"]\n    decision = next(\n        event for event in events if event.get("event") == "DECISION_ALLOCATION_RECORDED"\n    )\n    if "mitigation" in decision or "mitigation" in decision.get("fields", []):\n        raise AssertionError("LOW_FALSE_MITIGATION_EVENT")\n    if any(event.get("event") == "MINORITY_CONCERN_STATUS" for event in events):\n        raise AssertionError("LOW_FALSE_MINORITY_ADDRESS_EVENT")\n    summary = next(\n        event for event in events if event.get("event") == "SUMMARY_FIELDS_RECORDED"\n    )\n    if summary.get("fields") != ["allocation"]:\n        raise AssertionError(f"LOW_FALSE_SUMMARY_FIELDS: {summary.get('fields')}")\n\n    dimensions = {\n        item["dimension"]: item\n        for item in generated.evaluation_result["candidate_dimensions"]\n    }\n    for group_id, group in generated.feedback["display_groups"].items():\n        bottleneck = group["bottleneck_dimension"]\n        expected = dimensions[bottleneck]["missing_behavior"]\n        if group["summary"] != expected:\n            raise AssertionError(\n                f"LOW_FALSE_GROUP_SUMMARY: {group_id}: {group['summary']}"\n            )\n'''
-          if "def assert_prompt_control" not in text:
-              text = text.replace("\ndef main() -> None:\n", helpers + "\n\ndef main() -> None:\n", 1)
-          call_block = '''    assert_unique_case_identity(loaded_by_state)
-          '''
-          replacement = '''    assert_unique_case_identity(loaded_by_state)
-              assert_prompt_control(loaded_by_state)
-              assert_low_semantic_consistency(
-                  loaded_by_state["low"], generated_by_state["low"]
+          checker_path = Path("scripts/check_exercise_b_high_low.py")
+          checker = checker_path.read_text(encoding="utf-8")
+          helpers = '''
+
+          def assert_prompt_control(loaded_by_state) -> None:
+              prompt_versions = {
+                  loaded.runtime.episode["versions"]["prompt_version"]
+                  for loaded in loaded_by_state.values()
+              }
+              if len(prompt_versions) != 1:
+                  raise AssertionError(f"PROMPT_VERSION_DIFFER: {sorted(prompt_versions)}")
+
+
+          def assert_low_semantic_consistency(loaded, generated) -> None:
+              events = loaded.runtime.episode["events"]
+              decision = next(
+                  event
+                  for event in events
+                  if event.get("event") == "DECISION_ALLOCATION_RECORDED"
               )
+              if "mitigation" in decision or "mitigation" in decision.get("fields", []):
+                  raise AssertionError("LOW_FALSE_MITIGATION_EVENT")
+              if any(
+                  event.get("event") == "MINORITY_CONCERN_STATUS" for event in events
+              ):
+                  raise AssertionError("LOW_FALSE_MINORITY_ADDRESS_EVENT")
+              summary = next(
+                  event
+                  for event in events
+                  if event.get("event") == "SUMMARY_FIELDS_RECORDED"
+              )
+              if summary.get("fields") != ["allocation"]:
+                  raise AssertionError(
+                      f"LOW_FALSE_SUMMARY_FIELDS: {summary.get('fields')}"
+                  )
+
+              dimensions = {
+                  item["dimension"]: item
+                  for item in generated.evaluation_result["candidate_dimensions"]
+              }
+              for group_id, group in generated.feedback["display_groups"].items():
+                  bottleneck = group["bottleneck_dimension"]
+                  expected = dimensions[bottleneck]["missing_behavior"]
+                  if group["summary"] != expected:
+                      raise AssertionError(
+                          f"LOW_FALSE_GROUP_SUMMARY: {group_id}: {group['summary']}"
+                      )
           '''
-          if "assert_low_semantic_consistency(" not in text.split("def main() -> None:", 1)[1]:
-              if call_block not in text:
+          helpers = "\n".join(
+              line[10:] if line.startswith("          ") else line
+              for line in helpers.splitlines()
+          )
+          if "def assert_prompt_control" not in checker:
+              checker = checker.replace(
+                  "\ndef main() -> None:\n", helpers + "\n\ndef main() -> None:\n", 1
+              )
+          old_call = "    assert_unique_case_identity(loaded_by_state)\n"
+          new_call = (
+              "    assert_unique_case_identity(loaded_by_state)\n"
+              "    assert_prompt_control(loaded_by_state)\n"
+              "    assert_low_semantic_consistency(\n"
+              "        loaded_by_state[\"low\"], generated_by_state[\"low\"]\n"
+              "    )\n"
+          )
+          if new_call not in checker:
+              if old_call not in checker:
                   raise SystemExit("CHECKER_CALL_TARGET_MISSING")
-              text = text.replace(call_block, replacement, 1)
-          checker.write_text(text, encoding="utf-8")
+              checker = checker.replace(old_call, new_call, 1)
+          checker_path.write_text(checker, encoding="utf-8")
           PY
       - name: Install validation dependencies
         run: python -m pip install --disable-pip-version-check "jsonschema[format]>=4.23,<5"
