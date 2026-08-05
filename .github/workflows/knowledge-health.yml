@@ -15,6 +15,8 @@ jobs:
           python-version: "3.12"
       - name: Install validation dependencies
         run: python -m pip install --disable-pip-version-check "jsonschema[format]>=4.23,<5"
+      - name: Generate Exercise B high/low fixtures
+        run: python scripts/generate_exercise_b_high_low.py
       - name: Validate knowledge notes
         run: python scripts/check_knowledge.py
       - name: Validate evaluation contract
@@ -37,3 +39,12 @@ jobs:
         run: python scripts/check_exercise_a_four_state_matrix.py
       - name: Validate Exercise B medium vertical slice
         run: python scripts/check_exercise_b_medium.py
+      - name: Validate Exercise B high/low calibration
+        run: python scripts/check_exercise_b_high_low.py
+      - name: Upload generated Exercise B fixtures
+        uses: actions/upload-artifact@v4
+        with:
+          name: exercise-b-high-low-fixtures
+          path: |
+            fixtures/calibration/full-episodes/stakeholder-conflict/high
+            fixtures/calibration/full-episodes/stakeholder-conflict/low
