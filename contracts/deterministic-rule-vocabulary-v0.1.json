@@ -6,6 +6,7 @@
     "candidate_move_types",
     "private_concern_triggered_release",
     "summary_contains_fields",
+    "candidate_summary_contains_fields",
     "positions_and_challenge_before_phase",
     "candidate_response_to_concern",
     "candidate_integrates_positions",
