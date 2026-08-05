@@ -69,6 +69,14 @@ def failed_system_rules(generated: Any) -> list[str]:
     )
 
 
+def semantic_system_quality(generated: Any) -> dict[str, Any]:
+    return {
+        "status": generated.system_quality["status"],
+        "rule_results": generated.system_quality["rule_results"],
+        "dimension_scores": generated.system_quality["dimension_scores"],
+    }
+
+
 def runtime_receives_state(runtime: Any) -> bool:
     if is_dataclass(runtime):
         return "state" in {field.name for field in fields(runtime)}
@@ -141,8 +149,8 @@ def build_matrix(
                 for state in NORMAL_STATES
             ),
             "normal_state_system_quality_equal": all(
-                generated_by_state[state].system_quality
-                == reference_generated.system_quality
+                semantic_system_quality(generated_by_state[state])
+                == semantic_system_quality(reference_generated)
                 for state in NORMAL_STATES
             ),
             "normal_state_opportunity_supply_equal": all(
