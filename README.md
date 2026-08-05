@@ -68,6 +68,7 @@ python scripts/check_contract_hardening.py
 python scripts/check_full_episode_runner.py
 python scripts/check_exercise_a_high_low.py
 python scripts/check_exercise_a_system_failure.py
+python scripts/check_numeric_evidence_provenance.py
 ```
 
 ## 評価者の基本手順
