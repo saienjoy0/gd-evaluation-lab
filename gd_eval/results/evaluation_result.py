@@ -109,10 +109,6 @@ def _validate_human_inputs(
                     raise EvaluationBuildError(
                         f"UNKNOWN_OPPORTUNITY_EVENT: {event_id}"
                     )
-                if opportunity["dimension"] != dimension:
-                    raise EvaluationBuildError(
-                        f"OPPORTUNITY_DIMENSION_MISMATCH: {dimension}:{event_id}"
-                    )
                 referenced_opportunities.append(opportunity)
 
             if item["score"] == "NE":
@@ -133,6 +129,20 @@ def _validate_human_inputs(
             ):
                 raise EvaluationBuildError(
                     f"INVALIDATED_OPPORTUNITY_NUMERIC_SCORE: {dimension}"
+                )
+
+            minimum_primary = _minimum_valid_opportunities(
+                candidate_rubric, dimension
+            )
+            primary_opportunities = [
+                opportunity
+                for opportunity in referenced_opportunities
+                if opportunity["dimension"] == dimension
+            ]
+            if len(primary_opportunities) < minimum_primary:
+                raise EvaluationBuildError(
+                    f"PRIMARY_OPPORTUNITY_EVIDENCE_INSUFFICIENT: "
+                    f"{sheet['sheet_id']}:{dimension}"
                 )
 
             eligible_response_ids = {
