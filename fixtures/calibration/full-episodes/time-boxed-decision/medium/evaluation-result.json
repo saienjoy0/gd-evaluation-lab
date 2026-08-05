@@ -1,0 +1,167 @@
+{
+  "ai_quality": {
+    "dimension_scores": {
+      "consensus_quality": 4,
+      "discussion_coherence": 4,
+      "goal_progression": 4,
+      "natural_pacing": 4,
+      "novelty_and_repetition": 4,
+      "responsiveness": 4,
+      "role_believability": 4,
+      "user_agency": 5
+    },
+    "status": "pass",
+    "violations": []
+  },
+  "candidate_dimensions": [
+    {
+      "confidence": 0.9,
+      "dimension": "issue_framing",
+      "evidence_message_ids": [
+        "m005"
+      ],
+      "improvement": "次回は、目的、対象、前提、主要論点を整理し、議論可能な形にする。",
+      "missing_behavior": "次の水準で求められる行動は「目的、対象、前提、主要論点を整理し、議論可能な形にする。」である。",
+      "not_evaluable_reason": null,
+      "positive_behavior": "m005は複数基準を提示したが、基準の重み・検討順・主要トレードオフを初期段階で構造化していないため最終2とした。",
+      "question_results": [],
+      "score": 2
+    },
+    {
+      "confidence": 0.9,
+      "dimension": "logical_reasoning",
+      "evidence_message_ids": [
+        "m020",
+        "m028"
+      ],
+      "improvement": "次回は、仮説の弱点、反対証拠、不確実性も扱い、議論の精度を高める。",
+      "missing_behavior": "次の水準で求められる行動は「仮説の弱点、反対証拠、不確実性も扱い、議論の精度を高める。」である。",
+      "not_evaluable_reason": null,
+      "positive_behavior": "三案を複数基準で比較し、遅延リスク後に接続条件を修正した。",
+      "question_results": [],
+      "score": 3
+    },
+    {
+      "confidence": 0.9,
+      "dimension": "listening_and_response",
+      "evidence_message_ids": [
+        "m008",
+        "m028"
+      ],
+      "improvement": "次回は、複数人の発言を統合し、誤解や対立点を解消して議論を発展させる。",
+      "missing_behavior": "次の水準で求められる行動は「複数人の発言を統合し、誤解や対立点を解消して議論を発展させる。」である。",
+      "not_evaluable_reason": null,
+      "positive_behavior": "セキュリティ質問と遅延リスクへ直接応答し、案へ反映した。",
+      "question_results": [],
+      "score": 3
+    },
+    {
+      "confidence": 0.9,
+      "dimension": "valuable_contribution",
+      "evidence_message_ids": [
+        "m010",
+        "m022"
+      ],
+      "improvement": "次回は、新しい視点や具体案を示し、議論を前進させる。",
+      "missing_behavior": "次の水準で求められる行動は「新しい視点や具体案を示し、議論を前進させる。」である。",
+      "not_evaluable_reason": null,
+      "positive_behavior": "ハイブリッド案と例外対応を提案したが、重要制約の発見はAI提示に依存した。",
+      "question_results": [],
+      "score": 2
+    },
+    {
+      "confidence": 0.9,
+      "dimension": "collaboration_and_relationship",
+      "evidence_message_ids": [
+        "m012",
+        "m037"
+      ],
+      "improvement": "次回は、他者の意見を尊重し、発言機会や建設的な対話を作る。",
+      "missing_behavior": "次の水準で求められる行動は「他者の意見を尊重し、発言機会や建設的な対話を作る。」である。",
+      "not_evaluable_reason": null,
+      "positive_behavior": "複数立場を統合したが、参加促進や対立調整の働きかけは限定的だった。",
+      "question_results": [],
+      "score": 2
+    },
+    {
+      "confidence": 0.9,
+      "dimension": "decision_and_consensus",
+      "evidence_message_ids": [
+        "m020",
+        "m028",
+        "m037"
+      ],
+      "improvement": "次回は、少数意見、リスク、実行条件を含めて合意を形成し、結論の弱点も明示する。",
+      "missing_behavior": "次の水準で求められる行動は「少数意見、リスク、実行条件を含めて合意を形成し、結論の弱点も明示する。」である。",
+      "not_evaluable_reason": null,
+      "positive_behavior": "比較、リスク後修正、実施条件を含む合意形成を行った。",
+      "question_results": [],
+      "score": 3
+    },
+    {
+      "confidence": 0.9,
+      "dimension": "process_and_time_management",
+      "evidence_message_ids": [
+        "m018",
+        "m032",
+        "m039"
+      ],
+      "improvement": "次回は、停滞や脱線を早期に検知し、全員の理解を保ちながらプロセスを再設計する。",
+      "missing_behavior": "次の水準で求められる行動は「停滞や脱線を早期に検知し、全員の理解を保ちながらプロセスを再設計する。」である。",
+      "not_evaluable_reason": null,
+      "positive_behavior": "両時間通知後に優先順位を調整し、終了前に要約した。",
+      "question_results": [],
+      "score": 3
+    }
+  ],
+  "contract_version": "0.1",
+  "display_groups": {
+    "collaboration": {
+      "aggregation_status": "not_calibrated",
+      "bottleneck_dimension": "collaboration_and_relationship",
+      "coverage": {
+        "evaluated": 2,
+        "total": 2
+      },
+      "score": null,
+      "summary": "懸念へ応答して統合できたが、参加促進は限定的だった。"
+    },
+    "progress": {
+      "aggregation_status": "not_calibrated",
+      "bottleneck_dimension": "decision_and_consensus",
+      "coverage": {
+        "evaluated": 2,
+        "total": 2
+      },
+      "score": null,
+      "summary": "次の水準で求められる行動は「少数意見、リスク、実行条件を含めて合意を形成し、結論の弱点も明示する。」である。"
+    },
+    "thinking": {
+      "aggregation_status": "not_calibrated",
+      "bottleneck_dimension": "issue_framing",
+      "coverage": {
+        "evaluated": 3,
+        "total": 3
+      },
+      "score": null,
+      "summary": "次の水準で求められる行動は「目的、対象、前提、主要論点を整理し、議論可能な形にする。」である。"
+    }
+  },
+  "evaluation_disagreement": null,
+  "legacy_evaluation": null,
+  "review_status": "completed",
+  "session_id": "exercise-c-medium-001",
+  "status": "completed",
+  "target_participant_id": "candidate_c_medium",
+  "version_info": {
+    "ai_quality_rubric_version": "ai-participant-v0.1",
+    "deterministic_evaluator_version": "exercise-c-deterministic-v0.1",
+    "judge_model": "human-adjudication",
+    "judge_version": "not-applied-v0.1",
+    "orchestrator_version": "synthetic-calibration-v0.1",
+    "prompt_version": "exercise-c-medium-prompt-v0.1",
+    "rubric_version": "candidate-behavior-v0.1",
+    "scenario_version": "candidate-assessment-c-v0.1",
+    "transcript_hash": "84ddd149a37e39fff933357d1a60e75ca1dde9afaa73724a8ebdf55c1b9ca1f6"
+  }
+}
