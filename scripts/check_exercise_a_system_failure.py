@@ -35,6 +35,17 @@ def validate_schema(instance: dict, filename: str) -> None:
         )
 
 
+def expect_schema_failure(instance: dict, filename: str) -> None:
+    raw = json.loads((ROOT / "schemas" / filename).read_text(encoding="utf-8"))
+    errors = list(
+        Draft202012Validator(
+            raw, format_checker=FormatChecker()
+        ).iter_errors(instance)
+    )
+    if not errors:
+        raise AssertionError(f"EXPECTED_SCHEMA_FAILURE_NOT_RAISED: {filename}")
+
+
 def score_map(result: dict) -> dict[str, int | str]:
     return {
         item["dimension"]: item["score"]
@@ -87,6 +98,29 @@ def _score_valuable_contribution_numerically(runtime, score: int = 2) -> None:
     resolution["final_evidence_message_ids"] = ["m016"]
     resolution["not_evaluable_reason"] = None
     resolution["rubric_issue_code"] = None
+
+
+def _set_dimension_ne(runtime, dimension: str, reason: str) -> None:
+    for sheet in runtime.rater_sheets:
+        entry = next(
+            item for item in sheet["dimensions"] if item["dimension"] == dimension
+        )
+        entry["score"] = "NE"
+        entry["opportunity_status"] = "insufficient"
+        entry["selected_evidence_message_ids"] = []
+        entry["not_evaluable_reason"] = reason
+        entry["flags"] = ["OPPORTUNITY_ISSUE"]
+    resolution = next(
+        item
+        for item in runtime.adjudication["dimension_resolutions"]
+        if item["dimension"] == dimension
+    )
+    resolution["rater_scores"] = ["NE", "NE"]
+    resolution["agreement_class"] = "exact"
+    resolution["final_score"] = "NE"
+    resolution["final_evidence_message_ids"] = []
+    resolution["not_evaluable_reason"] = reason
+    resolution["rubric_issue_code"] = "PROCESS_DEVIATION"
 
 
 def main() -> None:
@@ -202,10 +236,10 @@ def main() -> None:
         ):
             raise AssertionError(f"FEEDBACK_NE_REASON_MISSING: {dimension}")
 
-    medium_generated = run_full_episode(
-        load_case(CASE_ROOT / "medium", ROOT).runtime
-    )
-    low_generated = run_full_episode(load_case(CASE_ROOT / "low", ROOT).runtime)
+    medium_loaded = load_case(CASE_ROOT / "medium", ROOT)
+    low_loaded = load_case(CASE_ROOT / "low", ROOT)
+    medium_generated = run_full_episode(medium_loaded.runtime)
+    low_generated = run_full_episode(low_loaded.runtime)
     medium_scores = score_map(medium_generated.evaluation_result)
     low_scores = score_map(low_generated.evaluation_result)
 
@@ -237,8 +271,7 @@ def main() -> None:
     invalid_numeric = copy.deepcopy(system_loaded.runtime)
     for sheet in invalid_numeric.rater_sheets:
         entry = next(
-            item
-            for item in sheet["dimensions"]
+            item for item in sheet["dimensions"]
             if item["dimension"] == "issue_framing"
         )
         entry["score"] = 2
@@ -247,8 +280,7 @@ def main() -> None:
         entry["not_evaluable_reason"] = None
         entry["flags"] = []
     resolution = next(
-        item
-        for item in invalid_numeric.adjudication["dimension_resolutions"]
+        item for item in invalid_numeric.adjudication["dimension_resolutions"]
         if item["dimension"] == "issue_framing"
     )
     resolution["rater_scores"] = [2, 2]
@@ -261,27 +293,7 @@ def main() -> None:
     )
 
     false_ne = copy.deepcopy(system_loaded.runtime)
-    for sheet in false_ne.rater_sheets:
-        entry = next(
-            item
-            for item in sheet["dimensions"]
-            if item["dimension"] == "logical_reasoning"
-        )
-        entry["score"] = "NE"
-        entry["opportunity_status"] = "insufficient"
-        entry["selected_evidence_message_ids"] = []
-        entry["not_evaluable_reason"] = "AI_QUALITY_FAILURE"
-        entry["flags"] = ["OPPORTUNITY_ISSUE"]
-    resolution = next(
-        item
-        for item in false_ne.adjudication["dimension_resolutions"]
-        if item["dimension"] == "logical_reasoning"
-    )
-    resolution["rater_scores"] = ["NE", "NE"]
-    resolution["final_score"] = "NE"
-    resolution["final_evidence_message_ids"] = []
-    resolution["not_evaluable_reason"] = "AI_QUALITY_FAILURE"
-    resolution["rubric_issue_code"] = "PROCESS_DEVIATION"
+    _set_dimension_ne(false_ne, "logical_reasoning", "AI_QUALITY_FAILURE")
     expect_evaluation_failure(
         false_ne, "AI_QUALITY_NE_WITHOUT_CAUSAL_INSUFFICIENCY"
     )
@@ -309,13 +321,71 @@ def main() -> None:
     }:
         raise AssertionError("PARTIAL_INVALID_OPPORTUNITY_PROFILE_INVALID")
 
+    false_insufficient = copy.deepcopy(low_loaded.runtime)
+    _set_dimension_ne(
+        false_insufficient, "logical_reasoning", "INSUFFICIENT_OPPORTUNITY"
+    )
+    expect_evaluation_failure(
+        false_insufficient, "INSUFFICIENT_OPPORTUNITY_WITH_SUFFICIENT_VALID"
+    )
+
+    unsupported_reason = copy.deepcopy(low_loaded.runtime)
+    _set_dimension_ne(
+        unsupported_reason, "logical_reasoning", "INSUFFICIENT_EVIDENCE"
+    )
+    expect_evaluation_failure(
+        unsupported_reason, "UNSUPPORTED_NE_REASON"
+    )
+
+    missing_opportunity_provenance = copy.deepcopy(system_loaded.runtime)
+    missing_entry = next(
+        item
+        for item in missing_opportunity_provenance.rater_sheets[0]["dimensions"]
+        if item["dimension"] == "logical_reasoning"
+    )
+    missing_entry["opportunity_evidence_event_ids"] = []
+    expect_schema_failure(
+        missing_opportunity_provenance.rater_sheets[0],
+        "rater-sheet-v0.1.schema.json",
+    )
+    expect_evaluation_failure(
+        missing_opportunity_provenance, "NUMERIC_OPPORTUNITY_EVIDENCE_MISSING"
+    )
+
+    unrelated_rater_evidence = copy.deepcopy(system_loaded.runtime)
+    unrelated_entry = next(
+        item
+        for item in unrelated_rater_evidence.rater_sheets[0]["dimensions"]
+        if item["dimension"] == "logical_reasoning"
+    )
+    unrelated_entry["selected_evidence_message_ids"] = ["m011"]
+    expect_evaluation_failure(
+        unrelated_rater_evidence, "EVIDENCE_NOT_LINKED_TO_OPPORTUNITY"
+    )
+
+    unrelated_adjudication_evidence = copy.deepcopy(system_loaded.runtime)
+    unrelated_resolution = next(
+        item
+        for item in unrelated_adjudication_evidence.adjudication[
+            "dimension_resolutions"
+        ]
+        if item["dimension"] == "logical_reasoning"
+    )
+    unrelated_resolution["final_evidence_message_ids"] = ["m011"]
+    expect_evaluation_failure(
+        unrelated_adjudication_evidence,
+        "ADJUDICATION_EVIDENCE_NOT_LINKED_TO_OPPORTUNITY",
+    )
+
     print("Exercise A system failure separation v0.1 OK")
     print("System failure: 5 invalid opportunities, 2 NE dimensions")
     print("Unaffected dimensions: 5 numeric scores preserved")
     print("Low case: 7 numeric scores, no NE")
     print("Feedback NE reasons: preserved")
     print("Partial invalidation: NE rejected, numeric score preserved")
-    print("Negative separation tests: 3 passed")
+    print("NE reason handling: fail closed")
+    print("Numeric evidence: opportunity provenance enforced")
+    print("Negative separation tests: 8 passed")
 
 
 if __name__ == "__main__":
