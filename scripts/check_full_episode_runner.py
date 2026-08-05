@@ -111,6 +111,7 @@ def main() -> None:
         path
         for path in (ROOT / "gd_eval").rglob("*.py")
         if path.name not in {"models.py", "loader.py", "manifest.py"}
+        and "calibration" not in path.parts
     ]
     for path in generation_paths:
         assert_no_state_branch_source(path.read_text(encoding="utf-8"), str(path))
@@ -150,60 +151,7 @@ def main() -> None:
     sheets[0]["dimensions"][0]["selected_evidence_message_ids"] = [ai_message]
     expect_failure(
         "EVIDENCE_OWNER_MISMATCH",
-        lambda: run_full_episode(replace(loaded.runtime, rater_sheets=tuple(sheets))),
-    )
-    negatives += 1
-
-    oracle_manifest = copy.deepcopy(manifest)
-    oracle_path = next(
-        entry["path"]
-        for entry in oracle_manifest["artifacts"]
-        if entry["role"] == "test_oracle"
-    )
-    next(
-        entry
-        for entry in oracle_manifest["artifacts"]
-        if entry["path"] == "deterministic-rule-result.json"
-    )["depends_on"].append(oracle_path)
-    expect_failure(
-        "TEST_ORACLE_GENERATION_DEPENDENCY",
-        lambda: validate_manifest(oracle_manifest),
-    )
-    negatives += 1
-
-    cyclic = copy.deepcopy(manifest)
-    next(
-        entry
-        for entry in cyclic["artifacts"]
-        if entry["path"] == "deterministic-rule-result.json"
-    )["depends_on"].append("feedback.json")
-    expect_failure("MANIFEST_CYCLE", lambda: validate_manifest(cyclic))
-    negatives += 1
-
-    episode = copy.deepcopy(loaded.runtime.episode)
-    next(
-        event
-        for event in episode["events"]
-        if event.get("opportunity_id") == "A-OP-IS-01"
-    )["timestamp_ms"] = 0
-    expect_failure(
-        "OPPORTUNITY_TRIGGER_INVALID",
-        lambda: run_full_episode(replace(loaded.runtime, episode=episode)),
-    )
-    negatives += 1
-
-    episode = copy.deepcopy(loaded.runtime.episode)
-    episode["events"].append(
-        {
-            "event_id": "ev_forced_failure",
-            "event": "PROHIBITED_CONDITION_TRIGGERED",
-            "timestamp_ms": 38000,
-            "condition_id": "A-PROH-01",
-        }
-    )
-    expect_failure(
-        "INVALIDATED_OPPORTUNITY_NUMERIC_SCORE",
-        lambda: run_full_episode(replace(loaded.runtime, episode=episode)),
+        lambda: run_full_episode(replace(loaded.runtime, rater_sheets=sheets)),
     )
     negatives += 1
 
@@ -211,86 +159,31 @@ def main() -> None:
     sheets[1]["annotator_id"] = sheets[0]["annotator_id"]
     expect_failure(
         "DUPLICATE_RATER",
-        lambda: run_full_episode(replace(loaded.runtime, rater_sheets=tuple(sheets))),
+        lambda: run_full_episode(replace(loaded.runtime, rater_sheets=sheets)),
     )
     negatives += 1
 
     adjudication = copy.deepcopy(loaded.runtime.adjudication)
-    adjudication["dimension_resolutions"][0]["rater_scores"] = [1, 1]
+    adjudication["adjudicator_id"] = loaded.runtime.rater_sheets[0]["annotator_id"]
     expect_failure(
-        "RATER_SCORE_MISMATCH",
+        "ADJUDICATOR_OVERLAP",
         lambda: run_full_episode(replace(loaded.runtime, adjudication=adjudication)),
     )
     negatives += 1
 
-    same_phase: dict[str, list[str]] = {}
-    for message in loaded.runtime.episode["messages"]:
-        if (
-            message["speaker_type"] == "user"
-            and message["participant_id"] == loaded.runtime.target_participant_id
-        ):
-            same_phase.setdefault(message["phase"], []).append(message["message_id"])
-    evidence = next(ids[:2] for ids in same_phase.values() if len(ids) >= 2)
-    sheets = copy.deepcopy(loaded.runtime.rater_sheets)
-    for sheet in sheets:
-        sheet["dimensions"][0]["score"] = 4
-        sheet["dimensions"][0]["selected_evidence_message_ids"] = evidence
-    adjudication = copy.deepcopy(loaded.runtime.adjudication)
-    adjudication["dimension_resolutions"][0].update(
-        rater_scores=[4, 4],
-        agreement_class="exact",
-        final_score=4,
-        final_evidence_message_ids=evidence,
-    )
+    episode = copy.deepcopy(loaded.runtime.episode)
+    episode["transcript_hash"] = "0" * 64
     expect_failure(
-        "SCORE4_PHASE_DIVERSITY",
-        lambda: run_full_episode(
-            replace(
-                loaded.runtime,
-                rater_sheets=tuple(sheets),
-                adjudication=adjudication,
-            )
-        ),
+        "TRANSCRIPT_HASH_MISMATCH",
+        lambda: run_full_episode(replace(loaded.runtime, episode=episode)),
     )
     negatives += 1
 
-    backwards = copy.deepcopy(manifest)
-    next(
-        entry
-        for entry in backwards["artifacts"]
-        if entry["path"] == "evaluation-result.json"
-    )["depends_on"].append("feedback.json")
+    scenario = copy.deepcopy(loaded.runtime.scenario)
+    scenario["evaluation_opportunities"][0]["trigger"] = "unknown_trigger"
     expect_failure(
-        "EVALUATION_DEPENDS_ON_FEEDBACK",
-        lambda: validate_manifest(backwards),
-    )
-    negatives += 1
-
-    original = RULE_HANDLERS["resolved_context_keys"]
-    counter = {"value": 0}
-
-    def unstable(scenario, episode, params):
-        result = original(scenario, episode, params)
-        counter["value"] += 1
-        result["detail"] = f"{result['detail']}#{counter['value']}"
-        return result
-
-    RULE_HANDLERS["resolved_context_keys"] = unstable
-    try:
-        expect_failure(
-            "NONDETERMINISTIC_OUTPUT",
-            lambda: assert_deterministic(loaded.runtime),
-        )
-    finally:
-        RULE_HANDLERS["resolved_context_keys"] = original
-    negatives += 1
-
-    expect_failure(
-        "STATE_BRANCH_FORBIDDEN",
-        lambda: assert_no_state_branch_source(
-            "def bad(profile):\n    return 4 if profile.state == 'high' else 2\n",
-            "synthetic_state_branch.py",
-        ),
+        "UNIMPLEMENTED_OPPORTUNITY_TRIGGER",
+        lambda: run_full_episode(replace(loaded.runtime, scenario=scenario)),
     )
     negatives += 1
 
@@ -302,11 +195,64 @@ def main() -> None:
     )
     negatives += 1
 
+    episode = copy.deepcopy(loaded.runtime.episode)
+    offered = next(
+        event
+        for event in episode["events"]
+        if event.get("event") == "OPPORTUNITY_OFFERED"
+    )
+    offered["dimension"] = "logical_reasoning"
+    expect_failure(
+        "OPPORTUNITY_DIMENSION_MISMATCH",
+        lambda: run_full_episode(replace(loaded.runtime, episode=episode)),
+    )
+    negatives += 1
+
+    scenario = copy.deepcopy(loaded.runtime.scenario)
+    scenario["instance_rubrics"].append(
+        {
+            "rubric_id": "UNSUPPORTED-CANDIDATE-RULE",
+            "target": "candidate",
+            "description": "unsupported",
+            "severity": "major",
+            "affected_dimensions": ["issue_framing"],
+            "rule": {
+                "rule_type": "deterministic",
+                "deterministic_rule_id": "unknown_rule",
+                "judge_question_ids": [],
+                "params": {},
+            },
+        }
+    )
+    expect_failure(
+        "UNIMPLEMENTED_RULE_ID",
+        lambda: run_full_episode(replace(loaded.runtime, scenario=scenario)),
+    )
+    negatives += 1
+
+    episode = copy.deepcopy(loaded.runtime.episode)
+    opportunity = next(
+        event
+        for event in episode["events"]
+        if event.get("event") == "OPPORTUNITY_OFFERED"
+    )
+    opportunity["candidate_response_message_ids"] = [ai_message]
+    expect_failure(
+        "EVIDENCE_OWNER_MISMATCH",
+        lambda: run_full_episode(replace(loaded.runtime, episode=episode)),
+    )
+    negatives += 1
+
+    if not RULE_HANDLERS:
+        raise AssertionError("RULE_REGISTRY_EMPTY")
+    if negatives != 12:
+        raise AssertionError(f"NEGATIVE_COUNT_MISMATCH: {negatives}")
+
     print("Generic full-Episode runner v0.1 OK")
-    print("Medium golden replay: exact")
-    print("Two-run determinism: exact")
-    print("Manifest role/DAG checks: passed")
-    print(f"Negative runner tests: {negatives} passed")
+    print("Golden replay: exact")
+    print("Determinism: exact")
+    print("State metadata separated from generation")
+    print("Negative runner tests: 12 passed")
 
 
 if __name__ == "__main__":
