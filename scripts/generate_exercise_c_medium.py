@@ -11,11 +11,9 @@ CASE_DIR = ROOT / "fixtures/calibration/full-episodes/time-boxed-decision/medium
 
 from gd_eval.vertical_slice.loader import load_case  # noqa: E402
 from gd_eval.vertical_slice.runner import run_full_episode, write_generated  # noqa: E402
-from materialize_exercise_c_medium_episode import main as materialize_episode  # noqa: E402
 
 
 def main() -> None:
-    materialize_episode()
     loaded = load_case(CASE_DIR, ROOT)
     generated = run_full_episode(loaded.runtime)
     write_generated(CASE_DIR, generated)
