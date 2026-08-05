@@ -63,9 +63,22 @@ System Quality全体がfailであっても、無関係な軸へ一括して`NE`�
 3. 有効な`offered + observed`機会が必要数未満である
 4. 最終証拠発言は空である
 
+`INSUFFICIENT_OPPORTUNITY`は、有効な`offered + observed`機会が必要数未満の場合だけ許可する。`INSUFFICIENT_EVIDENCE`など、原因を機械的に確認する契約がまだないNE理由はfail closedで拒否する。
+
 一部機会がinvalidでも、必要数の有効機会が残る場合はNEを拒否し、利用者行動を数値評価する。無効化された機会への数値採点は拒否する一方、NEの原因説明として無効化イベントIDをRater Sheetへ保存することは許可する。
 
-## 7. Feedbackへの伝播
+## 7. 数値評価の証拠連結
+
+数値評価では、軸全体に有効機会が存在するだけでは不十分とする。各Rater Sheetは次を満たす。
+
+1. `opportunity_evidence_event_ids`を1件以上持つ
+2. 参照した機会が`offered + observed`である
+3. 選択証拠が、その機会の`candidate_response_message_ids`に含まれる
+4. rubricが要求する最低証拠数を満たす
+
+Adjudicationの最終証拠も、独立評価者が参照した有効機会の応答IDへ結び付いていなければならない。これにより、無関係な利用者発言を使った数値採点を防ぐ。
+
+## 8. Feedbackへの伝播
 
 EvaluationResultだけでなく最終Feedbackにも、評価不能になった軸ごとに次を保存する。
 
@@ -75,7 +88,7 @@ EvaluationResultだけでなく最終Feedbackにも、評価不能になった�
 
 これにより、空欄だけを表示してシステム欠陥の理由が失われることを防ぐ。
 
-## 8. CI検査
+## 9. CI検査
 
 `scripts/check_exercise_a_system_failure.py`で次を確認する。
 
@@ -90,14 +103,20 @@ EvaluationResultだけでなく最終Feedbackにも、評価不能になった�
 - 失敗ruleまたは因果的invalid機会がないNEを拒否する
 - 一部invalidでも有効機会が残る軸のNEを拒否する
 - 同じ一部invalidケースを数値評価できる
+- 偽の`INSUFFICIENT_OPPORTUNITY`を拒否する
+- 未実装NE理由をfail closedで拒否する
+- 数値評価で空の機会参照をSchemaとEvaluatorの両方が拒否する
+- 機会応答と無関係なRater証拠を拒否する
+- 機会応答と無関係なAdjudication証拠を拒否する
 - FeedbackにNE理由が残る
 
-## 9. 完了条件
+## 10. 完了条件
 
 - lowとsystem_failureの差を機械検査で説明できる
-- candidate underperformanceをNEへ逃がさない
+- candidate underperformanceを別NE理由へ逃がさない
 - system failureをcandidate low scoreへ転嫁しない
 - 一部invalidでも有効機会が残る場合は数値評価を維持する
+- 数値評価の証拠が有効機会の応答へ追跡可能である
 - 影響範囲外の数値評価を保持する
 - Feedback上でもNE理由を説明できる
 - runnerは`state`ラベルを評価生成に使用しない
