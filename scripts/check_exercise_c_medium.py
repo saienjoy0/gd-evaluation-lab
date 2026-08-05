@@ -155,6 +155,11 @@ def remove_priority_events(episode: dict) -> None:
         episode["events"].remove(event(episode, event_id))
 
 
+def remove_priority_moves(episode: dict) -> None:
+    for message_id in ("m018", "m032"):
+        message(episode, message_id)["move"] = "propose_idea"
+
+
 def main() -> None:
     materialize_episode()
     loaded = load_case(CASE_DIR, ROOT)
@@ -291,11 +296,7 @@ def main() -> None:
             concern="wrong"
         ),
     )
-    expect_rule_failure(
-        loaded.runtime,
-        "C-R03",
-        lambda item: message(item, "m018").update(move="propose_idea"),
-    )
+    expect_rule_failure(loaded.runtime, "C-R03", remove_priority_moves)
     expect_rule_failure(loaded.runtime, "C-R03", remove_priority_events)
     expect_rule_failure(
         loaded.runtime,
