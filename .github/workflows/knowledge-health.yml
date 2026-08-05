@@ -5,40 +5,14 @@ on:
   push:
     branches: [main]
 
-permissions:
-  contents: write
-
 jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
-          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Normalize calibration implementation
-        if: github.event_name == 'pull_request'
-        run: |
-          git fetch origin main
-          git checkout origin/main -- scripts/check_full_episode_runner.py
-          python - <<'PY'
-          from pathlib import Path
-          path = Path("scripts/generate_exercise_b_high_low.py")
-          text = path.read_text(encoding="utf-8")
-          old = "    write_generated(destination, generated)\n"
-          new = (
-              "    write_generated(destination, generated)\n"
-              "    generated_feedback = destination / \"feedback.json\"\n"
-              "    generated_feedback.replace(destination / \"expected-feedback.json\")\n"
-          )
-          if "generated_feedback.replace" not in text:
-              if old not in text:
-                  raise SystemExit("GENERATOR_PATCH_TARGET_MISSING")
-              path.write_text(text.replace(old, new, 1), encoding="utf-8")
-          PY
       - name: Install validation dependencies
         run: python -m pip install --disable-pip-version-check "jsonschema[format]>=4.23,<5"
       - name: Validate knowledge notes
@@ -65,15 +39,5 @@ jobs:
         run: python scripts/check_exercise_b_medium.py
       - name: Validate Exercise B high/low calibration
         run: python scripts/check_exercise_b_high_low.py
-      - name: Validate generator syntax
+      - name: Validate Exercise B fixture generator syntax
         run: python -m py_compile scripts/generate_exercise_b_high_low.py
-      - name: Commit normalized implementation
-        if: github.event_name == 'pull_request'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add scripts/check_full_episode_runner.py scripts/generate_exercise_b_high_low.py
-          if ! git diff --cached --quiet; then
-            git commit -m "Normalize Exercise B calibration implementation"
-            git push origin HEAD:${{ github.head_ref }}
-          fi
