@@ -260,6 +260,8 @@ def generate_state(state: str) -> None:
     loaded = load_case(destination, ROOT)
     generated = run_full_episode(loaded.runtime)
     write_generated(destination, generated)
+    generated_feedback = destination / "feedback.json"
+    generated_feedback.replace(destination / "expected-feedback.json")
 
 
 def main() -> None:
