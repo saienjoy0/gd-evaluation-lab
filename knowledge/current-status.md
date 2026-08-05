@@ -10,7 +10,7 @@ updated: 2026-08-05
 
 ## Observations
 
-- [phase] Exercise B 4状態マトリクスの準備
+- [phase] Exercise C共通runner展開の準備
 - [completed] 評価研究を`gd-app`から別リポジトリへ分離した
 - [completed] 利用者7軸、表示3領域、1〜4＋NE、AI品質分離の方針を決めた
 - [completed] Scenario、Episode、Annotation、Evaluation Result契約v0.1を作成した
@@ -28,13 +28,15 @@ updated: 2026-08-05
 - [completed] 正常3状態のgolden再生、AI品質、機会供給、score 4複数phase証拠、lowのNE逃げを共通checkerで検証した
 - [completed] 演習B system_failureで候補者前のAI配分確定を発生させ、4機会をinvalid、影響2軸だけをNEへ分離した
 - [completed] system_failureの影響外5軸をmediumと同じ数値に保ち、lowの7軸数値評価との違いを固定した
-- [next] 演習Bの4状態マトリクスを作成する
-- [next] 演習Cへ共通runnerを展開し、残りの完全Episodeを作成する
+- [completed] 演習A・Bの4状態横断検査を共通matrix checkerへ統合した
+- [completed] 演習Bの4状態をSchema・JSON・Markdownの横断マトリクスとして確定した
+- [next] 演習Cへ共通runnerを展開し、medium完全Episodeを作成する
+- [next] 演習Cのhigh / low / system_failureと4状態マトリクスを順次校正する
 - [next] 35マイクロアンカーを仕様に従って作成する
 - [later] System Quality Gateのgd-app接続、Evidence-first Judge、GD APP Episode Exporterへ進む
 
 ## Relations
 
 - part_of [[GD Evaluation Lab Project Overview]]
-- follows [[Exercise B System Failure v0.1 Decision]]
-- informed_by [[Exercise B High Low Calibration v0.1 Decision]]
+- follows [[Exercise B Four-State Matrix v0.1 Decision]]
+- informed_by [[Exercise B System Failure v0.1 Decision]]
