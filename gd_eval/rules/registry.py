@@ -22,6 +22,7 @@ from .stakeholder_conflict import (
 from .time_boxed_decision import (
     candidate_compares_and_revises,
     candidate_prioritizes_after_time_check,
+    candidate_summary_contains_fields,
     private_concern_revealed_before_phase,
     time_checkpoints_followed_by_candidate_turn,
 )
@@ -49,6 +50,7 @@ RULE_HANDLERS: dict[str, RuleHandler] = {
     "private_concern_revealed_before_phase": private_concern_revealed_before_phase,
     "candidate_prioritizes_after_time_check": candidate_prioritizes_after_time_check,
     "candidate_compares_and_revises": candidate_compares_and_revises,
+    "candidate_summary_contains_fields": candidate_summary_contains_fields,
 }
 
 
