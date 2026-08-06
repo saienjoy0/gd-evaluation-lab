@@ -74,3 +74,9 @@ jobs:
             fixtures/calibration/full-episodes/time-boxed-decision/high \
             fixtures/calibration/full-episodes/time-boxed-decision/low
           python scripts/check_exercise_c_high_low.py
+      - name: Validate Exercise C system failure separation
+        run: |
+          python scripts/generate_exercise_c_system_failure.py
+          git diff --exit-code -- \
+            fixtures/calibration/full-episodes/time-boxed-decision/system_failure
+          python scripts/check_exercise_c_system_failure.py

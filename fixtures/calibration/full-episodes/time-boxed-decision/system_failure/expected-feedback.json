@@ -1,0 +1,95 @@
+{
+  "contract_version": "0.1",
+  "dimension_narratives": {
+    "collaboration_and_relationship": {
+      "improvement": "次回は、他者の意見を尊重し、発言機会や建設的な対話を作る。",
+      "missing": "次の水準で求められる行動は「他者の意見を尊重し、発言機会や建設的な対話を作る。」である。",
+      "positive": "複数立場を統合したが、参加促進や対立調整の働きかけは限定的だった。"
+    },
+    "decision_and_consensus": {
+      "improvement": "",
+      "missing": "",
+      "positive": ""
+    },
+    "issue_framing": {
+      "improvement": "次回は、目的、対象、前提、主要論点を整理し、議論可能な形にする。",
+      "missing": "次の水準で求められる行動は「目的、対象、前提、主要論点を整理し、議論可能な形にする。」である。",
+      "positive": "m005は複数基準を提示したが、基準の重み・検討順・主要トレードオフを初期段階で構造化していないため最終2とした。"
+    },
+    "listening_and_response": {
+      "improvement": "",
+      "missing": "",
+      "positive": ""
+    },
+    "logical_reasoning": {
+      "improvement": "",
+      "missing": "",
+      "positive": ""
+    },
+    "process_and_time_management": {
+      "improvement": "次回は、停滞や脱線を早期に検知し、全員の理解を保ちながらプロセスを再設計する。",
+      "missing": "次の水準で求められる行動は「停滞や脱線を早期に検知し、全員の理解を保ちながらプロセスを再設計する。」である。",
+      "positive": "両時間通知後に優先順位を調整し、終了前に要約した。"
+    },
+    "valuable_contribution": {
+      "improvement": "次回は、新しい視点や具体案を示し、議論を前進させる。",
+      "missing": "次の水準で求められる行動は「新しい視点や具体案を示し、議論を前進させる。」である。",
+      "positive": "ハイブリッド案と例外対応を提案したが、重要制約の発見はAI提示に依存した。"
+    }
+  },
+  "display_groups": {
+    "collaboration": {
+      "aggregation_status": "not_calibrated",
+      "bottleneck_dimension": "collaboration_and_relationship",
+      "coverage": {
+        "evaluated": 1,
+        "total": 2
+      },
+      "score": null,
+      "summary": "次の水準で求められる行動は「他者の意見を尊重し、発言機会や建設的な対話を作る。」である。"
+    },
+    "progress": {
+      "aggregation_status": "not_calibrated",
+      "bottleneck_dimension": "process_and_time_management",
+      "coverage": {
+        "evaluated": 1,
+        "total": 2
+      },
+      "score": null,
+      "summary": "次の水準で求められる行動は「停滞や脱線を早期に検知し、全員の理解を保ちながらプロセスを再設計する。」である。"
+    },
+    "thinking": {
+      "aggregation_status": "not_calibrated",
+      "bottleneck_dimension": "issue_framing",
+      "coverage": {
+        "evaluated": 2,
+        "total": 3
+      },
+      "score": null,
+      "summary": "次の水準で求められる行動は「目的、対象、前提、主要論点を整理し、議論可能な形にする。」である。"
+    }
+  },
+  "limitations": "合成Episodeに基づく校正用フィードバックであり、採用判断には使用しない。",
+  "next_action": "次回は、目的、対象、前提、主要論点を整理し、議論可能な形にする。",
+  "not_evaluable_dimensions": {
+    "decision_and_consensus": {
+      "evaluation_status": "not_evaluable",
+      "reason": "C-PROH-01により主要機会が無効化され、候補者能力として採点できない。",
+      "reason_code": "AI_QUALITY_FAILURE"
+    },
+    "listening_and_response": {
+      "evaluation_status": "not_evaluable",
+      "reason": "C-PROH-01により主要機会が無効化され、候補者能力として採点できない。",
+      "reason_code": "AI_QUALITY_FAILURE"
+    },
+    "logical_reasoning": {
+      "evaluation_status": "not_evaluable",
+      "reason": "C-PROH-01により主要機会が無効化され、候補者能力として採点できない。",
+      "reason_code": "AI_QUALITY_FAILURE"
+    }
+  },
+  "slice_id": "exercise-c-system-failure-v0.1",
+  "strengths": [
+    "両時間通知後に優先順位を調整し、終了前に要約した"
+  ]
+}
