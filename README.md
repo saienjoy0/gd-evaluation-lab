@@ -30,6 +30,7 @@ Evaluation Contract v0.1では、次を正本として管理します。
 - `annotation/MICRO_ANCHOR_RATING_GUIDE.md`
 - `docs/MICRO_ANCHOR_SPEC.md`
 - `docs/MICRO_ANCHOR_FOUNDATION_ISSUE_FRAMING_V0.1.md`
+- `docs/MICRO_ANCHOR_THINKING_COLLABORATION_V0.1.md`
 - `docs/FULL_EPISODE_SPEC.md`
 - `docs/CANDIDATE_ASSESSMENT_SCENARIO_PACK.md`
 - `docs/SCENARIO_OPPORTUNITY_MATRIX.md`
@@ -64,6 +65,10 @@ Evaluation Contract v0.1では、次を正本として管理します。
 - `fixtures/calibration/full-episodes/time-boxed-decision/medium/episode.json`
 - `fixtures/anchors/anchor-set-v0.1.json`
 - `fixtures/anchors/issue_framing/`
+- `fixtures/anchors/logical_reasoning/`
+- `fixtures/anchors/valuable_contribution/`
+- `fixtures/anchors/listening_and_response/`
+- `fixtures/anchors/collaboration_and_relationship/`
 - `fixtures/anchors/blind/issue-framing-v0.1.json`
 - `schemas/`
 
@@ -107,16 +112,26 @@ python scripts/export_micro_anchor_blind_pack.py --check
 python scripts/check_micro_anchor_negative_fixtures.py
 ```
 
+Blind Pack全文が必要な場合は次で生成する。
+
+```bash
+python scripts/export_micro_anchor_blind_pack.py --output micro-anchor-blind-pack-v0.1.json
+```
+
 ## マイクロアンカー現在地
 
-35件中5件を実装済みです。
+35件中25件を実装済みです。
 
 - Issue Framing: score 1 / 2 / 3 / 4 / NE
+- Logical Reasoning: score 1 / 2 / 3 / 4 / NE
+- Valuable Contribution: score 1 / 2 / 3 / 4 / NE
+- Listening and Response: score 1 / 2 / 3 / 4 / NE
+- Collaboration and Relationship: score 1 / 2 / 3 / 4 / NE
 - Anchor set status: `partial`
 - 各アンカーのapproval status: `draft`
 - 人間二重評価: 未実施
 
-次はLogical ReasoningとValuable Contributionの10件を追加します。
+次はDecision and ConsensusとProcess and Time Managementの10件を追加し、35 / 35を完成します。
 
 ## 評価者の基本手順
 
