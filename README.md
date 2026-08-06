@@ -27,7 +27,9 @@ Evaluation Contract v0.1では、次を正本として管理します。
 
 - `docs/VALIDATION_PLAN.md`
 - `annotation/HUMAN_ANNOTATION_GUIDE.md`
+- `annotation/MICRO_ANCHOR_RATING_GUIDE.md`
 - `docs/MICRO_ANCHOR_SPEC.md`
+- `docs/MICRO_ANCHOR_FOUNDATION_ISSUE_FRAMING_V0.1.md`
 - `docs/FULL_EPISODE_SPEC.md`
 - `docs/CANDIDATE_ASSESSMENT_SCENARIO_PACK.md`
 - `docs/SCENARIO_OPPORTUNITY_MATRIX.md`
@@ -53,10 +55,16 @@ Evaluation Contract v0.1では、次を正本として管理します。
 - `contracts/deterministic-rule-vocabulary-v0.1.json`
 - `schemas/common/ne-reason-codes-v0.1.json`
 - `schemas/exercise-four-state-matrix-v0.1.schema.json`
+- `schemas/micro-anchor-v0.1.schema.json`
+- `schemas/micro-anchor-set-v0.1.schema.json`
+- `schemas/micro-anchor-rating-v0.1.schema.json`
 - `fixtures/calibration/matrices/exercise-a-four-state-v0.1.json`
 - `fixtures/calibration/matrices/exercise-b-four-state-v0.1.json`
 - `fixtures/calibration/matrices/exercise-c-four-state-v0.1.json`
 - `fixtures/calibration/full-episodes/time-boxed-decision/medium/episode.json`
+- `fixtures/anchors/anchor-set-v0.1.json`
+- `fixtures/anchors/issue_framing/`
+- `fixtures/anchors/blind/issue-framing-v0.1.json`
 - `schemas/`
 
 ## 役割分担
@@ -66,7 +74,7 @@ Evaluation Contract v0.1では、次を正本として管理します。
 - `rubrics/`: 版管理された行動アンカーとJudge質問
 - `contracts/`: moveとdeterministic ruleの共通語彙
 - `schemas/`: gd-appと評価ラボ間のJSON契約
-- `fixtures/`: 匿名化・合成の検証データ、標準演習、評価機会ケース、完全Episode
+- `fixtures/`: 匿名化・合成の検証データ、標準演習、評価機会ケース、完全Episode、マイクロアンカー
 - `knowledge/`: 長期的に残す決定と現在地
 - Beads (`bd`): 未完了タスクと依存関係
 - `TASKS_FALLBACK.md`: Beads初期化前だけ使う一時タスクリスト
@@ -93,7 +101,22 @@ python scripts/check_exercise_c_medium.py
 python scripts/check_exercise_c_high_low.py
 python scripts/check_exercise_c_system_failure.py
 python scripts/check_exercise_c_four_state_matrix.py
+python scripts/check_micro_anchor_contract.py
+python scripts/check_micro_anchor_set.py
+python scripts/export_micro_anchor_blind_pack.py --check
+python scripts/check_micro_anchor_negative_fixtures.py
 ```
+
+## マイクロアンカー現在地
+
+35件中5件を実装済みです。
+
+- Issue Framing: score 1 / 2 / 3 / 4 / NE
+- Anchor set status: `partial`
+- 各アンカーのapproval status: `draft`
+- 人間二重評価: 未実施
+
+次はLogical ReasoningとValuable Contributionの10件を追加します。
 
 ## 評価者の基本手順
 
