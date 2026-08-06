@@ -82,3 +82,11 @@ jobs:
           python scripts/check_exercise_c_system_failure.py
       - name: Validate Exercise C four-state matrix
         run: python scripts/check_exercise_c_four_state_matrix.py
+      - name: Validate Micro Anchor contract
+        run: python scripts/check_micro_anchor_contract.py
+      - name: Validate Micro Anchor set
+        run: python scripts/check_micro_anchor_set.py
+      - name: Validate Micro Anchor blind export
+        run: python scripts/export_micro_anchor_blind_pack.py --check
+      - name: Validate Micro Anchor negative fixtures
+        run: python scripts/check_micro_anchor_negative_fixtures.py
