@@ -1,0 +1,122 @@
+{
+  "contract_version": "0.1",
+  "anchor_set_version": "micro-anchor-set-v0.1",
+  "anchor_id": "anchor-if-3-001",
+  "rubric_id": "candidate-behavior",
+  "rubric_version": "candidate-behavior-v0.1",
+  "target_dimension": "issue_framing",
+  "target_score": 3,
+  "target_participant_id": "candidate_target",
+  "scenario_context": {
+    "scenario_family_id": "anchor-family-if-001",
+    "topic": "地域交流施設の企画",
+    "task": "限られた時間で検討論点と判断基準を整理する",
+    "shared_context": "「若者に良い地域交流施設」という曖昧な依頼が提示された。",
+    "constraints": [
+      "予算上限は600万円",
+      "対象となる若者の範囲が未定"
+    ]
+  },
+  "opportunity_description": {
+    "opportunity_id": "ANCHOR-IF-OP-001",
+    "status": "sufficient",
+    "trigger_message_ids": [
+      "m001",
+      "m004"
+    ],
+    "description": "候補者が目的、対象、前提、制約、判断基準を整理できる場面。"
+  },
+  "participants": [
+    {
+      "participant_id": "candidate_target",
+      "speaker_type": "user",
+      "role": "evaluation_target"
+    },
+    {
+      "participant_id": "participant_a",
+      "speaker_type": "user",
+      "role": "peer"
+    },
+    {
+      "participant_id": "facilitator_ai",
+      "speaker_type": "ai",
+      "role": "facilitator"
+    }
+  ],
+  "micro_episode": [
+    {
+      "message_id": "m001",
+      "sequence_index": 1,
+      "participant_id": "facilitator_ai",
+      "speaker_type": "ai",
+      "phase": "opening",
+      "move": "clarify_goal",
+      "text": "「若者に良い地域交流施設」を企画します。目的、対象、制約、判断基準を整理してください。"
+    },
+    {
+      "message_id": "m002",
+      "sequence_index": 2,
+      "participant_id": "participant_a",
+      "speaker_type": "user",
+      "phase": "discussion",
+      "move": "propose_idea",
+      "text": "私はカフェを併設すると人が集まりやすいと思います。"
+    },
+    {
+      "message_id": "m003",
+      "sequence_index": 3,
+      "participant_id": "candidate_target",
+      "speaker_type": "user",
+      "phase": "discussion",
+      "move": "define_scope",
+      "text": "目的を継続利用、対象を高校生から大学生とし、費用、利用頻度、安全性を判断基準にして、候補案を同じ順序で比べましょう。"
+    },
+    {
+      "message_id": "m004",
+      "sequence_index": 4,
+      "participant_id": "facilitator_ai",
+      "speaker_type": "ai",
+      "phase": "constraint_update",
+      "move": "challenge",
+      "text": "追加条件です。初年度予算は600万円までで、対象となる若者の範囲はまだ決まっていません。"
+    },
+    {
+      "message_id": "m005",
+      "sequence_index": 5,
+      "participant_id": "candidate_target",
+      "speaker_type": "user",
+      "phase": "revision",
+      "move": "prioritize",
+      "text": "予算上限を前提に、まず必須機能と追加機能を分け、対象者ごとの利用場面を確認してから優先順位を決めます。"
+    },
+    {
+      "message_id": "m006",
+      "sequence_index": 6,
+      "participant_id": "facilitator_ai",
+      "speaker_type": "ai",
+      "phase": "closing",
+      "move": "summarize",
+      "text": "ここまでの整理をもとに、次の検討へ進みます。"
+    }
+  ],
+  "expected_evidence_message_ids": [
+    "m003"
+  ],
+  "expected_not_evaluable_reason": null,
+  "rationale": "目的、対象、制約、判断基準を明示し、追加条件後に検討順を具体化して議論可能な構造を作った。",
+  "boundary_note": {
+    "adjacent_lower": {
+      "score": 2,
+      "difference": "目的、対象、制約、判断基準を接続し、議論可能な構造として提示した。"
+    },
+    "adjacent_upper": {
+      "score": 4,
+      "difference": "初期の論点漏れの明示と、新情報後の構造全体の再設計までは行っていない。"
+    },
+    "score_1_vs_ne": "十分な機会と明確な構造化行動があり、数値評価できる。"
+  },
+  "prohibited_inference_note": "名前、性別、年齢、障害、アクセント、発言量、性格などは得点根拠に使用しない。",
+  "author": "synthetic-calibration-team",
+  "reviewer": null,
+  "approval_status": "draft"
+}
