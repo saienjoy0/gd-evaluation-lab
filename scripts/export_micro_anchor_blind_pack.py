@@ -120,8 +120,14 @@ def main() -> int:
         / "issue-framing-v0.1.json"
     )
     if args.check:
-        if load_json(oracle) != build_oracle(pack, rendered):
-            raise AssertionError("BLIND_PACK_ORACLE_MISMATCH")
+        expected = load_json(oracle)
+        actual = build_oracle(pack, rendered)
+        if expected != actual:
+            raise AssertionError(
+                "BLIND_PACK_ORACLE_MISMATCH: "
+                f"expected={json.dumps(expected, ensure_ascii=False, sort_keys=True)} "
+                f"actual={json.dumps(actual, ensure_ascii=False, sort_keys=True)}"
+            )
         print("Micro Anchor blind pack OK")
         print(f"Blind entries: {pack['entry_count']}")
         return 0
