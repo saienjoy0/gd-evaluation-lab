@@ -284,9 +284,12 @@ def _display_groups(
             bottleneck = None
             fallback = "有効な評価機会が不足したため、この領域は評価不能だった。"
         use_observed_fallback = (
-            exercise_id == "candidate-assessment-b-stakeholder-conflict"
-            and bottleneck is not None
-            and int(dimension_map[bottleneck]["score"]) <= 1
+            exercise_id == "candidate-assessment-c-time-boxed-decision"
+            or (
+                exercise_id == "candidate-assessment-b-stakeholder-conflict"
+                and bottleneck is not None
+                and int(dimension_map[bottleneck]["score"]) <= 1
+            )
         )
         groups[group_id] = {
             "aggregation_status": "not_calibrated",
