@@ -1,0 +1,167 @@
+{
+  "ai_quality": {
+    "dimension_scores": {
+      "consensus_quality": 4,
+      "discussion_coherence": 4,
+      "goal_progression": 4,
+      "natural_pacing": 4,
+      "novelty_and_repetition": 4,
+      "responsiveness": 4,
+      "role_believability": 4,
+      "user_agency": 5
+    },
+    "status": "pass",
+    "violations": []
+  },
+  "candidate_dimensions": [
+    {
+      "confidence": 0.9,
+      "dimension": "issue_framing",
+      "evidence_message_ids": [
+        "m005"
+      ],
+      "improvement": "次回は、問題の一部を捉えるが、重要な前提・対象・制約が曖昧である。",
+      "missing_behavior": "次の水準で求められる行動は「問題の一部を捉えるが、重要な前提・対象・制約が曖昧である。」である。",
+      "not_evaluable_reason": null,
+      "positive_behavior": "比較軸を具体化せず、無難さだけで方向を決めた。",
+      "question_results": [],
+      "score": 1
+    },
+    {
+      "confidence": 0.9,
+      "dimension": "logical_reasoning",
+      "evidence_message_ids": [
+        "m020",
+        "m028"
+      ],
+      "improvement": "次回は、理由はあるが、主張との接続が弱い、または根拠が曖昧である。",
+      "missing_behavior": "次の水準で求められる行動は「理由はあるが、主張との接続が弱い、または根拠が曖昧である。」である。",
+      "not_evaluable_reason": null,
+      "positive_behavior": "三案の差や制約を検討せず、リスク後も根拠を更新しなかった。",
+      "question_results": [],
+      "score": 1
+    },
+    {
+      "confidence": 0.9,
+      "dimension": "listening_and_response",
+      "evidence_message_ids": [
+        "m008",
+        "m028"
+      ],
+      "improvement": "次回は、他者の発言を正確に捉え、関連する質問や接続を行う。",
+      "missing_behavior": "次の水準で求められる行動は「他者の発言を正確に捉え、関連する質問や接続を行う。」である。",
+      "not_evaluable_reason": null,
+      "positive_behavior": "懸念には返答したが、内容を十分に受け止めた修正には至らなかった。",
+      "question_results": [],
+      "score": 2
+    },
+    {
+      "confidence": 0.9,
+      "dimension": "valuable_contribution",
+      "evidence_message_ids": [
+        "m010",
+        "m022"
+      ],
+      "improvement": "次回は、関連する意見を出すが、既出内容の反復または具体性不足である。",
+      "missing_behavior": "次の水準で求められる行動は「関連する意見を出すが、既出内容の反復または具体性不足である。」である。",
+      "not_evaluable_reason": null,
+      "positive_behavior": "既存案を言い換えるだけで、制約を解く新しい提案を作らなかった。",
+      "question_results": [],
+      "score": 1
+    },
+    {
+      "confidence": 0.9,
+      "dimension": "collaboration_and_relationship",
+      "evidence_message_ids": [
+        "m012",
+        "m037"
+      ],
+      "improvement": "次回は、礼儀は保つが、他者参加の促進や対立調整は行わない。",
+      "missing_behavior": "次の水準で求められる行動は「礼儀は保つが、他者参加の促進や対立調整は行わない。」である。",
+      "not_evaluable_reason": null,
+      "positive_behavior": "他参加者の立場を確認せず、合意を急いだ。",
+      "question_results": [],
+      "score": 1
+    },
+    {
+      "confidence": 0.9,
+      "dimension": "decision_and_consensus",
+      "evidence_message_ids": [
+        "m020",
+        "m028",
+        "m037"
+      ],
+      "improvement": "次回は、案を選ぶが、判断基準や反対意見の処理が不十分である。",
+      "missing_behavior": "次の水準で求められる行動は「案を選ぶが、判断基準や反対意見の処理が不十分である。」である。",
+      "not_evaluable_reason": null,
+      "positive_behavior": "実施条件、例外、確認事項を詰めずに結論を固定した。",
+      "question_results": [],
+      "score": 1
+    },
+    {
+      "confidence": 0.9,
+      "dimension": "process_and_time_management",
+      "evidence_message_ids": [
+        "m018",
+        "m032",
+        "m039"
+      ],
+      "improvement": "次回は、時間に言及するが、具体的な調整につながらない。",
+      "missing_behavior": "次の水準で求められる行動は「時間に言及するが、具体的な調整につながらない。」である。",
+      "not_evaluable_reason": null,
+      "positive_behavior": "時間通知後に優先順位を更新せず、終盤は検討を打ち切った。",
+      "question_results": [],
+      "score": 1
+    }
+  ],
+  "contract_version": "0.1",
+  "display_groups": {
+    "collaboration": {
+      "aggregation_status": "not_calibrated",
+      "bottleneck_dimension": "collaboration_and_relationship",
+      "coverage": {
+        "evaluated": 2,
+        "total": 2
+      },
+      "score": null,
+      "summary": "懸念へ応答して統合できたが、参加促進は限定的だった。"
+    },
+    "progress": {
+      "aggregation_status": "not_calibrated",
+      "bottleneck_dimension": "decision_and_consensus",
+      "coverage": {
+        "evaluated": 2,
+        "total": 2
+      },
+      "score": null,
+      "summary": "次の水準で求められる行動は「案を選ぶが、判断基準や反対意見の処理が不十分である。」である。"
+    },
+    "thinking": {
+      "aggregation_status": "not_calibrated",
+      "bottleneck_dimension": "issue_framing",
+      "coverage": {
+        "evaluated": 3,
+        "total": 3
+      },
+      "score": null,
+      "summary": "次の水準で求められる行動は「問題の一部を捉えるが、重要な前提・対象・制約が曖昧である。」である。"
+    }
+  },
+  "evaluation_disagreement": null,
+  "legacy_evaluation": null,
+  "review_status": "completed",
+  "session_id": "exercise-c-low-001",
+  "status": "completed",
+  "target_participant_id": "candidate_c_low",
+  "version_info": {
+    "ai_quality_rubric_version": "ai-participant-v0.1",
+    "deterministic_evaluator_version": "exercise-c-deterministic-v0.1",
+    "judge_model": "human-adjudication",
+    "judge_version": "not-applied-v0.1",
+    "orchestrator_version": "synthetic-calibration-v0.1",
+    "prompt_version": "exercise-c-medium-prompt-v0.1",
+    "rubric_version": "candidate-behavior-v0.1",
+    "scenario_version": "candidate-assessment-c-v0.1",
+    "transcript_hash": "201df887921bd551f8807ff86864a5cc7ed53e14700b0c2a82820fc63286bd31"
+  }
+}
