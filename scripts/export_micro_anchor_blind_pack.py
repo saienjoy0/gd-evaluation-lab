@@ -89,6 +89,17 @@ def serialize(pack: dict[str, Any]) -> str:
     return json.dumps(pack, ensure_ascii=False, indent=2) + "\n"
 
 
+def build_oracle(pack: dict[str, Any], rendered: str) -> dict[str, Any]:
+    return {
+        "contract_version": pack["contract_version"],
+        "blind_pack_version": pack["blind_pack_version"],
+        "anchor_set_version": pack["anchor_set_version"],
+        "rubric_version": pack["rubric_version"],
+        "entry_count": pack["entry_count"],
+        "sha256": hashlib.sha256(rendered.encode("utf-8")).hexdigest(),
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--check", action="store_true")
@@ -109,7 +120,7 @@ def main() -> int:
         / "issue-framing-v0.1.json"
     )
     if args.check:
-        if load_json(oracle) != pack:
+        if load_json(oracle) != build_oracle(pack, rendered):
             raise AssertionError("BLIND_PACK_ORACLE_MISMATCH")
         print("Micro Anchor blind pack OK")
         print(f"Blind entries: {pack['entry_count']}")
