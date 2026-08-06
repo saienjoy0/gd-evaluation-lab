@@ -1,0 +1,76 @@
+{
+  "contract_version": "0.1",
+  "dimension_narratives": {
+    "collaboration_and_relationship": {
+      "improvement": "次回は、礼儀は保つが、他者参加の促進や対立調整は行わない。",
+      "missing": "次の水準で求められる行動は「礼儀は保つが、他者参加の促進や対立調整は行わない。」である。",
+      "positive": "他参加者の立場を確認せず、合意を急いだ。"
+    },
+    "decision_and_consensus": {
+      "improvement": "次回は、案を選ぶが、判断基準や反対意見の処理が不十分である。",
+      "missing": "次の水準で求められる行動は「案を選ぶが、判断基準や反対意見の処理が不十分である。」である。",
+      "positive": "実施条件、例外、確認事項を詰めずに結論を固定した。"
+    },
+    "issue_framing": {
+      "improvement": "次回は、問題の一部を捉えるが、重要な前提・対象・制約が曖昧である。",
+      "missing": "次の水準で求められる行動は「問題の一部を捉えるが、重要な前提・対象・制約が曖昧である。」である。",
+      "positive": "比較軸を具体化せず、無難さだけで方向を決めた。"
+    },
+    "listening_and_response": {
+      "improvement": "次回は、他者の発言を正確に捉え、関連する質問や接続を行う。",
+      "missing": "次の水準で求められる行動は「他者の発言を正確に捉え、関連する質問や接続を行う。」である。",
+      "positive": "懸念には返答したが、内容を十分に受け止めた修正には至らなかった。"
+    },
+    "logical_reasoning": {
+      "improvement": "次回は、理由はあるが、主張との接続が弱い、または根拠が曖昧である。",
+      "missing": "次の水準で求められる行動は「理由はあるが、主張との接続が弱い、または根拠が曖昧である。」である。",
+      "positive": "三案の差や制約を検討せず、リスク後も根拠を更新しなかった。"
+    },
+    "process_and_time_management": {
+      "improvement": "次回は、時間に言及するが、具体的な調整につながらない。",
+      "missing": "次の水準で求められる行動は「時間に言及するが、具体的な調整につながらない。」である。",
+      "positive": "時間通知後に優先順位を更新せず、終盤は検討を打ち切った。"
+    },
+    "valuable_contribution": {
+      "improvement": "次回は、関連する意見を出すが、既出内容の反復または具体性不足である。",
+      "missing": "次の水準で求められる行動は「関連する意見を出すが、既出内容の反復または具体性不足である。」である。",
+      "positive": "既存案を言い換えるだけで、制約を解く新しい提案を作らなかった。"
+    }
+  },
+  "display_groups": {
+    "collaboration": {
+      "aggregation_status": "not_calibrated",
+      "bottleneck_dimension": "collaboration_and_relationship",
+      "coverage": {
+        "evaluated": 2,
+        "total": 2
+      },
+      "score": null,
+      "summary": "次の水準で求められる行動は「礼儀は保つが、他者参加の促進や対立調整は行わない。」である。"
+    },
+    "progress": {
+      "aggregation_status": "not_calibrated",
+      "bottleneck_dimension": "decision_and_consensus",
+      "coverage": {
+        "evaluated": 2,
+        "total": 2
+      },
+      "score": null,
+      "summary": "次の水準で求められる行動は「案を選ぶが、判断基準や反対意見の処理が不十分である。」である。"
+    },
+    "thinking": {
+      "aggregation_status": "not_calibrated",
+      "bottleneck_dimension": "issue_framing",
+      "coverage": {
+        "evaluated": 3,
+        "total": 3
+      },
+      "score": null,
+      "summary": "次の水準で求められる行動は「問題の一部を捉えるが、重要な前提・対象・制約が曖昧である。」である。"
+    }
+  },
+  "limitations": "合成Episodeに基づく校正用フィードバックであり、採用判断には使用しない。",
+  "next_action": "中盤で残り時間と未解決論点を確認し、根拠付きで優先順位を付ける。",
+  "slice_id": "exercise-c-low-v0.1",
+  "strengths": []
+}

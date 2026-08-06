@@ -1,0 +1,85 @@
+{
+  "contract_version": "0.1",
+  "dimension_scores": {
+    "consensus_quality": 4,
+    "discussion_coherence": 4,
+    "goal_progression": 4,
+    "natural_pacing": 4,
+    "novelty_and_repetition": 4,
+    "responsiveness": 4,
+    "role_believability": 4,
+    "user_agency": 5
+  },
+  "evaluator_version": "exercise-c-deterministic-v0.1",
+  "result_id": "sq-exercise-c-low-001",
+  "rule_results": [
+    {
+      "affected_dimensions": [
+        "process_and_time_management",
+        "decision_and_consensus"
+      ],
+      "detail": "2件の時間通知後に候補者ターンが確保された。",
+      "evidence_event_ids": [
+        "ev_checkpoint_40",
+        "ev_checkpoint_75"
+      ],
+      "evidence_message_ids": [
+        "m017",
+        "m018",
+        "m031",
+        "m032"
+      ],
+      "outcome": "pass",
+      "rule_id": "C-R01",
+      "severity": "critical"
+    },
+    {
+      "affected_dimensions": [
+        "listening_and_response",
+        "logical_reasoning",
+        "decision_and_consensus"
+      ],
+      "detail": "決定前に1件の遅延リスクが正規の候補者行動後に開示された。",
+      "evidence_event_ids": [
+        "ev_late_risk_security"
+      ],
+      "evidence_message_ids": [
+        "m027"
+      ],
+      "outcome": "pass",
+      "rule_id": "C-R02",
+      "severity": "critical"
+    },
+    {
+      "affected_dimensions": [
+        "logical_reasoning",
+        "listening_and_response",
+        "decision_and_consensus"
+      ],
+      "detail": "AIは遅延リスク開示前に結論を確定していない。",
+      "evidence_event_ids": [],
+      "evidence_message_ids": [],
+      "outcome": "pass",
+      "rule_id": "C-PROH-01",
+      "severity": "critical"
+    },
+    {
+      "affected_dimensions": [
+        "decision_and_consensus",
+        "process_and_time_management"
+      ],
+      "detail": "候補者要約の後にセッションが終了した。",
+      "evidence_event_ids": [],
+      "evidence_message_ids": [
+        "m039"
+      ],
+      "outcome": "pass",
+      "rule_id": "C-PROH-02",
+      "severity": "major"
+    }
+  ],
+  "scenario_id": "candidate-assessment-c-time-boxed-decision",
+  "scenario_version": "candidate-assessment-c-v0.1",
+  "session_id": "exercise-c-low-001",
+  "status": "pass"
+}

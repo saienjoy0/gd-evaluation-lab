@@ -3,14 +3,14 @@ title: Current Status
 type: status
 tags: [gd, evaluation, status]
 permalink: gd-evaluation-current-status
-updated: 2026-08-05
+updated: 2026-08-06
 ---
 
 # Current Status
 
 ## Observations
 
-- [phase] Exercise C high / low校正の準備
+- [phase] Exercise C system_failure分離の準備
 - [completed] 評価研究を`gd-app`から別リポジトリへ分離した
 - [completed] 利用者7軸、表示3領域、1〜4＋NE、AI品質分離の方針を決めた
 - [completed] Scenario、Episode、Annotation、Evaluation Result契約v0.1を作成した
@@ -33,13 +33,18 @@ updated: 2026-08-05
 - [completed] 演習C固有の時間通知、遅延リスク、三案比較、優先順位更新、要約ruleを共通runnerへ接続した
 - [completed] 演習C mediumをScenarioからFeedbackまで通し、15機会すべてobserved、7軸を`2/3/3/2/2/3/3`で数値評価した
 - [completed] 40%・75%時間通知後の候補者ターン、リスク後の案修正、条件付き合意を構造化証拠で固定した
-- [next] 演習C high / lowを同じAI品質・同じ15機会で校正する
-- [next] 演習C system_failureと4状態マトリクスを作成する
+- [completed] 演習C high / medium / lowを同じAI発言・同じSystem Quality・同じ15機会で校正した
+- [completed] 演習Cの点数順をhigh `3/4/4/4/4/4/4`、medium `2/3/3/2/2/3/3`、low `1/1/2/1/1/1/1`として全7軸で固定した
+- [completed] lowは15機会を維持したままC-R03 / C-R04 / C-R05だけを失敗させ、7軸すべて数値・NEなし・strengthなしに固定した
+- [completed] highの6つのscore 4について複数phase証拠を要求し、issue_framingは単一機会契約を守ってscore 3を上限にした
+- [next] 演習C system_failureでAI起因の評価機会欠損と影響軸NEを分離する
+- [next] 演習Cの4状態マトリクスを作成する
 - [next] 35マイクロアンカーを仕様に従って作成する
 - [later] System Quality Gateのgd-app接続、Evidence-first Judge、GD APP Episode Exporterへ進む
 
 ## Relations
 
 - part_of [[GD Evaluation Lab Project Overview]]
-- follows [[Exercise C Medium Vertical Slice v0.1 Decision]]
+- follows [[Exercise C High Low Calibration v0.1 Decision]]
+- informed_by [[Exercise C Medium Vertical Slice v0.1 Decision]]
 - informed_by [[Exercise B Four-State Matrix v0.1 Decision]]
