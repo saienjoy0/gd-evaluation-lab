@@ -1,0 +1,138 @@
+{
+  "annotator_id": "rater_a_anon",
+  "calibration_set_version": "exercise-c-system-failure-v0.1",
+  "completed_at": "2026-08-05T12:35:00Z",
+  "contract_version": "0.1",
+  "dimensions": [
+    {
+      "comment": "比較基準を列挙したが、重みや論点構造は初期段階では限定的だった。",
+      "confidence": 0.84,
+      "dimension": "issue_framing",
+      "flags": [],
+      "not_evaluable_reason": null,
+      "opportunity_evidence_event_ids": [
+        "ev_opp_c_op_is_01"
+      ],
+      "opportunity_status": "sufficient",
+      "score": 2,
+      "selected_evidence_message_ids": [
+        "m005"
+      ]
+    },
+    {
+      "comment": "AIが遅延リスクの開示前に結論を確定し、この軸の主要評価機会が因果的に無効化された。",
+      "confidence": 0.95,
+      "dimension": "logical_reasoning",
+      "flags": [
+        "OPPORTUNITY_ISSUE"
+      ],
+      "not_evaluable_reason": "AI_QUALITY_FAILURE",
+      "opportunity_evidence_event_ids": [
+        "ev_opp_c_op_lo_01",
+        "ev_opp_c_op_lo_02"
+      ],
+      "opportunity_status": "insufficient",
+      "score": "NE",
+      "selected_evidence_message_ids": []
+    },
+    {
+      "comment": "AIが遅延リスクの開示前に結論を確定し、この軸の主要評価機会が因果的に無効化された。",
+      "confidence": 0.95,
+      "dimension": "listening_and_response",
+      "flags": [
+        "OPPORTUNITY_ISSUE"
+      ],
+      "not_evaluable_reason": "AI_QUALITY_FAILURE",
+      "opportunity_evidence_event_ids": [
+        "ev_opp_c_op_li_01",
+        "ev_opp_c_op_li_02"
+      ],
+      "opportunity_status": "insufficient",
+      "score": "NE",
+      "selected_evidence_message_ids": []
+    },
+    {
+      "comment": "ハイブリッド案と例外対応を提案したが、重要制約の発見はAI提示に依存した。",
+      "confidence": 0.84,
+      "dimension": "valuable_contribution",
+      "flags": [],
+      "not_evaluable_reason": null,
+      "opportunity_evidence_event_ids": [
+        "ev_opp_c_op_va_01",
+        "ev_opp_c_op_va_02"
+      ],
+      "opportunity_status": "sufficient",
+      "score": 2,
+      "selected_evidence_message_ids": [
+        "m010",
+        "m022"
+      ]
+    },
+    {
+      "comment": "複数立場を統合したが、参加促進や対立調整の働きかけは限定的だった。",
+      "confidence": 0.84,
+      "dimension": "collaboration_and_relationship",
+      "flags": [],
+      "not_evaluable_reason": null,
+      "opportunity_evidence_event_ids": [
+        "ev_opp_c_op_co_01",
+        "ev_opp_c_op_co_02"
+      ],
+      "opportunity_status": "sufficient",
+      "score": 2,
+      "selected_evidence_message_ids": [
+        "m012",
+        "m037"
+      ]
+    },
+    {
+      "comment": "AIが遅延リスクの開示前に結論を確定し、この軸の主要評価機会が因果的に無効化された。",
+      "confidence": 0.95,
+      "dimension": "decision_and_consensus",
+      "flags": [
+        "OPPORTUNITY_ISSUE"
+      ],
+      "not_evaluable_reason": "AI_QUALITY_FAILURE",
+      "opportunity_evidence_event_ids": [
+        "ev_opp_c_op_de_01",
+        "ev_opp_c_op_de_02",
+        "ev_opp_c_op_de_03"
+      ],
+      "opportunity_status": "insufficient",
+      "score": "NE",
+      "selected_evidence_message_ids": []
+    },
+    {
+      "comment": "両時間通知後に優先順位を調整し、終了前に要約した。",
+      "confidence": 0.84,
+      "dimension": "process_and_time_management",
+      "flags": [],
+      "not_evaluable_reason": null,
+      "opportunity_evidence_event_ids": [
+        "ev_opp_c_op_pr_01",
+        "ev_opp_c_op_pr_02",
+        "ev_opp_c_op_pr_03"
+      ],
+      "opportunity_status": "sufficient",
+      "score": 3,
+      "selected_evidence_message_ids": [
+        "m018",
+        "m032",
+        "m039"
+      ]
+    }
+  ],
+  "episode_id": "exercise-c-system-failure-001",
+  "evaluation_stage": "independent",
+  "overall_notes": "Exercise C system_failureとして、C-PROH-01の影響3軸だけをNEへ分離した。",
+  "rubric_version": "candidate-behavior-v0.1",
+  "scenario_id": "candidate-assessment-c-time-boxed-decision",
+  "sheet_id": "rater-a-exercise-c-system-failure-001",
+  "started_at": "2026-08-05T12:20:00Z",
+  "workflow_attestations": {
+    "ai_scores_hidden": true,
+    "evidence_selected_before_score": true,
+    "identity_blinded": true,
+    "rubric_consulted": true
+  }
+}

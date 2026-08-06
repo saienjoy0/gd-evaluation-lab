@@ -1,0 +1,122 @@
+{
+  "adjudication_id": "adj-exercise-c-system-failure-001",
+  "adjudicator_id": "adjudicator_anon",
+  "contract_version": "0.1",
+  "created_at": "2026-08-05T13:10:00Z",
+  "dimension_resolutions": [
+    {
+      "agreement_class": "adjacent",
+      "dimension": "issue_framing",
+      "final_evidence_message_ids": [
+        "m005"
+      ],
+      "final_score": 2,
+      "not_evaluable_reason": null,
+      "rater_scores": [
+        2,
+        3
+      ],
+      "resolution_reason": "m005は複数基準を提示したが、基準の重み・検討順・主要トレードオフを初期段階で構造化していないため最終2とした。",
+      "rubric_issue_code": null
+    },
+    {
+      "agreement_class": "exact",
+      "dimension": "logical_reasoning",
+      "final_evidence_message_ids": [],
+      "final_score": "NE",
+      "not_evaluable_reason": "AI_QUALITY_FAILURE",
+      "rater_scores": [
+        "NE",
+        "NE"
+      ],
+      "resolution_reason": "C-PROH-01により主要機会が無効化され、候補者能力として採点できない。",
+      "rubric_issue_code": "PROCESS_DEVIATION"
+    },
+    {
+      "agreement_class": "exact",
+      "dimension": "listening_and_response",
+      "final_evidence_message_ids": [],
+      "final_score": "NE",
+      "not_evaluable_reason": "AI_QUALITY_FAILURE",
+      "rater_scores": [
+        "NE",
+        "NE"
+      ],
+      "resolution_reason": "C-PROH-01により主要機会が無効化され、候補者能力として採点できない。",
+      "rubric_issue_code": "PROCESS_DEVIATION"
+    },
+    {
+      "agreement_class": "exact",
+      "dimension": "valuable_contribution",
+      "final_evidence_message_ids": [
+        "m010",
+        "m022"
+      ],
+      "final_score": 2,
+      "not_evaluable_reason": null,
+      "rater_scores": [
+        2,
+        2
+      ],
+      "resolution_reason": "ハイブリッド案と例外対応を提案したが、重要制約の発見はAI提示に依存した。",
+      "rubric_issue_code": null
+    },
+    {
+      "agreement_class": "exact",
+      "dimension": "collaboration_and_relationship",
+      "final_evidence_message_ids": [
+        "m012",
+        "m037"
+      ],
+      "final_score": 2,
+      "not_evaluable_reason": null,
+      "rater_scores": [
+        2,
+        2
+      ],
+      "resolution_reason": "複数立場を統合したが、参加促進や対立調整の働きかけは限定的だった。",
+      "rubric_issue_code": null
+    },
+    {
+      "agreement_class": "exact",
+      "dimension": "decision_and_consensus",
+      "final_evidence_message_ids": [],
+      "final_score": "NE",
+      "not_evaluable_reason": "AI_QUALITY_FAILURE",
+      "rater_scores": [
+        "NE",
+        "NE"
+      ],
+      "resolution_reason": "C-PROH-01により主要機会が無効化され、候補者能力として採点できない。",
+      "rubric_issue_code": "PROCESS_DEVIATION"
+    },
+    {
+      "agreement_class": "exact",
+      "dimension": "process_and_time_management",
+      "final_evidence_message_ids": [
+        "m018",
+        "m032",
+        "m039"
+      ],
+      "final_score": 3,
+      "not_evaluable_reason": null,
+      "rater_scores": [
+        3,
+        3
+      ],
+      "resolution_reason": "両時間通知後に優先順位を調整し、終了前に要約した。",
+      "rubric_issue_code": null
+    }
+  ],
+  "episode_id": "exercise-c-system-failure-001",
+  "overall_resolution_notes": "AIの早期確定と因果関係のある3軸だけをNEとし、影響外4軸はmediumの数値評価を維持した。",
+  "rater_sheet_ids": [
+    "rater-a-exercise-c-system-failure-001",
+    "rater-b-exercise-c-system-failure-001"
+  ],
+  "rubric_version": "candidate-behavior-v0.1",
+  "scenario_id": "candidate-assessment-c-time-boxed-decision",
+  "trigger_reasons": [
+    "RANDOM_CALIBRATION_SAMPLE"
+  ]
+}

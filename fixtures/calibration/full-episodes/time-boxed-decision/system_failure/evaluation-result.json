@@ -1,0 +1,179 @@
+{
+  "ai_quality": {
+    "dimension_scores": {
+      "consensus_quality": 4,
+      "discussion_coherence": 4,
+      "goal_progression": 4,
+      "natural_pacing": 4,
+      "novelty_and_repetition": 4,
+      "responsiveness": 4,
+      "role_believability": 4,
+      "user_agency": 2
+    },
+    "status": "fail",
+    "violations": [
+      {
+        "affected_candidate_dimensions": [
+          "logical_reasoning",
+          "listening_and_response",
+          "decision_and_consensus"
+        ],
+        "message_ids": [
+          "m025"
+        ],
+        "rule_id": "C-PROH-01",
+        "severity": "critical"
+      }
+    ]
+  },
+  "candidate_dimensions": [
+    {
+      "confidence": 0.9,
+      "dimension": "issue_framing",
+      "evidence_message_ids": [
+        "m005"
+      ],
+      "improvement": "次回は、目的、対象、前提、主要論点を整理し、議論可能な形にする。",
+      "missing_behavior": "次の水準で求められる行動は「目的、対象、前提、主要論点を整理し、議論可能な形にする。」である。",
+      "not_evaluable_reason": null,
+      "positive_behavior": "m005は複数基準を提示したが、基準の重み・検討順・主要トレードオフを初期段階で構造化していないため最終2とした。",
+      "question_results": [],
+      "score": 2
+    },
+    {
+      "confidence": 0,
+      "dimension": "logical_reasoning",
+      "evidence_message_ids": [],
+      "improvement": "",
+      "missing_behavior": "",
+      "not_evaluable_reason": {
+        "code": "AI_QUALITY_FAILURE",
+        "detail": "C-PROH-01により主要機会が無効化され、候補者能力として採点できない。"
+      },
+      "positive_behavior": "",
+      "question_results": [],
+      "score": "NE"
+    },
+    {
+      "confidence": 0,
+      "dimension": "listening_and_response",
+      "evidence_message_ids": [],
+      "improvement": "",
+      "missing_behavior": "",
+      "not_evaluable_reason": {
+        "code": "AI_QUALITY_FAILURE",
+        "detail": "C-PROH-01により主要機会が無効化され、候補者能力として採点できない。"
+      },
+      "positive_behavior": "",
+      "question_results": [],
+      "score": "NE"
+    },
+    {
+      "confidence": 0.9,
+      "dimension": "valuable_contribution",
+      "evidence_message_ids": [
+        "m010",
+        "m022"
+      ],
+      "improvement": "次回は、新しい視点や具体案を示し、議論を前進させる。",
+      "missing_behavior": "次の水準で求められる行動は「新しい視点や具体案を示し、議論を前進させる。」である。",
+      "not_evaluable_reason": null,
+      "positive_behavior": "ハイブリッド案と例外対応を提案したが、重要制約の発見はAI提示に依存した。",
+      "question_results": [],
+      "score": 2
+    },
+    {
+      "confidence": 0.9,
+      "dimension": "collaboration_and_relationship",
+      "evidence_message_ids": [
+        "m012",
+        "m037"
+      ],
+      "improvement": "次回は、他者の意見を尊重し、発言機会や建設的な対話を作る。",
+      "missing_behavior": "次の水準で求められる行動は「他者の意見を尊重し、発言機会や建設的な対話を作る。」である。",
+      "not_evaluable_reason": null,
+      "positive_behavior": "複数立場を統合したが、参加促進や対立調整の働きかけは限定的だった。",
+      "question_results": [],
+      "score": 2
+    },
+    {
+      "confidence": 0,
+      "dimension": "decision_and_consensus",
+      "evidence_message_ids": [],
+      "improvement": "",
+      "missing_behavior": "",
+      "not_evaluable_reason": {
+        "code": "AI_QUALITY_FAILURE",
+        "detail": "C-PROH-01により主要機会が無効化され、候補者能力として採点できない。"
+      },
+      "positive_behavior": "",
+      "question_results": [],
+      "score": "NE"
+    },
+    {
+      "confidence": 0.9,
+      "dimension": "process_and_time_management",
+      "evidence_message_ids": [
+        "m018",
+        "m032",
+        "m039"
+      ],
+      "improvement": "次回は、停滞や脱線を早期に検知し、全員の理解を保ちながらプロセスを再設計する。",
+      "missing_behavior": "次の水準で求められる行動は「停滞や脱線を早期に検知し、全員の理解を保ちながらプロセスを再設計する。」である。",
+      "not_evaluable_reason": null,
+      "positive_behavior": "両時間通知後に優先順位を調整し、終了前に要約した。",
+      "question_results": [],
+      "score": 3
+    }
+  ],
+  "contract_version": "0.1",
+  "display_groups": {
+    "collaboration": {
+      "aggregation_status": "not_calibrated",
+      "bottleneck_dimension": "collaboration_and_relationship",
+      "coverage": {
+        "evaluated": 1,
+        "total": 2
+      },
+      "score": null,
+      "summary": "次の水準で求められる行動は「他者の意見を尊重し、発言機会や建設的な対話を作る。」である。"
+    },
+    "progress": {
+      "aggregation_status": "not_calibrated",
+      "bottleneck_dimension": "process_and_time_management",
+      "coverage": {
+        "evaluated": 1,
+        "total": 2
+      },
+      "score": null,
+      "summary": "次の水準で求められる行動は「停滞や脱線を早期に検知し、全員の理解を保ちながらプロセスを再設計する。」である。"
+    },
+    "thinking": {
+      "aggregation_status": "not_calibrated",
+      "bottleneck_dimension": "issue_framing",
+      "coverage": {
+        "evaluated": 2,
+        "total": 3
+      },
+      "score": null,
+      "summary": "次の水準で求められる行動は「目的、対象、前提、主要論点を整理し、議論可能な形にする。」である。"
+    }
+  },
+  "evaluation_disagreement": null,
+  "legacy_evaluation": null,
+  "review_status": "completed",
+  "session_id": "exercise-c-system-failure-001",
+  "status": "partial",
+  "target_participant_id": "candidate_c_system_failure",
+  "version_info": {
+    "ai_quality_rubric_version": "ai-participant-v0.1",
+    "deterministic_evaluator_version": "exercise-c-deterministic-v0.1",
+    "judge_model": "human-adjudication",
+    "judge_version": "not-applied-v0.1",
+    "orchestrator_version": "synthetic-calibration-v0.1",
+    "prompt_version": "exercise-c-system-failure-script-v0.1",
+    "rubric_version": "candidate-behavior-v0.1",
+    "scenario_version": "candidate-assessment-c-v0.1",
+    "transcript_hash": "563a5cf417ff3b01f146b9dc83d825afb3ea9ae340d726a01c8b23a2eaaaf091"
+  }
+}
