@@ -41,6 +41,9 @@ Evaluation Contract v0.1では、次を正本として管理します。
 - `docs/EXERCISE_B_SYSTEM_FAILURE_V0.1.md`
 - `docs/EXERCISE_B_FOUR_STATE_MATRIX_V0.1.md`
 - `docs/EXERCISE_C_MEDIUM_VERTICAL_SLICE.md`
+- `docs/EXERCISE_C_HIGH_LOW_CALIBRATION_V0.1.md`
+- `docs/EXERCISE_C_SYSTEM_FAILURE_V0.1.md`
+- `docs/EXERCISE_C_FOUR_STATE_MATRIX_V0.1.md`
 
 機械可読な正本:
 
@@ -52,6 +55,7 @@ Evaluation Contract v0.1では、次を正本として管理します。
 - `schemas/exercise-four-state-matrix-v0.1.schema.json`
 - `fixtures/calibration/matrices/exercise-a-four-state-v0.1.json`
 - `fixtures/calibration/matrices/exercise-b-four-state-v0.1.json`
+- `fixtures/calibration/matrices/exercise-c-four-state-v0.1.json`
 - `fixtures/calibration/full-episodes/time-boxed-decision/medium/episode.json`
 - `schemas/`
 
@@ -86,6 +90,9 @@ python scripts/check_exercise_b_system_failure.py
 python scripts/check_exercise_b_four_state_matrix.py
 python scripts/generate_exercise_c_medium.py
 python scripts/check_exercise_c_medium.py
+python scripts/check_exercise_c_high_low.py
+python scripts/check_exercise_c_system_failure.py
+python scripts/check_exercise_c_four_state_matrix.py
 ```
 
 ## 評価者の基本手順
