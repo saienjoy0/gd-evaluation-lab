@@ -1,0 +1,105 @@
+{
+  "contract_version": "0.1",
+  "evaluator_version": "exercise-c-deterministic-v0.1",
+  "result_id": "dr-exercise-c-medium-001",
+  "rule_results": [
+    {
+      "affected_dimensions": [
+        "process_and_time_management",
+        "decision_and_consensus"
+      ],
+      "detail": "2件の時間通知後に候補者ターンが確保された。",
+      "evidence_event_ids": [
+        "ev_checkpoint_40",
+        "ev_checkpoint_75"
+      ],
+      "evidence_message_ids": [
+        "m017",
+        "m018",
+        "m031",
+        "m032"
+      ],
+      "outcome": "pass",
+      "rule_id": "C-R01",
+      "severity": "critical",
+      "target": "ai_system"
+    },
+    {
+      "affected_dimensions": [
+        "listening_and_response",
+        "logical_reasoning",
+        "decision_and_consensus"
+      ],
+      "detail": "決定前に1件の遅延リスクが正規の候補者行動後に開示された。",
+      "evidence_event_ids": [
+        "ev_late_risk_security"
+      ],
+      "evidence_message_ids": [
+        "m027"
+      ],
+      "outcome": "pass",
+      "rule_id": "C-R02",
+      "severity": "critical",
+      "target": "ai_system"
+    },
+    {
+      "affected_dimensions": [
+        "process_and_time_management"
+      ],
+      "detail": "時間通知後の優先順位更新を2件確認した。",
+      "evidence_event_ids": [
+        "ev_priority_40",
+        "ev_priority_75"
+      ],
+      "evidence_message_ids": [
+        "m018",
+        "m032"
+      ],
+      "outcome": "pass",
+      "rule_id": "C-R03",
+      "severity": "major",
+      "target": "candidate"
+    },
+    {
+      "affected_dimensions": [
+        "logical_reasoning",
+        "listening_and_response",
+        "decision_and_consensus"
+      ],
+      "detail": "三案比較と遅延リスク後の案修正を確認した。",
+      "evidence_event_ids": [
+        "ev_options_compared",
+        "ev_revision"
+      ],
+      "evidence_message_ids": [
+        "m020",
+        "m028"
+      ],
+      "outcome": "pass",
+      "rule_id": "C-R04",
+      "severity": "major",
+      "target": "candidate"
+    },
+    {
+      "affected_dimensions": [
+        "decision_and_consensus",
+        "process_and_time_management"
+      ],
+      "detail": "要約に必要な項目と値が含まれる。",
+      "evidence_event_ids": [
+        "ev_summary_fields",
+        "ev_summary"
+      ],
+      "evidence_message_ids": [
+        "m039"
+      ],
+      "outcome": "pass",
+      "rule_id": "C-R05",
+      "severity": "major",
+      "target": "episode"
+    }
+  ],
+  "scenario_id": "candidate-assessment-c-time-boxed-decision",
+  "scenario_version": "candidate-assessment-c-v0.1",
+  "session_id": "exercise-c-medium-001"
+}

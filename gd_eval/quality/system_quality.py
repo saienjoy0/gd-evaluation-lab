@@ -4,6 +4,7 @@ from __future__ import annotations
 from typing import Any, Callable
 
 from .stakeholder_conflict import finalize_before_conflict, silence_minority_concern
+from .time_boxed_decision import finalize_before_risk_reveal, skip_summary
 
 
 class UnsupportedQualityRuleError(ValueError):
@@ -87,6 +88,8 @@ _PROHIBITED_HANDLERS: dict[
     "private_concern_revealed_without_trigger": _private_concern_revealed_without_trigger,
     "finalize_before_conflict": finalize_before_conflict,
     "silence_minority_concern": silence_minority_concern,
+    "finalize_before_risk_reveal": finalize_before_risk_reveal,
+    "skip_summary": skip_summary,
 }
 
 

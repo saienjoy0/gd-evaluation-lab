@@ -10,7 +10,7 @@ updated: 2026-08-05
 
 ## Observations
 
-- [phase] Exercise C共通runner展開の準備
+- [phase] Exercise C high / low校正の準備
 - [completed] 評価研究を`gd-app`から別リポジトリへ分離した
 - [completed] 利用者7軸、表示3領域、1〜4＋NE、AI品質分離の方針を決めた
 - [completed] Scenario、Episode、Annotation、Evaluation Result契約v0.1を作成した
@@ -30,13 +30,16 @@ updated: 2026-08-05
 - [completed] system_failureの影響外5軸をmediumと同じ数値に保ち、lowの7軸数値評価との違いを固定した
 - [completed] 演習A・Bの4状態横断検査を共通matrix checkerへ統合した
 - [completed] 演習Bの4状態をSchema・JSON・Markdownの横断マトリクスとして確定した
-- [next] 演習Cへ共通runnerを展開し、medium完全Episodeを作成する
-- [next] 演習Cのhigh / low / system_failureと4状態マトリクスを順次校正する
+- [completed] 演習C固有の時間通知、遅延リスク、三案比較、優先順位更新、要約ruleを共通runnerへ接続した
+- [completed] 演習C mediumをScenarioからFeedbackまで通し、15機会すべてobserved、7軸を`2/3/3/2/2/3/3`で数値評価した
+- [completed] 40%・75%時間通知後の候補者ターン、リスク後の案修正、条件付き合意を構造化証拠で固定した
+- [next] 演習C high / lowを同じAI品質・同じ15機会で校正する
+- [next] 演習C system_failureと4状態マトリクスを作成する
 - [next] 35マイクロアンカーを仕様に従って作成する
 - [later] System Quality Gateのgd-app接続、Evidence-first Judge、GD APP Episode Exporterへ進む
 
 ## Relations
 
 - part_of [[GD Evaluation Lab Project Overview]]
-- follows [[Exercise B Four-State Matrix v0.1 Decision]]
-- informed_by [[Exercise B System Failure v0.1 Decision]]
+- follows [[Exercise C Medium Vertical Slice v0.1 Decision]]
+- informed_by [[Exercise B Four-State Matrix v0.1 Decision]]

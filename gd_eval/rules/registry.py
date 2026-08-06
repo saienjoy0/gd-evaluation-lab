@@ -19,6 +19,13 @@ from .stakeholder_conflict import (
     decision_contains_fields,
     positions_and_challenge_before_phase,
 )
+from .time_boxed_decision import (
+    candidate_compares_and_revises,
+    candidate_prioritizes_after_time_check,
+    candidate_summary_contains_fields,
+    private_concern_revealed_before_phase,
+    time_checkpoints_followed_by_candidate_turn,
+)
 
 
 class UnsupportedRuleError(ValueError):
@@ -37,6 +44,13 @@ RULE_HANDLERS: dict[str, RuleHandler] = {
     "decision_contains_fields": decision_contains_fields,
     "challenge_after_first_candidate_proposal": challenge_after_first_candidate_proposal,
     "numeric_constraint_preserved": numeric_constraint_preserved,
+    "time_checkpoints_followed_by_candidate_turn": (
+        time_checkpoints_followed_by_candidate_turn
+    ),
+    "private_concern_revealed_before_phase": private_concern_revealed_before_phase,
+    "candidate_prioritizes_after_time_check": candidate_prioritizes_after_time_check,
+    "candidate_compares_and_revises": candidate_compares_and_revises,
+    "candidate_summary_contains_fields": candidate_summary_contains_fields,
 }
 
 

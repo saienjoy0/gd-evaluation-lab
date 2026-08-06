@@ -9,6 +9,8 @@ from .stakeholder_conflict import (
 from .stakeholder_conflict import (
     TRIGGER_HANDLERS as STAKEHOLDER_TRIGGER_HANDLERS,
 )
+from .time_boxed_decision import CONTEXT_HANDLERS as TIME_CONTEXT_HANDLERS
+from .time_boxed_decision import TRIGGER_HANDLERS as TIME_TRIGGER_HANDLERS
 
 
 class OpportunityResolutionError(ValueError):
@@ -182,6 +184,7 @@ _TRIGGER_HANDLERS: dict[
     "before_final_selection": _before_final_selection,
     "before_session_close": _before_session_close,
     **STAKEHOLDER_TRIGGER_HANDLERS,
+    **TIME_TRIGGER_HANDLERS,
 }
 
 
@@ -272,7 +275,9 @@ def _context_satisfied(
     }
     if context in checks:
         return checks[context]
-    handler = STAKEHOLDER_CONTEXT_HANDLERS.get(context)
+    handler = TIME_CONTEXT_HANDLERS.get(context)
+    if handler is None:
+        handler = STAKEHOLDER_CONTEXT_HANDLERS.get(context)
     if handler is None:
         raise OpportunityResolutionError(
             f"UNIMPLEMENTED_OPPORTUNITY_CONTEXT: {context}"

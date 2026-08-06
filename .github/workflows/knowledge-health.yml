@@ -56,3 +56,14 @@ jobs:
           python scripts/check_exercise_b_system_failure.py
       - name: Validate Exercise B four-state matrix
         run: python scripts/check_exercise_b_four_state_matrix.py
+      - name: Validate Exercise C medium vertical slice
+        run: |
+          python scripts/generate_exercise_c_medium.py
+          git diff --exit-code -- \
+            fixtures/calibration/full-episodes/time-boxed-decision/medium/deterministic-rule-result.json \
+            fixtures/calibration/full-episodes/time-boxed-decision/medium/system-quality-result.json \
+            fixtures/calibration/full-episodes/time-boxed-decision/medium/opportunity-resolution.json \
+            fixtures/calibration/full-episodes/time-boxed-decision/medium/evaluation-result.json \
+            fixtures/calibration/full-episodes/time-boxed-decision/medium/expected-feedback.json
+          python scripts/check_exercise_c_medium.py
+          python scripts/check_exercise_c_review_regressions.py
