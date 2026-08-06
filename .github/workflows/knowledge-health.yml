@@ -5,6 +5,9 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: write
+
 jobs:
   validate:
     runs-on: ubuntu-latest
@@ -15,6 +18,25 @@ jobs:
           python-version: "3.12"
       - name: Install validation dependencies
         run: python -m pip install --disable-pip-version-check "jsonschema[format]>=4.23,<5"
+      - name: Check out PR head for Exercise C system failure fixture
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          git fetch origin "${GITHUB_HEAD_REF}"
+          git checkout -B "${GITHUB_HEAD_REF}" "origin/${GITHUB_HEAD_REF}"
+      - name: Generate and persist Exercise C system failure fixture
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          python scripts/generate_exercise_c_system_failure.py
+          python scripts/check_exercise_c_system_failure.py
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- fixtures/calibration/full-episodes/time-boxed-decision/system_failure
+          if git diff --cached --quiet; then
+            echo "Exercise C system failure fixture already fixed"
+            exit 0
+          fi
+          git commit -m "Add Exercise C system failure fixture"
+          git push origin "HEAD:${GITHUB_HEAD_REF}"
       - name: Validate knowledge notes
         run: python scripts/check_knowledge.py
       - name: Validate evaluation contract
@@ -74,3 +96,9 @@ jobs:
             fixtures/calibration/full-episodes/time-boxed-decision/high \
             fixtures/calibration/full-episodes/time-boxed-decision/low
           python scripts/check_exercise_c_high_low.py
+      - name: Validate Exercise C system failure separation
+        run: |
+          python scripts/generate_exercise_c_system_failure.py
+          git diff --exit-code -- \
+            fixtures/calibration/full-episodes/time-boxed-decision/system_failure
+          python scripts/check_exercise_c_system_failure.py
