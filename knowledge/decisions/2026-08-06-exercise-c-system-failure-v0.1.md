@@ -8,6 +8,13 @@ updated: 2026-08-06
 
 # Exercise C System Failure v0.1 Decision
 
+## Observations
+
+- mediumではm027の遅延リスク開示前にAIは結論を確定していない。
+- Scenario契約はC-PROH-01へlogical reasoning 2件、listening and response 2件、decision and consensus 3件の計7機会を紐づけている。
+- issue framing、valuable contribution、collaboration and relationship、process and time managementの8機会はC-PROH-01の影響外である。
+- lowはSystem Qualityがpassし、15機会すべてがobservedされたうえで7軸数値評価となる。
+
 ## Decision
 
 Exercise Cのsystem_failureは、AIが遅延リスク開示前に結論を確定する`C-PROH-01`単独故障として作成する。
