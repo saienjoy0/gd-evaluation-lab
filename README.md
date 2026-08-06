@@ -31,6 +31,8 @@ Evaluation Contract v0.1では、次を正本として管理します。
 - `docs/MICRO_ANCHOR_SPEC.md`
 - `docs/MICRO_ANCHOR_FOUNDATION_ISSUE_FRAMING_V0.1.md`
 - `docs/MICRO_ANCHOR_THINKING_COLLABORATION_V0.1.md`
+- `docs/MICRO_ANCHOR_PROGRESS_COMPLETION_V0.1.md`
+- `docs/MICRO_ANCHOR_35_COVERAGE_V0.1.md`
 - `docs/FULL_EPISODE_SPEC.md`
 - `docs/CANDIDATE_ASSESSMENT_SCENARIO_PACK.md`
 - `docs/SCENARIO_OPPORTUNITY_MATRIX.md`
@@ -69,6 +71,8 @@ Evaluation Contract v0.1では、次を正本として管理します。
 - `fixtures/anchors/valuable_contribution/`
 - `fixtures/anchors/listening_and_response/`
 - `fixtures/anchors/collaboration_and_relationship/`
+- `fixtures/anchors/decision_and_consensus/`
+- `fixtures/anchors/process_and_time_management/`
 - `fixtures/anchors/blind/issue-framing-v0.1.json`
 - `schemas/`
 
@@ -120,18 +124,20 @@ python scripts/export_micro_anchor_blind_pack.py --output micro-anchor-blind-pac
 
 ## マイクロアンカー現在地
 
-35件中25件を実装済みです。
+35件中35件を実装済みです。
 
 - Issue Framing: score 1 / 2 / 3 / 4 / NE
 - Logical Reasoning: score 1 / 2 / 3 / 4 / NE
 - Valuable Contribution: score 1 / 2 / 3 / 4 / NE
 - Listening and Response: score 1 / 2 / 3 / 4 / NE
 - Collaboration and Relationship: score 1 / 2 / 3 / 4 / NE
-- Anchor set status: `partial`
+- Decision and Consensus: score 1 / 2 / 3 / 4 / NE
+- Process and Time Management: score 1 / 2 / 3 / 4 / NE
+- Anchor set status: `blind_calibration_pending`
 - 各アンカーのapproval status: `draft`
 - 人間二重評価: 未実施
 
-次はDecision and ConsensusとProcess and Time Managementの10件を追加し、35 / 35を完成します。
+次は2名の評価者による10件のBlindパイロットを実施します。
 
 ## 評価者の基本手順
 
