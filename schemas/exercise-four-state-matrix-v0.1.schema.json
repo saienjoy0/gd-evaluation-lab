@@ -105,16 +105,25 @@
   "properties": {
     "contract_version": {"const": "0.1"},
     "matrix_id": {
-      "enum": ["exercise-a-four-state-v0.1", "exercise-b-four-state-v0.1"]
+      "enum": [
+        "exercise-a-four-state-v0.1",
+        "exercise-b-four-state-v0.1",
+        "exercise-c-four-state-v0.1"
+      ]
     },
     "exercise_id": {
       "enum": [
         "candidate-assessment-a-ambiguous-structure",
-        "candidate-assessment-b-stakeholder-conflict"
+        "candidate-assessment-b-stakeholder-conflict",
+        "candidate-assessment-c-time-boxed-decision"
       ]
     },
     "scenario_version": {
-      "enum": ["candidate-assessment-a-v0.1", "candidate-assessment-b-v0.1"]
+      "enum": [
+        "candidate-assessment-a-v0.1",
+        "candidate-assessment-b-v0.1",
+        "candidate-assessment-c-v0.1"
+      ]
     },
     "runner_version": {"const": "generic-full-episode-runner-v0.1"},
     "states": {"const": ["high", "medium", "low", "system_failure"]},
@@ -222,6 +231,30 @@
             "properties": {
               "system_failure_ne_scope": {"const": ["issue_framing", "decision_and_consensus"]},
               "system_failure_failed_rules": {"const": ["B-PROH-01"]}
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"matrix_id": {"const": "exercise-c-four-state-v0.1"}},
+        "required": ["matrix_id"]
+      },
+      "then": {
+        "properties": {
+          "exercise_id": {"const": "candidate-assessment-c-time-boxed-decision"},
+          "scenario_version": {"const": "candidate-assessment-c-v0.1"},
+          "assertions": {
+            "properties": {
+              "system_failure_ne_scope": {
+                "const": [
+                  "logical_reasoning",
+                  "listening_and_response",
+                  "decision_and_consensus"
+                ]
+              },
+              "system_failure_failed_rules": {"const": ["C-PROH-01"]}
             }
           }
         }
