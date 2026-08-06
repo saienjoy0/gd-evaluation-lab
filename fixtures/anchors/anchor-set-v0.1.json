@@ -1,0 +1,54 @@
+{
+  "contract_version": "0.1",
+  "anchor_set_id": "micro-anchor-set-v0.1",
+  "rubric_version": "candidate-behavior-v0.1",
+  "expected_anchor_count": 35,
+  "implemented_anchor_count": 5,
+  "status": "partial",
+  "coverage": {
+    "issue_framing": [1, 2, 3, 4, "NE"],
+    "logical_reasoning": [],
+    "listening_and_response": [],
+    "valuable_contribution": [],
+    "collaboration_and_relationship": [],
+    "decision_and_consensus": [],
+    "process_and_time_management": []
+  },
+  "anchors": [
+    {
+      "anchor_id": "anchor-if-1-001",
+      "path": "fixtures/anchors/issue_framing/anchor-if-1-001.json",
+      "target_dimension": "issue_framing",
+      "target_score": 1,
+      "sha256": "79e3f08594a88880be25f5041a9a01bed41a66f5fa96c596ded7e99c7a0d1cf0"
+    },
+    {
+      "anchor_id": "anchor-if-2-001",
+      "path": "fixtures/anchors/issue_framing/anchor-if-2-001.json",
+      "target_dimension": "issue_framing",
+      "target_score": 2,
+      "sha256": "c93d235af3a966ecafde4ae777cc3759c7f25cd63dae0c366743766664e8699b"
+    },
+    {
+      "anchor_id": "anchor-if-3-001",
+      "path": "fixtures/anchors/issue_framing/anchor-if-3-001.json",
+      "target_dimension": "issue_framing",
+      "target_score": 3,
+      "sha256": "598cb9045ff6f8918b09bc50ac60ccf928b2dbc83bc9f477a7117ed0423a99dd"
+    },
+    {
+      "anchor_id": "anchor-if-4-001",
+      "path": "fixtures/anchors/issue_framing/anchor-if-4-001.json",
+      "target_dimension": "issue_framing",
+      "target_score": 4,
+      "sha256": "6126cb803448ae08de9fa0321edecfbed299f364a7856e3e9bd08a9db3858221"
+    },
+    {
+      "anchor_id": "anchor-if-ne-001",
+      "path": "fixtures/anchors/issue_framing/anchor-if-ne-001.json",
+      "target_dimension": "issue_framing",
+      "target_score": "NE",
+      "sha256": "ef4d1f618575f8775858681d2a4361402e4d6f38baf08545d6c1e50f8e303ebe"
+    }
+  ]
+}
