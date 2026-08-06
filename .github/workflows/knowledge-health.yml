@@ -28,25 +28,31 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
+          import re
 
           path = Path("gd_eval/results/evaluation_result.py")
           text = path.read_text(encoding="utf-8")
-          old = '''        use_observed_fallback = (
-              exercise_id == "candidate-assessment-b-stakeholder-conflict"
-              and bottleneck is not None
-              and int(dimension_map[bottleneck]["score"]) <= 1
-          )'''
-          new = '''        use_observed_fallback = (
-              exercise_id == "candidate-assessment-c-time-boxed-decision"
-              or (
-                  exercise_id == "candidate-assessment-b-stakeholder-conflict"
-                  and bottleneck is not None
-                  and int(dimension_map[bottleneck]["score"]) <= 1
-              )
-          )'''
-          if old not in text:
-              raise SystemExit("DISPLAY_GROUP_FIX_TARGET_NOT_FOUND")
-          path.write_text(text.replace(old, new, 1), encoding="utf-8")
+          pattern = re.compile(
+              r'        use_observed_fallback = \(\n'
+              r'            exercise_id == "candidate-assessment-b-stakeholder-conflict"\n'
+              r'            and bottleneck is not None\n'
+              r'            and int\(dimension_map\[bottleneck\]\["score"\]\) <= 1\n'
+              r'        \)'
+          )
+          replacement = "\n".join([
+              "        use_observed_fallback = (",
+              '            exercise_id == "candidate-assessment-c-time-boxed-decision"',
+              "            or (",
+              '                exercise_id == "candidate-assessment-b-stakeholder-conflict"',
+              "                and bottleneck is not None",
+              '                and int(dimension_map[bottleneck]["score"]) <= 1',
+              "            )",
+              "        )",
+          ])
+          text, count = pattern.subn(replacement, text, count=1)
+          if count != 1:
+              raise SystemExit(f"DISPLAY_GROUP_FIX_COUNT_INVALID:{count}")
+          path.write_text(text, encoding="utf-8")
           PY
           python scripts/generate_exercise_c_medium.py
           python scripts/generate_exercise_c_high_low.py
