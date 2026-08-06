@@ -100,6 +100,24 @@ def assert_candidate_profiles_differ(loaded_by_state) -> None:
         raise AssertionError("CANDIDATE_PROFILE_NOT_DISTINCT")
 
 
+def assert_display_group_consistency(generated_by_state) -> None:
+    for state, generated in generated_by_state.items():
+        dimensions = {
+            item["dimension"]: item
+            for item in generated.evaluation_result["candidate_dimensions"]
+        }
+        for group_id, group in generated.evaluation_result["display_groups"].items():
+            bottleneck = group["bottleneck_dimension"]
+            if bottleneck is None:
+                continue
+            expected = dimensions[bottleneck]["missing_behavior"]
+            if group["summary"] != expected:
+                raise AssertionError(
+                    "C_DISPLAY_GROUP_SUMMARY_MISMATCH: "
+                    f"{state}:{group_id}:{group['summary']} != {expected}"
+                )
+
+
 def main() -> None:
     loaded_by_state, generated_by_state = load_states(ROOT, CASE_ROOT)
     assert_strict_order(generated_by_state)
@@ -117,6 +135,7 @@ def main() -> None:
     assert_prompt_control(loaded_by_state)
     assert_candidate_profiles_differ(loaded_by_state)
     assert_low_semantic_consistency(loaded_by_state["low"])
+    assert_display_group_consistency(generated_by_state)
 
     for state, expected in EXPECTED_SCORES.items():
         actual = score_map(generated_by_state[state])
@@ -168,6 +187,7 @@ def main() -> None:
     print("Candidate score order: high > medium > low on all 7 dimensions")
     print("High score-4 multi-phase evidence: passed for 6 dimensions")
     print("Low numeric-score and false-strength guards: passed")
+    print("Exercise C display group summaries: evidence-aligned")
 
 
 if __name__ == "__main__":
