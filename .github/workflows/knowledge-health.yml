@@ -5,6 +5,9 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: write
+
 jobs:
   validate:
     runs-on: ubuntu-latest
@@ -67,14 +70,26 @@ jobs:
             fixtures/calibration/full-episodes/time-boxed-decision/medium/expected-feedback.json
           python scripts/check_exercise_c_medium.py
           python scripts/check_exercise_c_review_regressions.py
+      - name: Check out PR head for fixture persistence
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          git fetch origin "${GITHUB_HEAD_REF}"
+          git checkout -B "${GITHUB_HEAD_REF}" "origin/${GITHUB_HEAD_REF}"
       - name: Bootstrap and validate Exercise C high/low calibration
         run: |
           python scripts/generate_exercise_c_high_low.py
           python scripts/check_exercise_c_high_low.py
-      - name: Upload Exercise C high/low fixtures
-        uses: actions/upload-artifact@v4
-        with:
-          name: exercise-c-high-low-fixtures
-          path: |
-            fixtures/calibration/full-episodes/time-boxed-decision/high
+      - name: Persist validated Exercise C high/low fixtures
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- \
+            fixtures/calibration/full-episodes/time-boxed-decision/high \
             fixtures/calibration/full-episodes/time-boxed-decision/low
+          if git diff --cached --quiet; then
+            echo "Exercise C fixtures already persisted"
+            exit 0
+          fi
+          git commit -m "Add Exercise C high low fixtures"
+          git push origin "HEAD:${GITHUB_HEAD_REF}"
