@@ -10,7 +10,7 @@ updated: 2026-08-06
 
 ## Observations
 
-- [phase] Exercise C system_failure分離の準備
+- [phase] Exercise C system_failure分離の実装・検証中
 - [completed] 評価研究を`gd-app`から別リポジトリへ分離した
 - [completed] 利用者7軸、表示3領域、1〜4＋NE、AI品質分離の方針を決めた
 - [completed] Scenario、Episode、Annotation、Evaluation Result契約v0.1を作成した
@@ -37,7 +37,8 @@ updated: 2026-08-06
 - [completed] 演習Cの点数順をhigh `3/4/4/4/4/4/4`、medium `2/3/3/2/2/3/3`、low `1/1/2/1/1/1/1`として全7軸で固定した
 - [completed] lowは15機会を維持したままC-R03 / C-R04 / C-R05だけを失敗させ、7軸すべて数値・NEなし・strengthなしに固定した
 - [completed] highの6つのscore 4について複数phase証拠を要求し、issue_framingは単一機会契約を守ってscore 3を上限にした
-- [next] 演習C system_failureでAI起因の評価機会欠損と影響軸NEを分離する
+- [in_progress] 演習C system_failureでm025のAI早期確定だけを発生させ、C-PROH-01単独故障を検証する
+- [in_progress] C-PROH-01に紐づく7機会だけをinvalidにし、影響3軸NE・影響外4軸medium数値を固定する
 - [next] 演習Cの4状態マトリクスを作成する
 - [next] 35マイクロアンカーを仕様に従って作成する
 - [later] System Quality Gateのgd-app接続、Evidence-first Judge、GD APP Episode Exporterへ進む
@@ -46,5 +47,6 @@ updated: 2026-08-06
 
 - part_of [[GD Evaluation Lab Project Overview]]
 - follows [[Exercise C High Low Calibration v0.1 Decision]]
+- informed_by [[Exercise C System Failure v0.1 Decision]]
 - informed_by [[Exercise C Medium Vertical Slice v0.1 Decision]]
 - informed_by [[Exercise B Four-State Matrix v0.1 Decision]]
