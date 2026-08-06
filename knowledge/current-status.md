@@ -10,7 +10,7 @@ updated: 2026-08-06
 
 ## Observations
 
-- [phase] 35マイクロアンカーの準備
+- [phase] 35マイクロアンカーのThinking領域拡張準備（5 / 35実装済み）
 - [completed] 評価研究を`gd-app`から別リポジトリへ分離した
 - [completed] 利用者7軸、表示3領域、1〜4＋NE、AI品質分離の方針を決めた
 - [completed] Scenario、Episode、Annotation、Evaluation Result契約v0.1を作成した
@@ -45,13 +45,25 @@ updated: 2026-08-06
 - [completed] 正常3状態の統制、全7軸の得点順、lowの全数値評価、system_failureの7機会invalid・3軸NEを横断検証した
 - [completed] m025以外のAI発言と全候補者発言がmediumとsystem_failureで同一であることを固定した
 - [completed] 標準演習A・B・Cすべてでhigh / medium / low / system_failureの4状態校正を完成した
-- [next] 7評価軸×score 1 / 2 / 3 / 4 / NEの35マイクロアンカーを仕様に従って作成する
+- [completed] Micro Anchor、Anchor Set Manifest、Blind Ratingの3つのSchemaを作成した
+- [completed] contract checker、controlled ladder checker、blind exporter、17件のnegative suiteを実装した
+- [completed] Issue Framingのscore 1 / 2 / 3 / 4 / NEを同一scenario familyと同一opportunityで実装した
+- [completed] score 1〜4の非対象発言、発言順、候補者ターン位置を同一にし、候補者のtextとmoveだけを変える統制を固定した
+- [completed] score 4はm003とm005の異なるphaseを独立証拠とし、NEはAI先回りによるAI_QUALITY_FAILUREとしてscore 1と分離した
+- [completed] candidate総文字数比を1.8倍以内に制御し、発言量を得点の代理変数にしない検査を追加した
+- [completed] Blind Packから期待点、期待証拠、NE理由、rationale、boundary、承認情報を除去した
+- [completed] Anchor Setを5 / 35・status partial、各アンカーを人間校正前のdraftとして記録した
+- [next] Logical Reasoningのscore 1 / 2 / 3 / 4 / NEを作成する
+- [next] Valuable Contributionのscore 1 / 2 / 3 / 4 / NEを作成し、累計15 / 35とする
+- [later] Collaboration 10件、Progress 10件を追加して35 / 35を完成する
+- [later] 2名以上のblind独立評価、調停、校正レポートを実施してapprovedへ進める
 - [later] System Quality Gateのgd-app接続、Evidence-first Judge、GD APP Episode Exporterへ進む
 
 ## Relations
 
 - part_of [[GD Evaluation Lab Project Overview]]
-- follows [[Exercise C Four-State Matrix v0.1 Decision]]
+- follows [[Micro Anchor Foundation and Issue Framing v0.1 Decision]]
+- informed_by [[Exercise C Four-State Matrix v0.1 Decision]]
 - informed_by [[Exercise C System Failure v0.1 Decision]]
 - informed_by [[Exercise C High Low Calibration v0.1 Decision]]
 - informed_by [[Exercise C Medium Vertical Slice v0.1 Decision]]
