@@ -66,3 +66,4 @@ jobs:
             fixtures/calibration/full-episodes/time-boxed-decision/medium/evaluation-result.json \
             fixtures/calibration/full-episodes/time-boxed-decision/medium/expected-feedback.json
           python scripts/check_exercise_c_medium.py
+          python scripts/check_exercise_c_review_regressions.py
