@@ -67,3 +67,14 @@ jobs:
             fixtures/calibration/full-episodes/time-boxed-decision/medium/expected-feedback.json
           python scripts/check_exercise_c_medium.py
           python scripts/check_exercise_c_review_regressions.py
+      - name: Bootstrap and validate Exercise C high/low calibration
+        run: |
+          python scripts/generate_exercise_c_high_low.py
+          python scripts/check_exercise_c_high_low.py
+      - name: Upload Exercise C high/low fixtures
+        uses: actions/upload-artifact@v4
+        with:
+          name: exercise-c-high-low-fixtures
+          path: |
+            fixtures/calibration/full-episodes/time-boxed-decision/high
+            fixtures/calibration/full-episodes/time-boxed-decision/low
