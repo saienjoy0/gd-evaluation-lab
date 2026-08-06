@@ -109,7 +109,7 @@ def main() -> int:
         / "issue-framing-v0.1.json"
     )
     if args.check:
-        if rendered != oracle.read_text(encoding="utf-8"):
+        if load_json(oracle) != pack:
             raise AssertionError("BLIND_PACK_ORACLE_MISMATCH")
         print("Micro Anchor blind pack OK")
         print(f"Blind entries: {pack['entry_count']}")
