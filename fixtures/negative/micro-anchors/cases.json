@@ -1,0 +1,24 @@
+{
+  "contract_version": "0.1",
+  "suite_id": "micro-anchor-negative-fixtures-v0.1",
+  "baseline_anchor_id": "anchor-if-1-001",
+  "cases": [
+    {"case_id":"numeric-evidence-empty","scope":"anchor","mutation":"numeric_evidence_empty","expected_error":"MICRO_ANCHOR_SCHEMA_INVALID"},
+    {"case_id":"score4-one-evidence","scope":"anchor","mutation":"score4_one_evidence","expected_error":"MICRO_ANCHOR_SCHEMA_INVALID"},
+    {"case_id":"evidence-owner-ai","scope":"anchor","mutation":"evidence_owner_ai","expected_error":"EVIDENCE_OWNER_INVALID"},
+    {"case_id":"evidence-message-missing","scope":"anchor","mutation":"evidence_missing","expected_error":"EVIDENCE_MESSAGE_NOT_FOUND"},
+    {"case_id":"ne-evidence-present","scope":"anchor","mutation":"ne_evidence_present","expected_error":"MICRO_ANCHOR_SCHEMA_INVALID"},
+    {"case_id":"ne-reason-missing","scope":"anchor","mutation":"ne_reason_missing","expected_error":"MICRO_ANCHOR_SCHEMA_INVALID"},
+    {"case_id":"numeric-ne-reason-present","scope":"anchor","mutation":"numeric_reason_present","expected_error":"MICRO_ANCHOR_SCHEMA_INVALID"},
+    {"case_id":"score1-insufficient-opportunity","scope":"anchor","mutation":"score1_insufficient","expected_error":"MICRO_ANCHOR_SCHEMA_INVALID"},
+    {"case_id":"episode-too-short","scope":"anchor","mutation":"too_short","expected_error":"MICRO_ANCHOR_SCHEMA_INVALID"},
+    {"case_id":"episode-too-long","scope":"anchor","mutation":"too_long","expected_error":"MICRO_ANCHOR_SCHEMA_INVALID"},
+    {"case_id":"duplicate-message-id","scope":"anchor","mutation":"duplicate_message","expected_error":"DUPLICATE_MESSAGE_ID"},
+    {"case_id":"dimension-path-mismatch","scope":"anchor","mutation":"path_dimension_mismatch","expected_error":"DIMENSION_PATH_MISMATCH"},
+    {"case_id":"anchor-id-dimension-mismatch","scope":"anchor","mutation":"id_dimension_mismatch","expected_error":"ANCHOR_ID_DIMENSION_MISMATCH"},
+    {"case_id":"anchor-set-coverage-missing","scope":"set","mutation":"coverage_missing","expected_error":"ANCHOR_SET_LADDER_INCOMPLETE"},
+    {"case_id":"anchor-set-cell-duplicated","scope":"set","mutation":"cell_duplicated","expected_error":"ANCHOR_SET_CELL_DUPLICATED"},
+    {"case_id":"forbidden-inference","scope":"anchor","mutation":"forbidden_inference","expected_error":"FORBIDDEN_INFERENCE_FOUND"},
+    {"case_id":"approved-without-reviewer","scope":"anchor","mutation":"approved_without_reviewer","expected_error":"MICRO_ANCHOR_SCHEMA_INVALID"}
+  ]
+}
